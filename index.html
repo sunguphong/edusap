@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAP ABAP 30일×2 완성 - 1일 30분 교육과정</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">ABAP</span>
+    <div>
+      <strong>SAP ABAP 교육센터</strong>
+      <small>1일 30분 · 하루 한 걸음 완성 과정</small>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="mini-progress">
+      <span id="miniPct">0%</span>
+      <div class="mini-bar"><i id="miniBar"></i></div>
+    </div>
+    <button class="btn ghost" id="themeBtn" title="테마 전환">🌓</button>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <a href="#/dashboard" data-nav="dashboard"><span>📊</span> 대시보드</a>
+    <a href="#/schedule" data-nav="schedule"><span>🗓️</span> 전체 교육일정표</a>
+    <a href="#/day/1" data-nav="day"><span>📘</span> 오늘의 학습</a>
+    <a href="#/exams" data-nav="exams"><span>📝</span> 평가 센터</a>
+    <a href="#/report" data-nav="report"><span>🏅</span> 성적표 / 수료</a>
+    <a href="#/guide" data-nav="guide"><span>❓</span> 학습 가이드</a>
+    <div class="side-sep"></div>
+    <div class="side-foot">
+      <button class="btn ghost sm" id="exportBtn">진도 내보내기</button>
+      <button class="btn ghost sm" id="importBtn">진도 불러오기</button>
+      <button class="btn ghost sm danger" id="resetBtn">진도 초기화</button>
+      <input type="file" id="importFile" accept="application/json" hidden>
+    </div>
+  </nav>
+
+  <main id="view" class="view"><div class="loading">불러오는 중…</div></main>
+</div>
+
+<footer class="foot" id="footNote">SAP ABAP 교육과정 · 1일 30분(이론 15분 / 실습 10분 / 연습문제 5분) · 주차평가 + 중간평가 + 최종평가</footer>
+
+<!-- 커리큘럼 데이터 -->
+<script src="js/data/curriculum-01.js"></script>
+<script src="js/data/curriculum-02.js"></script>
+<script src="js/data/curriculum-03.js"></script>
+<!-- 6~12주차(Day 26~60) 콘텐츠는 이어서 추가됩니다 -->
+<script src="js/data/exams.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
