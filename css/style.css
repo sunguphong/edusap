@@ -183,3 +183,20 @@ textarea.input{width:100%; min-height:150px; font-family:Consolas,"D2Coding",mon
   .card,.weekbox{break-inside:avoid; box-shadow:none}
   body{background:#fff}
 }
+
+/* ===== 이론 도식 (SVG 규칙은 js/diagram.js) ===== */
+.theory .fig{margin:16px 0; padding:14px 14px 10px; background:var(--panel); border:1px solid var(--line); border-radius:10px; text-align:center}
+.theory .fig svg{display:block; width:100%; height:auto; max-width:760px; margin:0 auto}
+.theory .fig figcaption{margin-top:8px; font-size:.8rem; color:var(--ink2)}
+@media print{ .theory .fig{break-inside:avoid} }
+
+/* ===== 문법 비교 (기존 vs New Syntax) ===== */
+.cmp{margin:10px 0 16px}
+.cmp-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.cmp-grid > div{min-width:0}
+.cmp-grid pre.code{margin:0; height:calc(100% - 26px)}
+.cmp-lbl{font-size:.74rem; font-weight:700; padding:3px 10px; border-radius:6px 6px 0 0; display:inline-block}
+.cmp-lbl.old{background:color-mix(in srgb,var(--warn) 16%,transparent); color:var(--warn)}
+.cmp-lbl.new{background:color-mix(in srgb,var(--brand) 16%,transparent); color:var(--brand)}
+.cmp-note{font-size:.84rem; margin-top:8px; padding:8px 12px; border-left:3px solid var(--ok); background:color-mix(in srgb,var(--ok) 8%,transparent); border-radius:0 8px 8px 0}
+@media (max-width:820px){ .cmp-grid{grid-template-columns:1fr} .cmp-grid pre.code{height:auto} }

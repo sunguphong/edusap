@@ -37,6 +37,54 @@ SAP 표준 기능의 99%가 ABAP으로 작성되어 있습니다. ABAP 개발자
   <tr><td><b>Database</b></td><td>데이터 저장</td><td>HANA, Oracle, MS SQL 등</td></tr>
 </table>
 <p>ABAP 코드는 <b>Application 계층에서만</b> 실행됩니다. 사용자가 버튼을 누르면 → GUI가 요청을 Dispatcher에 보내고 → 비어있는 Work Process가 ABAP을 실행하고 → DB에서 데이터를 읽어 → 결과를 GUI로 돌려줍니다.</p>
+<figure class="fig">
+<svg viewBox="0 0 720 380" role="img" aria-label="SAP 3-Tier 아키텍처와 요청 처리 흐름">
+  <rect class="bx-b" x="20" y="16" width="480" height="70" rx="10"/>
+  <text class="tx-l" x="36" y="40">Presentation 계층</text>
+  <text class="tx-s" x="36" y="64">화면 표시 · 사용자 입력</text>
+  <rect class="bx" x="220" y="30" width="120" height="44" rx="6"/>
+  <text class="tx-b" x="280" y="52" text-anchor="middle">SAP GUI</text>
+  <rect class="bx" x="355" y="30" width="135" height="44" rx="6"/>
+  <text class="tx-b" x="422" y="52" text-anchor="middle">Fiori (브라우저)</text>
+  <path class="ln-b arr-b" d="M110,88 V120"/>
+  <path class="ln-g arr-g" d="M150,122 V90"/>
+  <text class="tx-s tx-c" x="74" y="105">요청</text>
+  <text class="tx-s tx-g" x="160" y="105">응답</text>
+  <rect class="bx-a" x="20" y="124" width="480" height="140" rx="10"/>
+  <text class="tx-l" x="36" y="146">Application 계층</text>
+  <text class="tx-s" x="36" y="168">ABAP 실행 · 업무 로직</text>
+  <text class="tx-s" x="196" y="176">Work Process 들</text>
+  <rect class="bx" x="36" y="190" width="120" height="52" rx="6"/>
+  <text class="tx-b" x="96" y="216" text-anchor="middle">Dispatcher</text>
+  <path class="ln arr" d="M156,216 H192"/>
+  <rect class="bx-s" x="196" y="190" width="88" height="52" rx="6"/>
+  <text class="tx-b tx-w" x="240" y="208" text-anchor="middle">WP 1</text>
+  <text class="tx-s tx-w" x="240" y="228" text-anchor="middle">ABAP 실행</text>
+  <rect class="bx" x="296" y="190" width="88" height="52" rx="6"/>
+  <text class="tx-b" x="340" y="208" text-anchor="middle">WP 2</text>
+  <text class="tx-s" x="340" y="228" text-anchor="middle">대기</text>
+  <rect class="bx" x="396" y="190" width="88" height="52" rx="6"/>
+  <text class="tx-b" x="440" y="208" text-anchor="middle">WP 3</text>
+  <text class="tx-s" x="440" y="228" text-anchor="middle">대기</text>
+  <path class="ln-b arr-b" d="M110,266 V300"/>
+  <path class="ln-g arr-g" d="M150,302 V268"/>
+  <text class="tx-s tx-c" x="74" y="284">SQL</text>
+  <text class="tx-s tx-g" x="160" y="284">데이터</text>
+  <rect class="bx-g" x="20" y="304" width="480" height="64" rx="10"/>
+  <text class="tx-l" x="36" y="326">Database 계층</text>
+  <text class="tx-s" x="36" y="350">HANA · Oracle · MS SQL</text>
+  <rect class="bx" x="270" y="316" width="214" height="40" rx="6"/>
+  <text x="377" y="336" text-anchor="middle">DB 테이블 (MANDT 포함)</text>
+  <rect class="bx" x="520" y="16" width="190" height="352" rx="10"/>
+  <text class="tx-b" x="536" y="42">처리 순서</text>
+  <text x="536" y="90">① 버튼 클릭 (GUI)</text>
+  <text x="536" y="145">② Dispatcher 접수</text>
+  <text x="536" y="200">③ WP가 ABAP 실행</text>
+  <text x="536" y="255">④ DB 조회 (SQL)</text>
+  <text x="536" y="310">⑤ 결과 화면 전송</text>
+</svg>
+<figcaption>그림 1. 3-Tier 아키텍처 — ABAP은 Application 계층의 Work Process에서만 실행된다</figcaption>
+</figure>
 
 <h4>4. 클라이언트(Client / Mandant)</h4>
 <p>하나의 SAP 시스템 안에 <b>논리적으로 완전히 분리된 여러 개의 회사 데이터 공간</b>을 둘 수 있습니다. 이것이 클라이언트입니다(3자리 숫자, 예: 100, 200, 800).</p>
@@ -45,11 +93,63 @@ SAP 표준 기능의 99%가 ABAP으로 작성되어 있습니다. ABAP 개발자
   <li>ABAP의 SELECT는 <b>자동으로 현재 로그인한 클라이언트만</b> 조회합니다(클라이언트 종속).</li>
   <li>반면 <b>프로그램 소스 코드</b>는 클라이언트와 무관하게 공유됩니다(클라이언트 독립).</li>
 </ul>
+<figure class="fig">
+<svg viewBox="0 0 720 300" role="img" aria-label="하나의 SAP 시스템 안의 클라이언트별 데이터와 공유 Repository">
+  <rect class="bx" x="20" y="16" width="680" height="268" rx="12"/>
+  <text class="tx-l" x="36" y="40">SAP 시스템 DEV (하나의 DB)</text>
+  <rect class="bx-b" x="40" y="60" width="200" height="120" rx="10"/>
+  <text class="tx-l" x="140" y="84" text-anchor="middle">클라이언트 100</text>
+  <text class="tx-s" x="140" y="112" text-anchor="middle">전표 · 자재 · 고객</text>
+  <text class="tx-m tx-c" x="140" y="138" text-anchor="middle">MANDT = '100'</text>
+  <text class="tx-s" x="140" y="162" text-anchor="middle">개발용</text>
+  <rect class="bx-b" x="260" y="60" width="200" height="120" rx="10"/>
+  <text class="tx-l" x="360" y="84" text-anchor="middle">클라이언트 200</text>
+  <text class="tx-s" x="360" y="112" text-anchor="middle">전표 · 자재 · 고객</text>
+  <text class="tx-m tx-c" x="360" y="138" text-anchor="middle">MANDT = '200'</text>
+  <text class="tx-s" x="360" y="162" text-anchor="middle">테스트용</text>
+  <rect class="bx-b" x="480" y="60" width="200" height="120" rx="10"/>
+  <text class="tx-l" x="580" y="84" text-anchor="middle">클라이언트 800</text>
+  <text class="tx-s" x="580" y="112" text-anchor="middle">전표 · 자재 · 고객</text>
+  <text class="tx-m tx-c" x="580" y="138" text-anchor="middle">MANDT = '800'</text>
+  <text class="tx-s" x="580" y="162" text-anchor="middle">교육용</text>
+  <path class="ln-r dash" d="M250,56 V184"/>
+  <path class="ln-r dash" d="M470,56 V184"/>
+  <path class="ln-a dash" d="M140,180 V212"/>
+  <path class="ln-a dash" d="M360,180 V212"/>
+  <path class="ln-a dash" d="M580,180 V212"/>
+  <rect class="bx-a" x="40" y="212" width="640" height="56" rx="10"/>
+  <text class="tx-b" x="60" y="232">Repository (클라이언트 독립)</text>
+  <text class="tx-s" x="60" y="254">프로그램 소스 · DDIC 정의 · 클래스 → 모든 클라이언트가 공유</text>
+</svg>
+<figcaption>그림 2. 클라이언트 — 업무 데이터는 MANDT로 분리(빨간 점선), 프로그램은 모두가 공유</figcaption>
+</figure>
 <div class="note">⚠️ 100번 클라이언트에서 만든 프로그램은 200번에서도 똑같이 보입니다. 하지만 100번에서 입력한 전표는 200번에서 보이지 않습니다. 이 차이를 꼭 기억하세요.</div>
 
 <h4>5. 시스템 Landscape (DEV → QAS → PRD)</h4>
 <p>개발은 항상 3단계를 거칩니다. 개발기(DEV)에서 만들고 → 품질기(QAS)에서 테스트하고 → 운영기(PRD)로 이관합니다.
 이 이동을 <b>Transport(트랜스포트)</b>라고 하며, Day 3에서 자세히 배웁니다.</p>
+<figure class="fig">
+<svg viewBox="0 0 720 190" role="img" aria-label="DEV, QAS, PRD 시스템 Landscape와 트랜스포트 방향">
+  <rect class="bx-b" x="20" y="40" width="170" height="100" rx="10"/>
+  <text class="tx-l" x="105" y="66" text-anchor="middle">DEV</text>
+  <text x="105" y="92" text-anchor="middle">개발기</text>
+  <text class="tx-s" x="105" y="118" text-anchor="middle">개발 · 단위 테스트</text>
+  <rect class="bx-o" x="275" y="40" width="170" height="100" rx="10"/>
+  <text class="tx-l" x="360" y="66" text-anchor="middle">QAS</text>
+  <text x="360" y="92" text-anchor="middle">품질기</text>
+  <text class="tx-s" x="360" y="118" text-anchor="middle">통합 테스트 · 검수</text>
+  <rect class="bx-g" x="530" y="40" width="170" height="100" rx="10"/>
+  <text class="tx-l" x="615" y="66" text-anchor="middle">PRD</text>
+  <text x="615" y="92" text-anchor="middle">운영기</text>
+  <text class="tx-s" x="615" y="118" text-anchor="middle">실제 업무 (수정 금지)</text>
+  <path class="ln-b arr-b" d="M192,90 H271"/>
+  <path class="ln-b arr-b" d="M447,90 H526"/>
+  <text class="tx-s tx-c" x="232" y="76" text-anchor="middle">Transport</text>
+  <text class="tx-s tx-c" x="487" y="76" text-anchor="middle">Transport</text>
+  <text class="tx-s" x="360" y="172" text-anchor="middle">모든 변경은 DEV에서만 만들고, 트랜스포트로 같은 내용을 옮긴다</text>
+</svg>
+<figcaption>그림 3. 시스템 Landscape — DEV → QAS → PRD 순서로만 이관한다</figcaption>
+</figure>
 `,
   code: [{
     caption: '오늘은 코드 대신, 개념을 머릿속에 그려봅니다',
@@ -102,6 +202,83 @@ SAP 표준 기능의 99%가 ABAP으로 작성되어 있습니다. ABAP 개발자
   <tr><td><b>Application Toolbar</b></td><td>현재 화면 전용 버튼들</td></tr>
   <tr><td><b>Status Bar</b></td><td>맨 아래. 메시지 + 시스템/클라이언트/프로그램 정보 표시</td></tr>
 </table>
+<figure class="fig">
+<svg viewBox="0 0 720 400" role="img" aria-label="SAP GUI 화면 구성 모형 (SE38 초기 화면)">
+  <rect class="bx" x="20" y="10" width="480" height="380" rx="6"/>
+  <rect class="bx" x="20" y="10" width="480" height="26" rx="6"/>
+  <text class="tx-s" x="32" y="23">메뉴   편집   이동   유틸리티   시스템   도움말</text>
+  <rect class="bx-b" x="20" y="36" width="480" height="36"/>
+  <rect class="bx" x="32" y="44" width="130" height="20" rx="3"/>
+  <text class="tx-m" x="40" y="54">/nSE38</text>
+  <rect class="bx" x="196" y="44" width="20" height="20" rx="3"/>
+  <rect class="bx" x="222" y="44" width="20" height="20" rx="3"/>
+  <rect class="bx" x="248" y="44" width="20" height="20" rx="3"/>
+  <rect class="bx" x="274" y="44" width="20" height="20" rx="3"/>
+  <rect class="bx" x="300" y="44" width="20" height="20" rx="3"/>
+  <rect class="bx-a" x="20" y="72" width="480" height="32"/>
+  <text class="tx-l" x="32" y="88">ABAP Editor: 초기 화면</text>
+  <rect class="bx" x="20" y="104" width="480" height="28"/>
+  <rect class="bx" x="32" y="108" width="48" height="20" rx="3"/>
+  <text class="tx-s" x="56" y="118" text-anchor="middle">실행</text>
+  <rect class="bx" x="86" y="108" width="48" height="20" rx="3"/>
+  <text class="tx-s" x="110" y="118" text-anchor="middle">디버깅</text>
+  <rect class="bx" x="140" y="108" width="48" height="20" rx="3"/>
+  <text class="tx-s" x="164" y="118" text-anchor="middle">점검</text>
+  <rect class="bx" x="20" y="132" width="480" height="224"/>
+  <text x="48" y="182">Program</text>
+  <rect class="bx-b" x="130" y="168" width="180" height="26" rx="3"/>
+  <text class="tx-m" x="140" y="181">ZTEST_HELLO</text>
+  <text class="tx-s" x="48" y="222">● 소스 코드</text>
+  <text class="tx-s" x="48" y="246">○ 변형 (Variants)</text>
+  <text class="tx-s" x="48" y="270">○ 속성 (Attributes)</text>
+  <rect class="bx" x="48" y="292" width="64" height="24" rx="3"/>
+  <text class="tx-s" x="80" y="304" text-anchor="middle">표시</text>
+  <rect class="bx" x="120" y="292" width="64" height="24" rx="3"/>
+  <text class="tx-s" x="152" y="304" text-anchor="middle">변경</text>
+  <rect class="bx" x="192" y="292" width="64" height="24" rx="3"/>
+  <text class="tx-s" x="224" y="304" text-anchor="middle">생성</text>
+  <rect class="bx-g" x="20" y="356" width="480" height="34"/>
+  <text class="tx-s" x="32" y="373">✔ 프로그램이 저장되었습니다</text>
+  <text class="tx-s tx-m" x="455" y="373" text-anchor="end">DEV (1) 100</text>
+  <circle class="bx-s" cx="176" cy="54" r="9"/>
+  <text class="tx-s tx-w" x="176" y="54" text-anchor="middle">1</text>
+  <circle class="bx-s" cx="480" cy="54" r="9"/>
+  <text class="tx-s tx-w" x="480" y="54" text-anchor="middle">2</text>
+  <circle class="bx-s" cx="480" cy="88" r="9"/>
+  <text class="tx-s tx-w" x="480" y="88" text-anchor="middle">3</text>
+  <circle class="bx-s" cx="480" cy="118" r="9"/>
+  <text class="tx-s tx-w" x="480" y="118" text-anchor="middle">4</text>
+  <circle class="bx-s" cx="480" cy="148" r="9"/>
+  <text class="tx-s tx-w" x="480" y="148" text-anchor="middle">5</text>
+  <circle class="bx-s" cx="480" cy="373" r="9"/>
+  <text class="tx-s tx-w" x="480" y="373" text-anchor="middle">6</text>
+  <circle class="bx-s" cx="534" cy="40" r="9"/>
+  <text class="tx-s tx-w" x="534" y="40" text-anchor="middle">1</text>
+  <text class="tx-b" x="550" y="40">Command Field</text>
+  <text class="tx-s" x="550" y="60">T-Code 입력 (/n, /o)</text>
+  <circle class="bx-s" cx="534" cy="100" r="9"/>
+  <text class="tx-s tx-w" x="534" y="100" text-anchor="middle">2</text>
+  <text class="tx-b" x="550" y="100">Standard Toolbar</text>
+  <text class="tx-s" x="550" y="120">저장 · 뒤로 · 종료 · 취소</text>
+  <circle class="bx-s" cx="534" cy="160" r="9"/>
+  <text class="tx-s tx-w" x="534" y="160" text-anchor="middle">3</text>
+  <text class="tx-b" x="550" y="160">Title Bar</text>
+  <text class="tx-s" x="550" y="180">현재 화면 제목</text>
+  <circle class="bx-s" cx="534" cy="220" r="9"/>
+  <text class="tx-s tx-w" x="534" y="220" text-anchor="middle">4</text>
+  <text x="550" y="220">Application Toolbar</text>
+  <text class="tx-s" x="550" y="240">현재 화면 전용 버튼</text>
+  <circle class="bx-s" cx="534" cy="280" r="9"/>
+  <text class="tx-s tx-w" x="534" y="280" text-anchor="middle">5</text>
+  <text class="tx-b" x="550" y="280">작업 영역</text>
+  <text class="tx-s" x="550" y="300">입력 필드 · 라디오 버튼</text>
+  <circle class="bx-s" cx="534" cy="340" r="9"/>
+  <text class="tx-s tx-w" x="534" y="340" text-anchor="middle">6</text>
+  <text class="tx-b" x="550" y="340">Status Bar</text>
+  <text class="tx-s" x="550" y="360">메시지 · 시스템 · 클라이언트</text>
+</svg>
+<figcaption>그림 1. SAP GUI 화면 구성 (SE38 초기 화면 모형) — 번호는 오른쪽 설명과 대응</figcaption>
+</figure>
 
 <h4>2. 트랜잭션 코드(T-Code)</h4>
 <p>SAP의 모든 화면에는 고유한 짧은 코드가 붙어 있습니다. 메뉴를 타고 들어가는 대신 Command Field에 코드를 치면 즉시 이동합니다.</p>
@@ -113,6 +290,36 @@ SAP 표준 기능의 99%가 ABAP으로 작성되어 있습니다. ABAP 개발자
   <tr><td><code>/n</code></td><td>현재 트랜잭션 취소하고 메인 메뉴로</td></tr>
   <tr><td><code>/nex</code></td><td>확인 없이 즉시 로그오프</td></tr>
 </table>
+<figure class="fig">
+<svg viewBox="0 0 720 220" role="img" aria-label="/n 과 /o 의 세션 동작 차이">
+  <text class="tx-b" x="20" y="24">/nSE16N — 같은 창에서 이동</text>
+  <rect class="bx" x="30" y="50" width="120" height="80" rx="6"/>
+  <rect class="bx-b" x="30" y="50" width="120" height="22" rx="6"/>
+  <text class="tx-s" x="40" y="61">세션 1</text>
+  <text class="tx-m" x="90" y="102" text-anchor="middle">SE38</text>
+  <path class="ln arr" d="M156,90 H204"/>
+  <rect class="bx" x="210" y="50" width="120" height="80" rx="6"/>
+  <rect class="bx-b" x="210" y="50" width="120" height="22" rx="6"/>
+  <text class="tx-s" x="220" y="61">세션 1</text>
+  <text class="tx-m" x="270" y="102" text-anchor="middle">SE16N</text>
+  <text class="tx-s tx-r" x="180" y="156" text-anchor="middle">SE38 작업은 종료됨</text>
+  <path class="ln dash" d="M360,12 V170"/>
+  <text class="tx-b" x="380" y="24">/oSE16N — 새 창(세션) 추가</text>
+  <rect class="bx" x="390" y="50" width="120" height="80" rx="6"/>
+  <rect class="bx-b" x="390" y="50" width="120" height="22" rx="6"/>
+  <text class="tx-s" x="400" y="61">세션 1</text>
+  <text class="tx-m" x="450" y="102" text-anchor="middle">SE38</text>
+  <path class="ln-g arr-g" d="M516,90 H554"/>
+  <text class="tx-b tx-g" x="535" y="76" text-anchor="middle">+</text>
+  <rect class="bx" x="560" y="50" width="120" height="80" rx="6"/>
+  <rect class="bx-g" x="560" y="50" width="120" height="22" rx="6"/>
+  <text class="tx-s" x="570" y="61">세션 2</text>
+  <text class="tx-m" x="620" y="102" text-anchor="middle">SE16N</text>
+  <text class="tx-s tx-g" x="535" y="156" text-anchor="middle">SE38 은 그대로 유지</text>
+  <text class="tx-s" x="360" y="198" text-anchor="middle">세션은 기본 최대 6개 · /n 은 현재 트랜잭션을 끝내고 이동</text>
+</svg>
+<figcaption>그림 2. /n 은 현재 세션을 바꾸고, /o 는 새 세션을 하나 더 연다</figcaption>
+</figure>
 <div class="tip">💡 세션(창)은 기본적으로 최대 6개까지 열 수 있습니다. 소스 보면서 테이블 조회하려면 <code>/o</code>가 필수입니다.</div>
 
 <h4>3. 개발자 필수 T-Code (오늘 외우세요)</h4>
@@ -144,6 +351,34 @@ SAP 표준 기능의 99%가 ABAP으로 작성되어 있습니다. ABAP 개발자
   <li><b>Ctrl+S</b> — 저장</li>
 </ul>
 <div class="note">⚠️ <b>F1 → 기술 정보(Technical Information)</b>는 개발자가 가장 많이 쓰는 기능입니다. 화면의 어떤 필드가 DB의 어느 테이블·필드인지 즉시 알 수 있습니다.</div>
+<figure class="fig">
+<svg viewBox="0 0 720 260" role="img" aria-label="F1 기술 정보 팝업 모형">
+  <text class="tx-s" x="20" y="76">MM03 화면의 입력 필드</text>
+  <rect class="bx" x="20" y="90" width="200" height="60" rx="6"/>
+  <text x="36" y="120">자재</text>
+  <rect class="bx-b" x="80" y="106" width="130" height="28" rx="3"/>
+  <text class="tx-m" x="90" y="120">100-100</text>
+  <path class="ln-o arr-o" d="M226,120 H300"/>
+  <text class="tx-b tx-o" x="263" y="104" text-anchor="middle">F1</text>
+  <text class="tx-s" x="263" y="138" text-anchor="middle">기술 정보</text>
+  <rect class="bx" x="310" y="16" width="390" height="228" rx="6"/>
+  <rect class="bx-s" x="310" y="16" width="390" height="30" rx="6"/>
+  <text class="tx-b tx-w" x="326" y="31">기술 정보 (Technical Information)</text>
+  <rect class="bx-o" x="320" y="124" width="370" height="28" rx="4"/>
+  <rect class="bx-o" x="320" y="158" width="370" height="28" rx="4"/>
+  <text class="tx-s" x="330" y="70">프로그램명</text>
+  <text class="tx-m" x="500" y="70">SAPLMGMM</text>
+  <text class="tx-s" x="330" y="104">화면 번호</text>
+  <text class="tx-m" x="500" y="104">4004</text>
+  <text class="tx-b" x="330" y="138">테이블명</text>
+  <text class="tx-m tx-b" x="500" y="138">MARA</text>
+  <text class="tx-b" x="330" y="172">필드명</text>
+  <text class="tx-m tx-b" x="500" y="172">MATNR</text>
+  <text class="tx-s" x="330" y="206">데이터 엘리먼트</text>
+  <text class="tx-m" x="500" y="206">MATNR</text>
+</svg>
+<figcaption>그림 3. 필드에서 F1 → 기술 정보 — 화면 필드가 MARA-MATNR 임을 바로 확인</figcaption>
+</figure>
 `,
   code: [{
     caption: 'Command Field 사용 예 (SAP GUI에 직접 입력해 보세요)',
@@ -201,6 +436,36 @@ SAP 표준 기능의 99%가 ABAP으로 작성되어 있습니다. ABAP 개발자
   <li><b>Screen Painter (SE51)</b> — 화면(Dynpro)</li>
   <li><b>Menu Painter (SE41)</b> — 메뉴/툴바(GUI Status)</li>
 </ul>
+<figure class="fig">
+<svg viewBox="0 0 720 320" role="img" aria-label="SE80 Object Navigator 화면 모형">
+  <rect class="bx" x="20" y="10" width="680" height="300" rx="6"/>
+  <rect class="bx-s" x="20" y="10" width="680" height="30" rx="6"/>
+  <text class="tx-b tx-w" x="36" y="25">Object Navigator (SE80)</text>
+  <rect class="bx-b" x="30" y="50" width="250" height="250" rx="4"/>
+  <rect class="bx" x="40" y="60" width="230" height="24" rx="3"/>
+  <text class="tx-m" x="48" y="72">Package : ZMM_DEV</text>
+  <text class="tx-b" x="44" y="104">▾ ZMM_DEV</text>
+  <text x="60" y="130">▾ Dictionary Objects</text>
+  <text class="tx-m" x="84" y="154">ZMM_MATERIAL_EXT</text>
+  <text x="60" y="180">▾ Programs</text>
+  <rect class="bx-o" x="78" y="193" width="180" height="22" rx="3"/>
+  <text class="tx-m" x="84" y="204">ZMM_STOCK_LIST</text>
+  <text x="60" y="230">▾ Classes</text>
+  <text class="tx-m" x="84" y="254">ZCL_MM_STOCK_CALCULATOR</text>
+  <text x="60" y="280">▸ Transactions</text>
+  <rect class="bx" x="290" y="50" width="400" height="250" rx="4"/>
+  <text class="tx-b" x="306" y="72">ABAP Editor : ZMM_STOCK_LIST</text>
+  <rect class="bx-d" x="300" y="90" width="380" height="150" rx="4"/>
+  <text class="tx-m tx-w" x="314" y="112">REPORT zmm_stock_list.</text>
+  <text class="tx-m tx-w" x="314" y="160">SELECT matnr, werks, labst</text>
+  <text class="tx-m tx-w" x="314" y="184">  FROM mard</text>
+  <text class="tx-m tx-w" x="314" y="208">  INTO TABLE @DATA(lt_stock).</text>
+  <path class="ln-o arr-o" d="M260,204 H298"/>
+  <text class="tx-s" x="306" y="262">왼쪽 트리에서 객체를 더블클릭하면</text>
+  <text class="tx-s" x="306" y="282">오른쪽에 해당 도구(Editor · DDIC · Class Builder)가 열린다</text>
+</svg>
+<figcaption>그림 1. SE80 Object Navigator — 왼쪽은 패키지 트리, 오른쪽은 선택한 객체의 편집 도구</figcaption>
+</figure>
 
 <h4>2. 패키지(Package)</h4>
 <p>개발 객체를 담는 폴더입니다(구버전 명칭: Development Class). 모든 개발 객체는 반드시 패키지에 속해야 합니다.</p>
@@ -229,6 +494,32 @@ SAP 표준 기능의 99%가 ABAP으로 작성되어 있습니다. ABAP 개발자
   <li><b>Workbench Request</b> — 프로그램, 테이블 등 개발 객체(클라이언트 독립)</li>
   <li><b>Customizing Request</b> — 설정 데이터(클라이언트 종속)</li>
 </ul>
+<figure class="fig">
+<svg viewBox="0 0 720 230" role="img" aria-label="트랜스포트 요청과 작업, 객체의 계층 구조">
+  <rect class="bx-b" x="20" y="20" width="320" height="56" rx="8"/>
+  <text class="tx-b" x="36" y="40">Request  DEVK900123</text>
+  <text class="tx-s" x="36" y="62">Workbench Request · 소유자 홍길동</text>
+  <path class="ln" d="M40,76 V191 H60"/>
+  <path class="ln" d="M40,125 H60"/>
+  <rect class="bx-a" x="60" y="100" width="280" height="50" rx="8"/>
+  <text class="tx-b" x="76" y="117">Task  DEVK900124</text>
+  <text class="tx-s" x="76" y="137">개발자 홍길동</text>
+  <rect class="bx-a" x="60" y="166" width="280" height="50" rx="8"/>
+  <text class="tx-b" x="76" y="183">Task  DEVK900125</text>
+  <text class="tx-s" x="76" y="203">개발자 김철수</text>
+  <text class="tx-s" x="380" y="48">Task 안에 실제 객체 목록이 기록된다</text>
+  <rect class="bx" x="380" y="94" width="310" height="28" rx="4"/>
+  <text class="tx-m" x="392" y="108">R3TR PROG ZMM_STOCK_LIST</text>
+  <rect class="bx" x="380" y="128" width="310" height="28" rx="4"/>
+  <text class="tx-m" x="392" y="142">R3TR TABL ZMM_MATERIAL_EXT</text>
+  <rect class="bx" x="380" y="177" width="310" height="28" rx="4"/>
+  <text class="tx-m" x="392" y="191">R3TR CLAS ZCL_MM_STOCK_CALCULATOR</text>
+  <path class="ln dash" d="M340,125 L380,108"/>
+  <path class="ln dash" d="M340,125 L380,142"/>
+  <path class="ln dash" d="M340,191 H380"/>
+</svg>
+<figcaption>그림 2. 트랜스포트 구조 — Request 아래 개발자별 Task, Task 안에 객체가 담긴다</figcaption>
+</figure>
 <p>진행 순서:</p>
 <ol>
   <li>객체 저장 시 트랜스포트 요청 번호를 지정 (예: <code>DEVK900123</code>)</li>
@@ -236,6 +527,39 @@ SAP 표준 기능의 99%가 ABAP으로 작성되어 있습니다. ABAP 개발자
   <li>이어서 <b>Request를 해제</b> → 파일로 추출됨</li>
   <li>Basis 담당자가 QAS → PRD 순서로 Import</li>
 </ol>
+<figure class="fig">
+<svg viewBox="0 0 720 190" role="img" aria-label="트랜스포트 해제와 Import 진행 순서">
+  <text class="tx-s" x="76" y="52" text-anchor="middle">STEP 1</text>
+  <text class="tx-s" x="218" y="52" text-anchor="middle">STEP 2</text>
+  <text class="tx-s" x="360" y="52" text-anchor="middle">STEP 3</text>
+  <text class="tx-s" x="502" y="52" text-anchor="middle">STEP 4</text>
+  <text class="tx-s" x="644" y="52" text-anchor="middle">STEP 5</text>
+  <rect class="bx-b" x="16" y="70" width="120" height="60" rx="8"/>
+  <text class="tx-b" x="76" y="90" text-anchor="middle">객체 저장</text>
+  <text class="tx-s" x="76" y="112" text-anchor="middle">요청 번호 지정</text>
+  <rect class="bx-b" x="158" y="70" width="120" height="60" rx="8"/>
+  <text class="tx-b" x="218" y="90" text-anchor="middle">Task 해제</text>
+  <text class="tx-s" x="218" y="112" text-anchor="middle">SE09 / SE10</text>
+  <rect class="bx-b" x="300" y="70" width="120" height="60" rx="8"/>
+  <text class="tx-b" x="360" y="90" text-anchor="middle">Request 해제</text>
+  <text class="tx-s" x="360" y="112" text-anchor="middle">파일로 추출</text>
+  <rect class="bx-o" x="442" y="70" width="120" height="60" rx="8"/>
+  <text class="tx-b" x="502" y="90" text-anchor="middle">QAS Import</text>
+  <text class="tx-s" x="502" y="112" text-anchor="middle">테스트 시스템</text>
+  <rect class="bx-g" x="584" y="70" width="120" height="60" rx="8"/>
+  <text class="tx-b" x="644" y="90" text-anchor="middle">PRD Import</text>
+  <text class="tx-s" x="644" y="112" text-anchor="middle">운영 반영</text>
+  <path class="ln arr" d="M136,100 H154"/>
+  <path class="ln arr" d="M278,100 H296"/>
+  <path class="ln arr" d="M420,100 H438"/>
+  <path class="ln arr" d="M562,100 H580"/>
+  <path class="ln-b" d="M16,150 H420"/>
+  <text class="tx-s tx-c" x="218" y="168" text-anchor="middle">개발자가 수행 (DEV)</text>
+  <path class="ln-o" d="M442,150 H704"/>
+  <text class="tx-s tx-o" x="573" y="168" text-anchor="middle">Basis 담당자가 수행</text>
+</svg>
+<figcaption>그림 3. 트랜스포트 진행 순서 — Task 해제 → Request 해제 → QAS → PRD Import</figcaption>
+</figure>
 <div class="tip">💡 요청 번호 형식: <code>SID</code> + <code>K</code> + <code>6자리 숫자</code>. 예) DEVK900123 은 DEV 시스템의 요청입니다.</div>
 
 <h4>5. 객체 잠금(Lock)</h4>
@@ -323,6 +647,21 @@ SAP 표준 기능의 99%가 ABAP으로 작성되어 있습니다. ABAP 개발자
 
 <h4>4. 체인 문장(Chained Statement)</h4>
 <p>같은 키워드를 반복할 때 콜론(:)과 쉼표(,)로 줄일 수 있습니다.</p>
+<figure class="fig">
+<svg viewBox="0 0 720 175" role="img" aria-label="체인 문장이 개별 문장으로 펼쳐지는 모습">
+  <rect class="bx-d" x="20" y="50" width="280" height="60" rx="8"/>
+  <text class="tx-m tx-w" x="36" y="80">WRITE: 'A', 'B', 'C'.</text>
+  <path class="ln-b arr-b" d="M306,80 H414"/>
+  <text class="tx-s tx-c" x="360" y="66" text-anchor="middle">컴파일러가 펼침</text>
+  <rect class="bx-d" x="420" y="20" width="280" height="120" rx="8"/>
+  <text class="tx-m tx-w" x="436" y="50">WRITE 'A'.</text>
+  <text class="tx-m tx-w" x="436" y="80">WRITE 'B'.</text>
+  <text class="tx-m tx-w" x="436" y="110">WRITE 'C'.</text>
+  <text class="tx-s" x="20" y="134">콜론(:) 앞 = 공통 키워드</text>
+  <text class="tx-s" x="20" y="156">쉼표(,)로 구분 · 마지막은 마침표(.)</text>
+</svg>
+<figcaption>그림 1. 체인 문장 — 콜론 앞의 공통 부분이 쉼표로 구분된 각 항목 앞에 붙는다</figcaption>
+</figure>
 
 <h4>5. 구문체크 vs 활성화</h4>
 <table>
@@ -333,6 +672,38 @@ SAP 표준 기능의 99%가 ABAP으로 작성되어 있습니다. ABAP 개발자
   <tr><td>실행</td><td>F8</td><td>활성 버전을 실행.</td></tr>
 </table>
 <div class="note">⚠️ "분명히 고쳤는데 결과가 그대로다" → 십중팔구 <b>활성화(Ctrl+F3)를 안 한 것</b>입니다. ABAP 개발자가 평생 겪는 실수 1위입니다.</div>
+<figure class="fig">
+<svg viewBox="0 0 720 215" role="img" aria-label="편집, 저장, 활성화, 실행과 비활성/활성 버전의 관계">
+  <text class="tx-s" x="20" y="24">Ctrl+F2 구문 체크 : 문법만 검사하고 아무것도 반영하지 않음</text>
+  <rect class="bx" x="20" y="50" width="120" height="56" rx="8"/>
+  <text class="tx-b" x="80" y="70" text-anchor="middle">소스 편집</text>
+  <text class="tx-s" x="80" y="92" text-anchor="middle">SE38 Editor</text>
+  <rect class="bx-b" x="190" y="50" width="130" height="56" rx="8"/>
+  <text class="tx-b" x="255" y="70" text-anchor="middle">저장</text>
+  <text class="tx-s tx-m" x="255" y="92" text-anchor="middle">Ctrl+S</text>
+  <rect class="bx-a" x="370" y="50" width="130" height="56" rx="8"/>
+  <text class="tx-b" x="435" y="70" text-anchor="middle">활성화</text>
+  <text class="tx-s tx-m" x="435" y="92" text-anchor="middle">Ctrl+F3</text>
+  <rect class="bx-g" x="550" y="50" width="150" height="56" rx="8"/>
+  <text class="tx-b" x="625" y="70" text-anchor="middle">실행</text>
+  <text class="tx-s tx-m" x="625" y="92" text-anchor="middle">F8</text>
+  <path class="ln arr" d="M140,78 H186"/>
+  <path class="ln arr" d="M320,78 H366"/>
+  <path class="ln arr" d="M500,78 H546"/>
+  <path class="ln-o dash arr-o" d="M255,106 V146"/>
+  <rect class="bx-o" x="180" y="150" width="150" height="50" rx="8"/>
+  <text class="tx-b" x="255" y="168" text-anchor="middle">비활성 버전</text>
+  <text class="tx-s" x="255" y="188" text-anchor="middle">저장만 된 상태</text>
+  <text class="tx-s tx-r" x="172" y="175" text-anchor="end">여기서 멈추면 반영 안 됨 →</text>
+  <path class="ln-g arr-g" d="M435,106 V146"/>
+  <rect class="bx-g" x="360" y="150" width="150" height="50" rx="8"/>
+  <text class="tx-b" x="435" y="168" text-anchor="middle">활성 버전</text>
+  <text class="tx-s" x="435" y="188" text-anchor="middle">실행에 쓰이는 코드</text>
+  <path class="ln-g arr-g" d="M510,175 H625 V110"/>
+  <text class="tx-s tx-g" x="530" y="194">F8은 활성 버전만 실행</text>
+</svg>
+<figcaption>그림 2. 저장은 비활성 버전만 만들고, 활성화를 해야 실행되는 버전이 바뀐다</figcaption>
+</figure>
 
 <h4>6. 시스템 필드(sy-)</h4>
 <p>SAP가 자동으로 채워주는 전역 변수들입니다. 자주 쓰는 것:</p>
@@ -379,6 +750,27 @@ DATA lv_name TYPE string.       "줄 뒤 주석은 큰따옴표
 lv_name = '홍길동'.
 
 WRITE / lv_name.`
+    }
+  ],
+  compare: [
+    {
+      topic: '여러 값을 한 줄 문자열로 조합해 출력하기',
+      classic: `DATA: lv_line  TYPE c LENGTH 80,
+      lv_datum TYPE c LENGTH 10.
+
+* 날짜를 사용자 형식 문자로 변환
+WRITE sy-datum TO lv_datum.
+
+CONCATENATE '사용자:' sy-uname
+            '/ 일자:' lv_datum
+       INTO lv_line SEPARATED BY space.
+
+WRITE / lv_line.`,
+      modern: `* 임시 변수 없이 String Template 한 줄
+DATA(lv_line) = |사용자: { sy-uname } / 일자: { sy-datum DATE = USER }|.
+
+WRITE / lv_line.`,
+      note: '결과용 변수 선언과 WRITE TO · CONCATENATE 단계가 String Template 하나로 합쳐지고, 날짜 포맷도 DATE = USER 옵션으로 처리됩니다.'
     }
   ],
   quiz: [
@@ -433,6 +825,40 @@ ULINE.`
 <span class="c">" 5. 서브루틴 / 로컬 클래스 정의</span>
 </pre>
 <p>작은 프로그램에서는 이벤트 블록을 생략할 수 있습니다. 그 경우 모든 실행문은 암묵적으로 <code>START-OF-SELECTION</code>에 속합니다.</p>
+<figure class="fig">
+<svg viewBox="0 0 720 210" role="img" aria-label="실행 프로그램의 이벤트 블록 실행 순서">
+  <rect class="bx" x="20" y="30" width="110" height="56" rx="8"/>
+  <text class="tx-b" x="75" y="58" text-anchor="middle">F8 실행</text>
+  <rect class="bx" x="160" y="30" width="150" height="56" rx="8"/>
+  <text class="tx-m tx-b" x="235" y="50" text-anchor="middle">INITIALIZATION</text>
+  <text class="tx-s" x="235" y="72" text-anchor="middle">초기값 세팅</text>
+  <rect class="bx-o" x="340" y="30" width="140" height="56" rx="8"/>
+  <text class="tx-b" x="410" y="50" text-anchor="middle">선택화면 표시</text>
+  <text class="tx-s" x="410" y="72" text-anchor="middle">사용자 입력</text>
+  <rect class="bx" x="510" y="30" width="190" height="56" rx="8"/>
+  <text class="tx-m tx-b" x="605" y="50" text-anchor="middle">AT SELECTION-SCREEN</text>
+  <text class="tx-s" x="605" y="72" text-anchor="middle">입력값 검증</text>
+  <path class="ln arr" d="M130,58 H156"/>
+  <path class="ln arr" d="M310,58 H336"/>
+  <path class="ln arr" d="M480,58 H506"/>
+  <path class="ln-r dash arr-r" d="M590,86 V104 H410 V90"/>
+  <text class="tx-s tx-r" x="500" y="118" text-anchor="middle">오류 시 다시 입력</text>
+  <path class="ln-g arr-g" d="M660,86 V136"/>
+  <text class="tx-s tx-g" x="668" y="114">정상</text>
+  <rect class="bx-b" x="470" y="140" width="200" height="56" rx="8"/>
+  <text class="tx-m tx-b" x="570" y="160" text-anchor="middle">START-OF-SELECTION</text>
+  <text class="tx-s" x="570" y="182" text-anchor="middle">메인 처리 (본체)</text>
+  <rect class="bx" x="240" y="140" width="190" height="56" rx="8"/>
+  <text class="tx-m tx-b" x="335" y="160" text-anchor="middle">END-OF-SELECTION</text>
+  <text class="tx-s" x="335" y="182" text-anchor="middle">마무리</text>
+  <rect class="bx-g" x="20" y="140" width="180" height="56" rx="8"/>
+  <text class="tx-b" x="110" y="160" text-anchor="middle">리스트 출력</text>
+  <text class="tx-s" x="110" y="182" text-anchor="middle">WRITE 결과 화면</text>
+  <path class="ln arr" d="M470,168 H434"/>
+  <path class="ln arr" d="M240,168 H204"/>
+</svg>
+<figcaption>그림 1. 실행 프로그램의 이벤트 순서 — 검증 오류 시 선택화면으로 돌아가고, 정상이면 본체가 실행된다</figcaption>
+</figure>
 
 <h4>2. 선언부와 처리부의 분리</h4>
 <p>ABAP은 "선언은 위, 실행은 아래"가 원칙입니다. <code>DATA</code> 선언은 프로그램 어디에 써도 되지만,
@@ -453,6 +879,35 @@ ULINE.`
   <tr><td><code>cv_ / cs_ / ct_</code></td><td>Changing 파라미터</td><td>ct_data</td></tr>
   <tr><td><code>rv_ / rs_ / rt_</code></td><td>Returning 파라미터</td><td>rv_amount</td></tr>
 </table>
+<figure class="fig">
+<svg viewBox="0 0 720 220" role="img" aria-label="헝가리안 변수 접두어의 구성">
+  <text class="tx-b tx-c" x="95" y="40" text-anchor="middle">범위 (Scope)</text>
+  <text class="tx-b tx-a" x="285" y="40" text-anchor="middle">종류 (Kind)</text>
+  <text class="tx-s" x="410" y="40" text-anchor="middle">구분</text>
+  <text class="tx-b tx-g" x="575" y="40" text-anchor="middle">의미 있는 이름</text>
+  <rect class="bx-b" x="60" y="70" width="70" height="50" rx="8"/>
+  <text class="tx-l" x="95" y="95" text-anchor="middle">l</text>
+  <text class="tx-l" x="190" y="95" text-anchor="middle">+</text>
+  <rect class="bx-a" x="250" y="70" width="70" height="50" rx="8"/>
+  <text class="tx-l" x="285" y="95" text-anchor="middle">v</text>
+  <text class="tx-l" x="355" y="95" text-anchor="middle">+</text>
+  <rect class="bx" x="390" y="70" width="40" height="50" rx="8"/>
+  <text class="tx-l" x="410" y="95" text-anchor="middle">_</text>
+  <text class="tx-l" x="460" y="95" text-anchor="middle">+</text>
+  <rect class="bx-g" x="490" y="70" width="170" height="50" rx="8"/>
+  <text class="tx-l" x="575" y="95" text-anchor="middle">count</text>
+  <text class="tx-s" x="95" y="145" text-anchor="middle">l = 지역</text>
+  <text class="tx-s" x="95" y="165" text-anchor="middle">g = 전역</text>
+  <text class="tx-s" x="95" y="185" text-anchor="middle">i e c r = 파라미터</text>
+  <text class="tx-s" x="285" y="145" text-anchor="middle">v = 단일 변수</text>
+  <text class="tx-s" x="285" y="165" text-anchor="middle">s = 구조체</text>
+  <text class="tx-s" x="285" y="185" text-anchor="middle">t = 내부 테이블</text>
+  <text class="tx-s" x="285" y="205" text-anchor="middle">o = 객체 · c = 상수</text>
+  <text class="tx-s" x="575" y="145" text-anchor="middle">영어 소문자 + 밑줄</text>
+  <text class="tx-m" x="575" y="168" text-anchor="middle">예) lt_order_items</text>
+</svg>
+<figcaption>그림 2. 변수명 = 범위 + 종류 + 밑줄 + 이름 (예: lv_count, gt_list, iv_matnr)</figcaption>
+</figure>
 
 <h4>4. Pretty Printer</h4>
 <p>편집기에서 <b>Shift+F1</b>을 누르면 들여쓰기와 키워드 대소문자가 자동 정렬됩니다.
@@ -510,6 +965,43 @@ FORM display_data.
          / '조회 건수 :', gv_count.
 ENDFORM.`
   }],
+  compare: [
+    {
+      topic: '처리 로직 모듈화 — FORM 서브루틴 vs 로컬 클래스 메소드',
+      classic: `DATA gv_count TYPE i.
+
+START-OF-SELECTION.
+  PERFORM get_data CHANGING gv_count.
+  PERFORM display_data USING gv_count.
+
+FORM get_data CHANGING cv_count TYPE i.
+  cv_count = 10.
+ENDFORM.
+
+FORM display_data USING iv_count TYPE i.
+  WRITE: / '조회 건수 :', iv_count.
+ENDFORM.`,
+      modern: `CLASS lcl_report DEFINITION.
+  PUBLIC SECTION.
+    METHODS: get_data     RETURNING VALUE(rv_count) TYPE i,
+             display_data IMPORTING iv_count TYPE i.
+ENDCLASS.
+
+CLASS lcl_report IMPLEMENTATION.
+  METHOD get_data.
+    rv_count = 10.
+  ENDMETHOD.
+  METHOD display_data.
+    WRITE: / '조회 건수 :', iv_count.
+  ENDMETHOD.
+ENDCLASS.
+
+START-OF-SELECTION.
+  DATA(lo_report) = NEW lcl_report( ).
+  lo_report->display_data( lo_report->get_data( ) ).`,
+      note: 'FORM/PERFORM은 공식적으로 obsolete이며, 현대 ABAP은 로컬 클래스 메소드와 NEW · 함수형 메소드 호출로 같은 구조를 만들어 전역 변수 없이 값을 주고받습니다.'
+    }
+  ],
   quiz: [
     { q: '이벤트 블록을 하나도 쓰지 않은 실행 프로그램에서, 작성한 실행문들은 어느 이벤트에 속하는가?', choices: ['INITIALIZATION', 'START-OF-SELECTION', 'END-OF-SELECTION', '어느 이벤트에도 속하지 않아 실행되지 않는다'], answer: 1, explain: '이벤트 키워드를 생략하면 모든 실행문은 암묵적으로 START-OF-SELECTION 블록에 속합니다.' },
     { q: '내부 테이블(Internal Table) 지역 변수에 관례적으로 붙이는 접두어는?', choices: ['lv_', 'ls_', 'lt_', 'lo_'], answer: 2, explain: 'lt_ = Local Table입니다. lv_는 단일 변수, ls_는 구조체, lo_는 객체 참조입니다.' },
@@ -592,6 +1084,33 @@ ENDFORM.`
 </table>
 <div class="note">⚠️ <code>DATA lv_c TYPE c LENGTH 10.</code> 에 'AB'를 넣으면 실제 값은 <code>'AB        '</code>(뒤 공백 8칸)입니다.
 <code>STRLEN( lv_c )</code>은 뒤 공백을 무시하고 2를 반환하지만, 비교 시에는 주의해야 합니다.</div>
+<figure class="fig">
+<svg viewBox="0 0 720 190" role="img" aria-label="C LENGTH 10 과 STRING 에 AB 를 넣었을 때의 메모리 비교">
+  <text class="tx-b tx-m" x="20" y="60">C LENGTH 10</text>
+  <rect class="bx-b" x="170" y="40" width="36" height="40"/>
+  <text class="tx-m" x="188" y="60" text-anchor="middle">A</text>
+  <rect class="bx-b" x="206" y="40" width="36" height="40"/>
+  <text class="tx-m" x="224" y="60" text-anchor="middle">B</text>
+  <rect class="bx" x="242" y="40" width="36" height="40"/>
+  <rect class="bx" x="278" y="40" width="36" height="40"/>
+  <rect class="bx" x="314" y="40" width="36" height="40"/>
+  <rect class="bx" x="350" y="40" width="36" height="40"/>
+  <rect class="bx" x="386" y="40" width="36" height="40"/>
+  <rect class="bx" x="422" y="40" width="36" height="40"/>
+  <rect class="bx" x="458" y="40" width="36" height="40"/>
+  <rect class="bx" x="494" y="40" width="36" height="40"/>
+  <text class="tx-s" x="545" y="60">메모리 10자리 고정</text>
+  <path class="ln dash" d="M242,90 H530"/>
+  <text class="tx-s" x="386" y="104" text-anchor="middle">남은 8칸은 공백으로 채워짐</text>
+  <text class="tx-b tx-m" x="20" y="150">STRING</text>
+  <rect class="bx-g" x="170" y="130" width="36" height="40"/>
+  <text class="tx-m" x="188" y="150" text-anchor="middle">A</text>
+  <rect class="bx-g" x="206" y="130" width="36" height="40"/>
+  <text class="tx-m" x="224" y="150" text-anchor="middle">B</text>
+  <text class="tx-s" x="260" y="150">길이 2 — 값에 따라 늘었다 줄었다 함 (가변 길이)</text>
+</svg>
+<figcaption>그림 1. 같은 값 'AB' 라도 C 타입은 선언 길이만큼 공백을 채우고, STRING은 실제 길이만 쓴다</figcaption>
+</figure>
 
 <h4>3. N 타입의 함정</h4>
 <p>N은 "숫자처럼 생긴 문자"입니다. 계산용이 아닙니다.</p>
@@ -601,6 +1120,34 @@ ENDFORM.`
   <li>그래서 자재번호를 조회할 때 <code>'100'</code>이 아니라 <code>'000000000000000100'</code>으로 넣어야 찾아집니다.</li>
 </ul>
 <div class="tip">💡 이 0 채우기(Leading Zero) 변환은 펑션 <code>CONVERSION_EXIT_ALPHA_INPUT</code>(채우기) / <code>ALPHA_OUTPUT</code>(제거)으로 처리합니다. 실무에서 엄청나게 자주 씁니다.</div>
+<figure class="fig">
+<svg viewBox="0 0 720 220" role="img" aria-label="N 타입의 0 채우기와 ALPHA 변환">
+  <text class="tx-b tx-m" x="20" y="44">N LENGTH 5</text>
+  <text class="tx-s" x="20" y="66">값 123 대입</text>
+  <rect class="bx-o" x="170" y="30" width="40" height="40"/>
+  <text class="tx-m" x="190" y="50" text-anchor="middle">0</text>
+  <rect class="bx-o" x="210" y="30" width="40" height="40"/>
+  <text class="tx-m" x="230" y="50" text-anchor="middle">0</text>
+  <rect class="bx-b" x="250" y="30" width="40" height="40"/>
+  <text class="tx-m" x="270" y="50" text-anchor="middle">1</text>
+  <rect class="bx-b" x="290" y="30" width="40" height="40"/>
+  <text class="tx-m" x="310" y="50" text-anchor="middle">2</text>
+  <rect class="bx-b" x="330" y="30" width="40" height="40"/>
+  <text class="tx-m" x="350" y="50" text-anchor="middle">3</text>
+  <text class="tx-s tx-o" x="390" y="50">오른쪽 정렬 + 왼쪽 0 채움</text>
+  <rect class="bx" x="20" y="120" width="200" height="70" rx="8"/>
+  <text class="tx-b" x="120" y="142" text-anchor="middle">화면 / 사람</text>
+  <text class="tx-m" x="120" y="170" text-anchor="middle">100</text>
+  <rect class="bx-a" x="480" y="120" width="220" height="70" rx="8"/>
+  <text class="tx-b" x="590" y="142" text-anchor="middle">DB 내부 값</text>
+  <text class="tx-m" x="590" y="170" text-anchor="middle">000000000000000100</text>
+  <path class="ln-b arr-b" d="M222,140 H476"/>
+  <text class="tx-s tx-c" x="349" y="128" text-anchor="middle">ALPHA_INPUT (0 채우기)</text>
+  <path class="ln-g arr-g" d="M478,176 H224"/>
+  <text class="tx-s tx-g" x="349" y="196" text-anchor="middle">ALPHA_OUTPUT (0 제거)</text>
+</svg>
+<figcaption>그림 2. N 타입 0 채우기와 ALPHA 변환 — 입력은 0을 채워 DB 형식으로, 출력은 0을 지워 사람 형식으로</figcaption>
+</figure>
 
 <h4>4. P 타입 (Packed Number) — 금액의 기본</h4>
 <p>소수점 자리수를 명시하는 10진 타입으로, 금융 계산에서 오차가 없습니다.</p>
@@ -609,6 +1156,40 @@ ENDFORM.`
   <li>LENGTH는 <b>byte</b> 단위이며, 저장 가능한 자리수는 <code>LENGTH × 2 - 1</code> 입니다. (13byte → 25자리)</li>
   <li>DECIMALS는 소수점 이하 자리수(최대 14).</li>
 </ul>
+<figure class="fig">
+<svg viewBox="0 0 720 200" role="img" aria-label="P LENGTH 4 DECIMALS 2 의 바이트 구조">
+  <text class="tx-m" x="20" y="24">TYPE p LENGTH 4 DECIMALS 2   값 12345.67</text>
+  <text class="tx-s tx-r" x="420" y="44" text-anchor="middle">소수점 (DECIMALS 2)</text>
+  <rect class="bx-b" x="120" y="60" width="60" height="44"/>
+  <text class="tx-l" x="150" y="82" text-anchor="middle">1</text>
+  <rect class="bx-b" x="180" y="60" width="60" height="44"/>
+  <text class="tx-l" x="210" y="82" text-anchor="middle">2</text>
+  <rect class="bx-b" x="240" y="60" width="60" height="44"/>
+  <text class="tx-l" x="270" y="82" text-anchor="middle">3</text>
+  <rect class="bx-b" x="300" y="60" width="60" height="44"/>
+  <text class="tx-l" x="330" y="82" text-anchor="middle">4</text>
+  <rect class="bx-b" x="360" y="60" width="60" height="44"/>
+  <text class="tx-l" x="390" y="82" text-anchor="middle">5</text>
+  <rect class="bx-b" x="420" y="60" width="60" height="44"/>
+  <text class="tx-l" x="450" y="82" text-anchor="middle">6</text>
+  <rect class="bx-b" x="480" y="60" width="60" height="44"/>
+  <text class="tx-l" x="510" y="82" text-anchor="middle">7</text>
+  <rect class="bx-o" x="540" y="60" width="60" height="44"/>
+  <text class="tx-l" x="570" y="82" text-anchor="middle">C</text>
+  <path class="ln-r dash" d="M420,52 V112"/>
+  <text class="tx-s tx-o" x="612" y="82">부호 (C = +)</text>
+  <path class="ln" d="M124,120 V128 H236 V120"/>
+  <path class="ln" d="M244,120 V128 H356 V120"/>
+  <path class="ln" d="M364,120 V128 H476 V120"/>
+  <path class="ln" d="M484,120 V128 H596 V120"/>
+  <text class="tx-s" x="180" y="144" text-anchor="middle">1 byte</text>
+  <text class="tx-s" x="300" y="144" text-anchor="middle">1 byte</text>
+  <text class="tx-s" x="420" y="144" text-anchor="middle">1 byte</text>
+  <text class="tx-s" x="540" y="144" text-anchor="middle">1 byte</text>
+  <text class="tx-s" x="20" y="180">자리수 = LENGTH × 2 − 1 = 7자리 (1 byte 에 숫자 2개, 마지막 반 바이트는 부호)</text>
+</svg>
+<figcaption>그림 3. Packed 숫자 — 한 바이트에 10진 숫자 2개를 담고, 소수점 위치는 DECIMALS 로만 기억한다</figcaption>
+</figure>
 <div class="note">⚠️ 프로그램에서 P 타입 계산이 소수점 없이 반올림된다면, 프로그램 속성의 <b>Fixed point arithmetic</b> 체크박스를 확인하세요. 이게 꺼져 있으면 소수점이 무시됩니다. 신규 생성 시 기본으로 켜집니다.</div>
 
 <h4>5. 금액/수량은 DDIC 타입을 쓰세요</h4>
@@ -681,6 +1262,57 @@ CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
 WRITE: / '출력포맷   :', lv_input.   "100`
     }
   ],
+  compare: [
+    {
+      topic: 'ALPHA 변환 (앞자리 0 채우기 / 제거)',
+      classic: `DATA: lv_input TYPE char18 VALUE '100',
+      lv_matnr TYPE matnr,
+      lv_out   TYPE char18.
+
+CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+  EXPORTING
+    input  = lv_input
+  IMPORTING
+    output = lv_matnr.
+
+CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
+  EXPORTING
+    input  = lv_matnr
+  IMPORTING
+    output = lv_out.
+
+WRITE: / '내부포맷 :', lv_matnr,
+       / '출력포맷 :', lv_out.`,
+      modern: `DATA lv_input TYPE char18 VALUE '100'.
+
+* String Template 포맷 옵션으로 변환
+DATA(lv_matnr) = CONV matnr( |{ lv_input ALPHA = IN }| ).
+DATA(lv_out)   = |{ lv_matnr ALPHA = OUT }|.
+
+WRITE: / '내부포맷 :', lv_matnr,
+       / '출력포맷 :', lv_out.`,
+      note: '변환 펑션 두 번 호출과 결과용 변수 선언이 String Template의 ALPHA = IN / OUT 옵션과 인라인 선언으로 대체됩니다.'
+    },
+    {
+      topic: '타입을 지정한 변수 선언과 값 할당',
+      classic: `DATA: lv_amt  TYPE p LENGTH 9 DECIMALS 2,
+      lv_date TYPE d,
+      lv_text TYPE string.
+
+lv_amt  = '1234.56'.
+lv_date = sy-datum.
+lv_text = '가변 길이 문자열'.
+
+WRITE: / lv_amt, / lv_date, / lv_text.`,
+      modern: `* 리터럴은 그대로 추론되므로 금액은 CONV로 타입 명시
+DATA(lv_amt)  = CONV dmbtr( '1234.56' ).
+DATA(lv_date) = sy-datum.
+DATA(lv_text) = |가변 길이 문자열|.
+
+WRITE: / lv_amt, / lv_date, / lv_text.`,
+      note: '인라인 선언은 우변에서 타입을 추론하므로, P 타입처럼 정확한 타입이 필요한 값은 CONV로 명시하고 문자열은 | | 로 STRING 타입을 얻습니다.'
+    }
+  ],
   quiz: [
     { q: '금액을 저장할 때 소수점 오차 없이 가장 적합한 ABAP 데이터 타입은?', choices: ['F (Float)', 'I (Integer)', 'P (Packed)', 'N (Numeric text)'], answer: 2, explain: 'P(Packed) 타입은 10진 기반이라 금융 계산에서 오차가 없습니다. F는 부동소수점이라 오차가 발생할 수 있습니다.' },
     { q: 'DATA lv_n TYPE n LENGTH 6. 에 값 45를 할당하면 실제 저장되는 값은?', choices: ["'45'", "'45    '", "'000045'", "'      45'"], answer: 2, explain: 'N 타입은 오른쪽 정렬 후 왼쪽 남은 자리를 0으로 채웁니다(Leading Zero).' },
@@ -746,6 +1378,25 @@ ULINE.
 
 <span class="k">DATA</span>: lv_sales <span class="k">TYPE</span> ty_amount,
       lv_cost  <span class="k">TYPE</span> ty_amount.</pre>
+<figure class="fig">
+<svg viewBox="0 0 720 220" role="img" aria-label="TYPES 는 설계도, DATA 는 실제 메모리">
+  <rect class="bx-a dash" x="20" y="40" width="240" height="90" rx="10"/>
+  <text class="tx-m tx-b" x="140" y="66" text-anchor="middle">TYPES ty_amount</text>
+  <text class="tx-s" x="140" y="92" text-anchor="middle">p LENGTH 13 DECIMALS 2</text>
+  <text class="tx-s tx-a" x="140" y="114" text-anchor="middle">설계도 · 메모리 없음</text>
+  <path class="ln-b arr-b" d="M260,70 C350,70 350,56 436,56"/>
+  <path class="ln-b arr-b" d="M260,100 C350,100 350,142 436,142"/>
+  <text class="tx-s tx-c" x="350" y="86" text-anchor="middle">TYPE 으로 참조</text>
+  <rect class="bx-b" x="440" y="24" width="260" height="64" rx="10"/>
+  <text class="tx-m tx-b" x="570" y="46" text-anchor="middle">DATA lv_sales</text>
+  <text class="tx-s" x="570" y="70" text-anchor="middle">메모리 할당 · 값 저장</text>
+  <rect class="bx-b" x="440" y="110" width="260" height="64" rx="10"/>
+  <text class="tx-m tx-b" x="570" y="132" text-anchor="middle">DATA lv_cost</text>
+  <text class="tx-s" x="570" y="156" text-anchor="middle">메모리 할당 · 값 저장</text>
+  <text class="tx-s" x="20" y="202">TYPES 는 모양만 정의하고, DATA 로 선언할 때 실제 메모리가 생긴다</text>
+</svg>
+<figcaption>그림 1. TYPES 는 설계도, DATA 는 그 설계도로 만든 실제 변수</figcaption>
+</figure>
 
 <h4>4. TYPE vs LIKE</h4>
 <table>
@@ -755,6 +1406,38 @@ ULINE.
   <tr><td>권장</td><td><b>권장</b> (현대 ABAP 표준)</td><td>지역 변수 복제에만 제한적 사용</td></tr>
 </table>
 <div class="note">⚠️ 과거에는 <code>LIKE mara-matnr</code>처럼 DDIC 필드도 LIKE로 참조했지만, 현재는 <code>TYPE mara-matnr</code>를 씁니다. 신규 코드에서는 TYPE을 쓰세요.</div>
+<figure class="fig">
+<svg viewBox="0 0 720 250" role="img" aria-label="TYPE 은 타입을, LIKE 는 기존 변수를 참조">
+  <rect class="bx-g" x="20" y="12" width="230" height="44" rx="8"/>
+  <text class="tx-s" x="36" y="25">데이터 엘리먼트 (DDIC)</text>
+  <text class="tx-m" x="36" y="44">werks_d</text>
+  <rect class="bx-g" x="20" y="68" width="230" height="44" rx="8"/>
+  <text class="tx-s" x="36" y="81">테이블-필드 (DDIC)</text>
+  <text class="tx-m" x="36" y="100">mara-matnr</text>
+  <rect class="bx-a" x="20" y="124" width="230" height="44" rx="8"/>
+  <text class="tx-s" x="36" y="137">로컬 사용자 타입</text>
+  <text class="tx-m" x="36" y="156">ty_amount</text>
+  <path class="ln-b arr-b" d="M250,34 H416"/>
+  <path class="ln-b arr-b" d="M250,90 H416"/>
+  <path class="ln-b arr-b" d="M250,146 H416"/>
+  <text class="tx-s tx-c" x="333" y="24" text-anchor="middle">TYPE</text>
+  <text class="tx-s tx-c" x="333" y="80" text-anchor="middle">TYPE</text>
+  <text class="tx-s tx-c" x="333" y="136" text-anchor="middle">TYPE</text>
+  <rect class="bx-b" x="420" y="12" width="170" height="44" rx="8"/>
+  <text class="tx-m" x="505" y="34" text-anchor="middle">DATA lv_werks</text>
+  <rect class="bx-b" x="420" y="68" width="170" height="44" rx="8"/>
+  <text class="tx-m" x="505" y="90" text-anchor="middle">DATA lv_matnr</text>
+  <rect class="bx-b" x="420" y="124" width="170" height="44" rx="8"/>
+  <text class="tx-m" x="505" y="146" text-anchor="middle">DATA lv_sales</text>
+  <text class="tx-s tx-g" x="604" y="90">권장 방식</text>
+  <path class="ln-o arr-o" d="M505,168 V188"/>
+  <text class="tx-s tx-o" x="515" y="180">LIKE</text>
+  <rect class="bx-o" x="420" y="192" width="170" height="40" rx="8"/>
+  <text class="tx-m" x="505" y="212" text-anchor="middle">DATA lv_cost</text>
+  <text class="tx-s tx-o" x="604" y="212">변수를 복제</text>
+</svg>
+<figcaption>그림 2. TYPE 은 타입(DDIC · TYPES)을, LIKE 는 이미 선언된 변수를 참조한다</figcaption>
+</figure>
 
 <h4>5. DDIC 타입 참조 (실무의 핵심)</h4>
 <p>변수를 DB 필드와 똑같은 타입으로 맞추는 것이 중요합니다. 그래야 길이 불일치 오류가 없습니다.</p>
@@ -846,6 +1529,60 @@ START-OF-SELECTION.
   WRITE: / '조회 건수 :', lines( lt_mara ).`
     }
   ],
+  compare: [
+    {
+      topic: 'DB 조회 결과를 내부 테이블로 받아 출력하기',
+      classic: `TYPES: BEGIN OF ty_mara,
+         matnr TYPE matnr,
+         mtart TYPE mtart,
+         matkl TYPE matkl,
+       END OF ty_mara.
+
+DATA: lt_mara TYPE STANDARD TABLE OF ty_mara,
+      ls_mara TYPE ty_mara,
+      lv_cnt  TYPE i.
+
+SELECT matnr mtart matkl
+  FROM mara
+  INTO TABLE lt_mara
+  UP TO p_rows ROWS.
+
+LOOP AT lt_mara INTO ls_mara.
+  WRITE: / sy-tabix, ls_mara-matnr, ls_mara-mtart, ls_mara-matkl.
+ENDLOOP.
+
+DESCRIBE TABLE lt_mara LINES lv_cnt.
+WRITE: / '조회 건수 :', lv_cnt.`,
+      modern: `SELECT matnr, mtart, matkl
+  FROM mara
+  INTO TABLE @DATA(lt_mara)
+  UP TO @p_rows ROWS.
+
+LOOP AT lt_mara INTO DATA(ls_mara).
+  WRITE: / sy-tabix, ls_mara-matnr, ls_mara-mtart, ls_mara-matkl.
+ENDLOOP.
+
+WRITE: / '조회 건수 :', lines( lt_mara ).`,
+      note: '구조 타입 · 내부 테이블 · 작업 영역을 미리 선언하던 코드가 @DATA( ) 인라인 선언과 lines( ) 함수로 줄고, SQL은 콤마와 @ 로 컬럼과 호스트 변수를 구분합니다.'
+    },
+    {
+      topic: '계산 결과를 담을 변수 선언',
+      classic: `DATA: lv_price TYPE p LENGTH 13 DECIMALS 2 VALUE '100000.00',
+      lv_qty   TYPE i VALUE 3,
+      lv_total TYPE p LENGTH 13 DECIMALS 2.
+
+lv_total = lv_price * lv_qty.
+
+WRITE: / '합계 :', lv_total.`,
+      modern: `DATA: lv_price TYPE p LENGTH 13 DECIMALS 2 VALUE '100000.00',
+      lv_qty   TYPE i VALUE 3.
+
+DATA(lv_total) = lv_price * lv_qty.   "타입 자동 추론
+
+WRITE: / '합계 :', lv_total.`,
+      note: '결과 변수를 맨 위에 미리 선언하지 않고, 처음 값을 대입하는 자리에서 DATA( )로 선언하며 타입은 우변 계산식에서 추론됩니다.'
+    }
+  ],
   quiz: [
     { q: 'CONSTANTS 선언 시 반드시 필요한 요소는?', choices: ['LENGTH 지정', 'VALUE 지정', 'DECIMALS 지정', 'TYPE 생략'], answer: 1, explain: '상수는 값이 고정되어야 하므로 선언 시 VALUE가 필수입니다. 이후 변경할 수 없습니다.' },
     { q: 'Open SQL 문 안에서 ABAP 변수를 사용할 때 앞에 붙여야 하는 escape 문자는?', choices: ['#', '@', '&', '$'], answer: 1, explain: 'ABAP 7.4 이후 Open SQL에서 호스트 변수는 @ 를 붙여 명시합니다. 예: WHERE matnr = @lv_matnr' },
@@ -881,6 +1618,33 @@ START-OF-SELECTION.
          / '합계   :', lv_total.
   ULINE.
 
+* 결과 : 공급가 105,000.00 / 부가세 10,500.00 / 합계 115,500.00`,
+    solutionClassic: `REPORT ztest_order_calc.
+
+TYPES ty_amount TYPE p LENGTH 13 DECIMALS 2.
+
+CONSTANTS gc_vat_rate TYPE p LENGTH 3 DECIMALS 2 VALUE '0.10'.
+
+DATA: lv_price TYPE ty_amount VALUE '15000.00',
+      lv_qty   TYPE i         VALUE 7,
+      lv_net   TYPE ty_amount,
+      lv_vat   TYPE ty_amount,
+      lv_total TYPE ty_amount.          "합계도 미리 선언
+
+START-OF-SELECTION.
+
+  lv_net   = lv_price * lv_qty.
+  lv_vat   = lv_net * gc_vat_rate.
+  lv_total = lv_net + lv_vat.
+
+  ULINE.
+  WRITE: / '단가   :', lv_price,
+         / '수량   :', lv_qty,
+         / '공급가 :', lv_net,
+         / '부가세 :', lv_vat, '( 세율', gc_vat_rate, ')',
+         / '합계   :', lv_total.
+  ULINE.
+
 * 결과 : 공급가 105,000.00 / 부가세 10,500.00 / 합계 115,500.00`
   }
 },
@@ -907,6 +1671,40 @@ START-OF-SELECTION.
   <tr><td>D → C(8)</td><td>'YYYYMMDD'</td><td>2026.01.05 → '20260105'</td></tr>
   <tr><td>D → I</td><td>1900.01.01 기준 일련번호</td><td>날짜 계산에 활용</td></tr>
 </table>
+<figure class="fig">
+<svg viewBox="0 0 720 200" role="img" aria-label="C 타입과 N 타입의 잘림 방향 비교">
+  <text class="tx-m" x="20" y="38">C(3) ← 'ABCDE'</text>
+  <rect class="bx-b" x="200" y="20" width="36" height="36"/>
+  <text class="tx-m" x="218" y="38" text-anchor="middle">A</text>
+  <rect class="bx-b" x="236" y="20" width="36" height="36"/>
+  <text class="tx-m" x="254" y="38" text-anchor="middle">B</text>
+  <rect class="bx-b" x="272" y="20" width="36" height="36"/>
+  <text class="tx-m" x="290" y="38" text-anchor="middle">C</text>
+  <rect class="bx-r dash" x="308" y="20" width="36" height="36"/>
+  <text class="tx-m tx-r" x="326" y="38" text-anchor="middle">D</text>
+  <rect class="bx-r dash" x="344" y="20" width="36" height="36"/>
+  <text class="tx-m tx-r" x="362" y="38" text-anchor="middle">E</text>
+  <rect class="ln-b" x="196" y="16" width="116" height="44" rx="4"/>
+  <text class="tx-s tx-r" x="400" y="38">오른쪽이 잘림</text>
+  <text class="tx-m tx-b" x="560" y="38">결과 'ABC'</text>
+  <text class="tx-m" x="20" y="128">N(3) ← '12345'</text>
+  <rect class="bx-r dash" x="200" y="110" width="36" height="36"/>
+  <text class="tx-m tx-r" x="218" y="128" text-anchor="middle">1</text>
+  <rect class="bx-r dash" x="236" y="110" width="36" height="36"/>
+  <text class="tx-m tx-r" x="254" y="128" text-anchor="middle">2</text>
+  <rect class="bx-b" x="272" y="110" width="36" height="36"/>
+  <text class="tx-m" x="290" y="128" text-anchor="middle">3</text>
+  <rect class="bx-b" x="308" y="110" width="36" height="36"/>
+  <text class="tx-m" x="326" y="128" text-anchor="middle">4</text>
+  <rect class="bx-b" x="344" y="110" width="36" height="36"/>
+  <text class="tx-m" x="362" y="128" text-anchor="middle">5</text>
+  <rect class="ln-b" x="268" y="106" width="116" height="44" rx="4"/>
+  <text class="tx-s tx-r" x="400" y="128">왼쪽이 잘림</text>
+  <text class="tx-m tx-b" x="560" y="128">결과 '345'</text>
+  <text class="tx-s" x="20" y="182">C 는 왼쪽 정렬이라 뒤가 잘리고, N 은 오른쪽 정렬이라 앞(상위 자리)이 잘린다</text>
+</svg>
+<figcaption>그림 1. 짧은 변수로 할당할 때 — C 타입과 N 타입은 잘리는 방향이 반대다</figcaption>
+</figure>
 <div class="note">⚠️ <b>문자 → 정수 변환 실패는 런타임 덤프(CX_SY_CONVERSION_NO_NUMBER)</b>를 일으킵니다. 사용자 입력값을 숫자로 바꿀 때는 반드시 검증하세요.</div>
 
 <h4>3. 날짜 연산 — D 타입은 정수처럼 계산됩니다</h4>
@@ -931,6 +1729,34 @@ lv_date = lv_date + <span class="n">30</span>.      <span class="c">" 30일 뒤 
   <tr><td><code>REFRESH lt_x.</code></td><td>내부 테이블 전용</td><td>CLEAR와 동일 (구문법)</td></tr>
   <tr><td><code>FREE lt_x.</code></td><td>내부 테이블</td><td>행 삭제 + <b>메모리까지 반환</b></td></tr>
 </table>
+<figure class="fig">
+<svg viewBox="0 0 720 220" role="img" aria-label="CLEAR 와 FREE 후 내부 테이블 메모리 상태">
+  <text class="tx-b" x="120" y="30" text-anchor="middle">데이터가 있는 lt_x</text>
+  <rect class="bx dash" x="40" y="50" width="160" height="120" rx="6"/>
+  <rect class="bx-b" x="50" y="60" width="140" height="24" rx="3"/>
+  <text class="tx-s" x="120" y="72" text-anchor="middle">행 1</text>
+  <rect class="bx-b" x="50" y="90" width="140" height="24" rx="3"/>
+  <text class="tx-s" x="120" y="102" text-anchor="middle">행 2</text>
+  <rect class="bx-b" x="50" y="120" width="140" height="24" rx="3"/>
+  <text class="tx-s" x="120" y="132" text-anchor="middle">행 3</text>
+  <text class="tx-s tx-a" x="120" y="159" text-anchor="middle">할당된 메모리</text>
+  <text class="tx-s tx-m" x="120" y="190" text-anchor="middle">lines( lt_x ) = 3</text>
+  <path class="ln-o arr-o" d="M222,110 H256"/>
+  <text class="tx-s tx-o" x="240" y="96" text-anchor="middle">CLEAR</text>
+  <text class="tx-b" x="360" y="30" text-anchor="middle">CLEAR / REFRESH 후</text>
+  <rect class="bx dash" x="280" y="50" width="160" height="120" rx="6"/>
+  <text class="tx-s" x="360" y="102" text-anchor="middle">(행 없음)</text>
+  <text class="tx-s tx-a" x="360" y="159" text-anchor="middle">메모리는 유지</text>
+  <text class="tx-s" x="360" y="190" text-anchor="middle">lines = 0 · 다시 채우면 빠름</text>
+  <path class="ln-r arr-r" d="M462,110 H496"/>
+  <text class="tx-s tx-r" x="480" y="96" text-anchor="middle">FREE</text>
+  <text class="tx-b" x="600" y="30" text-anchor="middle">FREE 후</text>
+  <text class="tx-s" x="600" y="102" text-anchor="middle">(행 없음)</text>
+  <text class="tx-s tx-r" x="600" y="126" text-anchor="middle">메모리 반환</text>
+  <text class="tx-s" x="600" y="190" text-anchor="middle">lines = 0 · 메모리 절약</text>
+</svg>
+<figcaption>그림 2. CLEAR · REFRESH 는 행만 지우고 메모리를 남기며, FREE 는 메모리까지 돌려준다</figcaption>
+</figure>
 
 <h4>6. IS INITIAL — 초기값 검사</h4>
 <pre class="code"><span class="k">IF</span> lv_matnr <span class="k">IS</span> <span class="k">INITIAL</span>.
@@ -946,6 +1772,28 @@ lv_date = lv_date + <span class="n">30</span>.      <span class="c">" 30일 뒤 
 <p>구조체끼리 <b>같은 이름의 필드만</b> 골라서 복사합니다.</p>
 <pre class="code"><span class="k">MOVE-CORRESPONDING</span> ls_source <span class="k">TO</span> ls_target.   <span class="c">" 구문법</span>
 ls_target = <span class="k">CORRESPONDING</span> #( ls_source ).      <span class="c">" 7.4+ 권장</span></pre>
+<figure class="fig">
+<svg viewBox="0 0 720 200" role="img" aria-label="CORRESPONDING 의 같은 이름 필드 복사">
+  <rect class="bx" x="40" y="30" width="200" height="150" rx="8"/>
+  <rect class="bx-s" x="40" y="30" width="200" height="30" rx="8"/>
+  <text class="tx-m tx-w tx-b" x="140" y="45" text-anchor="middle">ls_src</text>
+  <text class="tx-m" x="60" y="85">matnr</text>
+  <text class="tx-m" x="60" y="120">maktx</text>
+  <text class="tx-m tx-r" x="60" y="155">dummy</text>
+  <rect class="bx" x="480" y="30" width="200" height="150" rx="8"/>
+  <rect class="bx-s" x="480" y="30" width="200" height="30" rx="8"/>
+  <text class="tx-m tx-w tx-b" x="580" y="45" text-anchor="middle">ls_tgt</text>
+  <text class="tx-m" x="500" y="85">matnr</text>
+  <text class="tx-m" x="500" y="120">maktx</text>
+  <text class="tx-m tx-o" x="500" y="155">werks</text>
+  <text class="tx-s tx-o" x="580" y="155">초기값 유지</text>
+  <path class="ln-g arr-g" d="M240,85 H476"/>
+  <path class="ln-g arr-g" d="M240,120 H476"/>
+  <text class="tx-b tx-g" x="358" y="70" text-anchor="middle">같은 이름만 복사</text>
+  <text class="tx-s tx-r" x="260" y="155">짝이 없음 → 무시</text>
+</svg>
+<figcaption>그림 3. CORRESPONDING — 이름이 같은 필드(matnr, maktx)만 복사되고 나머지는 그대로</figcaption>
+</figure>
 `,
   code: [
     {
@@ -1023,6 +1871,50 @@ IF ls_tgt IS INITIAL.
 ENDIF.`
     }
   ],
+  compare: [
+    {
+      topic: '구조체 채우기와 같은 이름 필드 복사 (ty_src / ty_tgt 는 위 예제의 TYPES)',
+      classic: `DATA: ls_src TYPE ty_src,
+      ls_tgt TYPE ty_tgt.
+
+MOVE '000000000000000100' TO ls_src-matnr.
+MOVE '테스트 자재'        TO ls_src-maktx.
+
+MOVE-CORRESPONDING ls_src TO ls_tgt.
+MOVE '1000' TO ls_tgt-werks.
+
+WRITE: / ls_tgt-matnr, ls_tgt-maktx, ls_tgt-werks.`,
+      modern: `DATA(ls_src) = VALUE ty_src( matnr = '000000000000000100'
+                             maktx = '테스트 자재' ).
+
+DATA(ls_tgt) = CORRESPONDING ty_tgt( ls_src ).
+ls_tgt-werks = '1000'.
+
+WRITE: / ls_tgt-matnr, ls_tgt-maktx, ls_tgt-werks.`,
+      note: '필드마다 MOVE 하던 부분은 VALUE 생성 연산자로, MOVE-CORRESPONDING 문은 식 안에서 쓰는 CORRESPONDING 연산자로 바뀝니다.'
+    },
+    {
+      topic: '문자 → 숫자 변환과 날짜 계산',
+      classic: `DATA: lv_input  TYPE c LENGTH 10 VALUE '42',
+      lv_num    TYPE i,
+      lv_future TYPE d,
+      lv_gap    TYPE i.
+
+MOVE lv_input TO lv_num.          "결과 변수 타입으로 자동 변환
+lv_future = sy-datum + 100.
+lv_gap    = lv_future - sy-datum.
+
+WRITE: / lv_num, / lv_future, / lv_gap.`,
+      modern: `DATA lv_input TYPE c LENGTH 10 VALUE '42'.
+
+DATA(lv_num)    = CONV i( lv_input ).
+DATA(lv_future) = CONV d( sy-datum + 100 ).
+DATA(lv_gap)    = lv_future - sy-datum.
+
+WRITE: / lv_num, / lv_future, / lv_gap.`,
+      note: '받는 변수의 선언 타입으로 변환을 결정하던 방식에서, CONV 연산자로 원하는 타입을 식 안에서 직접 명시하는 방식으로 바뀝니다.'
+    }
+  ],
   quiz: [
     { q: "DATA lv_n TYPE n LENGTH 3. lv_n = '12345'. 의 결과는?", choices: ["'123'", "'345'", "'000'", '런타임 덤프'], answer: 1, explain: 'N 타입은 오른쪽 정렬이므로 길이를 초과하면 왼쪽(상위 자리)이 잘려 345가 됩니다. C 타입이라면 반대로 123이 됩니다.' },
     { q: 'P 타입 값 3.5를 I 타입 변수에 할당하면?', choices: ['3 (버림)', '4 (반올림)', '3.5 그대로', '덤프 발생'], answer: 1, explain: 'P → I 변환은 반올림됩니다. 3.5는 4, 3.4는 3이 됩니다.' },
@@ -1064,6 +1956,44 @@ START-OF-SELECTION.
   SKIP.
   WRITE: / '30일 전   :', lv_before,
          / '30일 후   :', lv_after.
+  ULINE.`,
+    solutionClassic: `REPORT ztest_date_calc.
+
+PARAMETERS p_date TYPE d DEFAULT sy-datum.
+
+DATA: lv_diff   TYPE i,
+      lv_after  TYPE d,
+      lv_before TYPE d,
+      lv_abs    TYPE i.
+
+START-OF-SELECTION.
+
+  IF p_date IS INITIAL.
+    WRITE / '날짜를 입력하세요.'.
+    RETURN.
+  ENDIF.
+
+  lv_diff   = p_date - sy-datum.
+  lv_after  = p_date + 30.
+  lv_before = p_date - 30.
+
+  ULINE.
+  WRITE: / '오늘      :', sy-datum,
+         / '입력 날짜 :', p_date.
+  SKIP.
+
+  IF lv_diff > 0.
+    WRITE: / '==> 오늘로부터', lv_diff, '일 후의 날짜입니다.'.
+  ELSEIF lv_diff < 0.
+    lv_abs = abs( lv_diff ).
+    WRITE: / '==> 오늘로부터', lv_abs, '일 전의 날짜입니다.'.
+  ELSE.
+    WRITE: / '==> 오늘입니다.'.
+  ENDIF.
+
+  SKIP.
+  WRITE: / '30일 전   :', lv_before,
+         / '30일 후   :', lv_after.
   ULINE.`
   }
 },
@@ -1083,6 +2013,40 @@ START-OF-SELECTION.
   <tr><td><code>MOD</code></td><td>나머지</td><td>7 MOD 2</td><td>1</td></tr>
   <tr><td><code>**</code></td><td>거듭제곱</td><td>2 ** 10</td><td>1024</td></tr>
 </table>
+<figure class="fig">
+<svg viewBox="0 0 720 165" role="img" aria-label="17 을 5 로 나눈 몫과 나머지">
+  <text class="tx-s" x="20" y="20">17개를 5개씩 묶으면?</text>
+  <rect class="bx-b" x="20" y="40" width="28" height="28" rx="4"/>
+  <rect class="bx-b" x="52" y="40" width="28" height="28" rx="4"/>
+  <rect class="bx-b" x="84" y="40" width="28" height="28" rx="4"/>
+  <rect class="bx-b" x="116" y="40" width="28" height="28" rx="4"/>
+  <rect class="bx-b" x="148" y="40" width="28" height="28" rx="4"/>
+  <rect class="bx-b" x="200" y="40" width="28" height="28" rx="4"/>
+  <rect class="bx-b" x="232" y="40" width="28" height="28" rx="4"/>
+  <rect class="bx-b" x="264" y="40" width="28" height="28" rx="4"/>
+  <rect class="bx-b" x="296" y="40" width="28" height="28" rx="4"/>
+  <rect class="bx-b" x="328" y="40" width="28" height="28" rx="4"/>
+  <rect class="bx-b" x="380" y="40" width="28" height="28" rx="4"/>
+  <rect class="bx-b" x="412" y="40" width="28" height="28" rx="4"/>
+  <rect class="bx-b" x="444" y="40" width="28" height="28" rx="4"/>
+  <rect class="bx-b" x="476" y="40" width="28" height="28" rx="4"/>
+  <rect class="bx-b" x="508" y="40" width="28" height="28" rx="4"/>
+  <rect class="bx-o" x="572" y="40" width="28" height="28" rx="4"/>
+  <rect class="bx-o" x="604" y="40" width="28" height="28" rx="4"/>
+  <path class="ln-b" d="M20,78 V84 H176 V78"/>
+  <path class="ln-b" d="M200,78 V84 H356 V78"/>
+  <path class="ln-b" d="M380,78 V84 H536 V78"/>
+  <path class="ln-o" d="M572,78 V84 H632 V78"/>
+  <text class="tx-s tx-c" x="98" y="100" text-anchor="middle">1묶음</text>
+  <text class="tx-s tx-c" x="278" y="100" text-anchor="middle">2묶음</text>
+  <text class="tx-s tx-c" x="458" y="100" text-anchor="middle">3묶음</text>
+  <text class="tx-s tx-o" x="602" y="100" text-anchor="middle">나머지 2</text>
+  <text class="tx-b tx-c" x="150" y="138" text-anchor="middle">17 DIV 5 = 3 (몫)</text>
+  <text class="tx-b tx-o" x="380" y="138" text-anchor="middle">17 MOD 5 = 2 (나머지)</text>
+  <text class="tx-b" x="600" y="138" text-anchor="middle">17 / 5 = 3.4</text>
+</svg>
+<figcaption>그림 1. DIV 는 묶음 수(몫), MOD 는 남은 개수(나머지), / 는 소수까지 계산한 결과</figcaption>
+</figure>
 <div class="note">⚠️ <b>연산자 양옆에는 반드시 공백</b>이 필요합니다. <code>lv_a = lv_b+1.</code> 은 오류이거나 전혀 다른 의미(오프셋 접근)로 해석됩니다. 반드시 <code>lv_b + 1</code>처럼 띄우세요. ABAP 초보가 가장 많이 겪는 에러입니다.</div>
 
 <h4>2. 연산자 우선순위</h4>
@@ -1093,6 +2057,42 @@ START-OF-SELECTION.
   <li><code>+ -</code></li>
 </ol>
 <p>괄호 안쪽에도 공백이 필요합니다: <code>lv_x = ( 1 + 2 ) * 3.</code></p>
+<figure class="fig">
+<svg viewBox="0 0 720 210" role="img" aria-label="연산자 우선순위에 따른 계산 트리 비교">
+  <text class="tx-m tx-b" x="180" y="16" text-anchor="middle">2 + 3 * 4 = 14</text>
+  <path class="ln" d="M180,50 L110,120"/>
+  <path class="ln" d="M180,50 L250,120"/>
+  <path class="ln" d="M250,120 L210,185"/>
+  <path class="ln" d="M250,120 L290,185"/>
+  <circle class="bx-a" cx="180" cy="50" r="20"/>
+  <text class="tx-l" x="180" y="50" text-anchor="middle">+</text>
+  <circle class="bx" cx="110" cy="120" r="18"/>
+  <text class="tx-b" x="110" y="120" text-anchor="middle">2</text>
+  <circle class="bx-a" cx="250" cy="120" r="20"/>
+  <text class="tx-l" x="250" y="120" text-anchor="middle">*</text>
+  <circle class="bx" cx="210" cy="185" r="18"/>
+  <text class="tx-b" x="210" y="185" text-anchor="middle">3</text>
+  <circle class="bx" cx="290" cy="185" r="18"/>
+  <text class="tx-b" x="290" y="185" text-anchor="middle">4</text>
+  <text class="tx-s" x="360" y="120" text-anchor="middle">아래쪽 노드부터 계산</text>
+  <text class="tx-m tx-b" x="540" y="16" text-anchor="middle">( 2 + 3 ) * 4 = 20</text>
+  <path class="ln" d="M540,50 L470,120"/>
+  <path class="ln" d="M540,50 L610,120"/>
+  <path class="ln" d="M470,120 L430,185"/>
+  <path class="ln" d="M470,120 L510,185"/>
+  <circle class="bx-a" cx="540" cy="50" r="20"/>
+  <text class="tx-l" x="540" y="50" text-anchor="middle">*</text>
+  <circle class="bx-o" cx="470" cy="120" r="20"/>
+  <text class="tx-l" x="470" y="120" text-anchor="middle">+</text>
+  <circle class="bx" cx="610" cy="120" r="18"/>
+  <text class="tx-b" x="610" y="120" text-anchor="middle">4</text>
+  <circle class="bx" cx="430" cy="185" r="18"/>
+  <text class="tx-b" x="430" y="185" text-anchor="middle">2</text>
+  <circle class="bx" cx="510" cy="185" r="18"/>
+  <text class="tx-b" x="510" y="185" text-anchor="middle">3</text>
+</svg>
+<figcaption>그림 2. 우선순위 트리 — 곱셈이 먼저(왼쪽), 괄호가 있으면 덧셈이 먼저(오른쪽)</figcaption>
+</figure>
 
 <h4>3. 결과 타입에 따른 정밀도</h4>
 <pre class="code"><span class="k">DATA</span>: lv_i <span class="k">TYPE</span> i,
@@ -1202,6 +2202,56 @@ ELSE.
 ENDIF.`
     }
   ],
+  compare: [
+    {
+      topic: '누적 합계와 평균 — 연산 명령어 vs 산술식',
+      classic: `DATA: lv_total TYPE i,
+      lv_cnt   TYPE i VALUE 3,
+      lv_avg   TYPE p LENGTH 8 DECIMALS 2.
+
+ADD 85 TO lv_total.
+ADD 92 TO lv_total.
+ADD 78 TO lv_total.
+
+lv_avg = lv_total.
+DIVIDE lv_avg BY lv_cnt.
+
+WRITE: / '총점 :', lv_total,
+       / '평균 :', lv_avg.`,
+      modern: `TYPES ty_avg TYPE p LENGTH 8 DECIMALS 2.
+
+DATA(lv_cnt)   = 3.
+DATA(lv_total) = 85 + 92 + 78.
+DATA(lv_avg)   = CONV ty_avg( lv_total / lv_cnt ).
+
+WRITE: / '총점 :', lv_total,
+       / '평균 :', lv_avg.`,
+      note: 'ADD · DIVIDE 같은 명령형 구문 대신 산술식과 CONV를 쓰면 계산 과정과 결과 타입이 한 줄에 드러납니다.'
+    },
+    {
+      topic: '조건에 따라 값 결정하기 — IF 분기 vs COND',
+      classic: `DATA lv_grade TYPE c LENGTH 1.
+
+IF lv_avg >= 90.
+  lv_grade = 'A'.
+ELSEIF lv_avg >= 80.
+  lv_grade = 'B'.
+ELSEIF lv_avg >= 70.
+  lv_grade = 'C'.
+ELSE.
+  lv_grade = 'D'.
+ENDIF.
+
+WRITE: / '등급 :', lv_grade.`,
+      modern: `DATA(lv_grade) = COND char1( WHEN lv_avg >= 90 THEN 'A'
+                             WHEN lv_avg >= 80 THEN 'B'
+                             WHEN lv_avg >= 70 THEN 'C'
+                             ELSE 'D' ).
+
+WRITE: / '등급 :', lv_grade.`,
+      note: '변수 선언과 IF/ELSEIF 할당 블록이 COND 조건 연산자 하나로 합쳐져, 값을 결정하는 로직이 하나의 식이 됩니다.'
+    }
+  ],
   quiz: [
     { q: '17 DIV 5 와 17 MOD 5 의 결과를 순서대로 고르면?', choices: ['3, 2', '3.4, 2', '2, 3', '3, 0'], answer: 0, explain: 'DIV는 몫(3), MOD는 나머지(2)를 반환합니다. 일반 나눗셈 / 을 쓰면 3.4가 됩니다.' },
     { q: 'ABAP에서 lv_c = lv_a+1. 처럼 연산자 앞뒤에 공백을 빼면 어떤 문제가 생기는가?', choices: ['정상 동작하며 권장 표기이다', '구문 오류이거나 오프셋 접근으로 잘못 해석된다', '결과가 2배가 된다', '경고만 발생하고 실행된다'], answer: 1, explain: 'ABAP은 연산자 양옆 공백이 필수입니다. lv_a+1 은 lv_a 변수의 오프셋 1 위치 접근으로 해석될 수 있어 전혀 다른 결과가 나옵니다.' },
@@ -1220,12 +2270,60 @@ PARAMETERS: p_kor TYPE i DEFAULT 85,
 START-OF-SELECTION.
 
   DATA(lv_total) = p_kor + p_eng + p_mat.
-  DATA(lv_avg)   = round( val = lv_total / 3 dec = 2 ).
+* i / i 는 정수로 계산되므로 decfloat34 로 바꿔서 나눈다
+  DATA(lv_avg)   = round( val = CONV decfloat34( lv_total ) / 3 dec = 2 ).
 
   DATA(lv_max) = nmax( val1 = nmax( val1 = p_kor val2 = p_eng ) val2 = p_mat ).
   DATA(lv_min) = nmin( val1 = nmin( val1 = p_kor val2 = p_eng ) val2 = p_mat ).
 
   DATA lv_grade TYPE c LENGTH 1.
+  IF lv_avg >= 90.
+    lv_grade = 'A'.
+  ELSEIF lv_avg >= 80.
+    lv_grade = 'B'.
+  ELSEIF lv_avg >= 70.
+    lv_grade = 'C'.
+  ELSE.
+    lv_grade = 'D'.
+  ENDIF.
+
+  ULINE.
+  WRITE: / '국어 :', p_kor,
+         / '영어 :', p_eng,
+         / '수학 :', p_mat.
+  ULINE.
+  WRITE: / '총점   :', lv_total,
+         / '평균   :', lv_avg,
+         / '최고점 :', lv_max,
+         / '최저점 :', lv_min,
+         / '등급   :', lv_grade.
+  ULINE.`,
+    solutionClassic: `REPORT ztest_score.
+
+PARAMETERS: p_kor TYPE i DEFAULT 85,
+            p_eng TYPE i DEFAULT 92,
+            p_mat TYPE i DEFAULT 78.
+
+DATA: lv_total TYPE i,
+      lv_avg   TYPE p LENGTH 8 DECIMALS 2,
+      lv_max   TYPE i,
+      lv_min   TYPE i,
+      lv_grade TYPE c LENGTH 1.
+
+START-OF-SELECTION.
+
+  lv_total = p_kor + p_eng + p_mat.
+  lv_avg   = lv_total / 3.        "DECIMALS 2 변수에 담으며 둘째 자리 반올림
+
+* 최고점 / 최저점 : 차례로 비교
+  lv_max = p_kor.
+  IF p_eng > lv_max. lv_max = p_eng. ENDIF.
+  IF p_mat > lv_max. lv_max = p_mat. ENDIF.
+
+  lv_min = p_kor.
+  IF p_eng < lv_min. lv_min = p_eng. ENDIF.
+  IF p_mat < lv_min. lv_min = p_mat. ENDIF.
+
   IF lv_avg >= 90.
     lv_grade = 'A'.
   ELSEIF lv_avg >= 80.
@@ -1267,6 +2365,34 @@ lv_result = |이름: { lv_name }, 나이: { lv_age }|.</pre>
 
 <h4>2. String Template 상세</h4>
 <p>파이프 <code>| |</code> 로 감싸고, 변수는 중괄호 <code>{ }</code> 안에 넣습니다. 중괄호 안쪽에 공백을 두는 것이 관례입니다.</p>
+<figure class="fig">
+<svg viewBox="0 0 720 190" role="img" aria-label="String Template 의 구성 요소">
+  <text class="tx-s tx-o" x="35" y="50" text-anchor="middle">시작</text>
+  <text class="tx-s" x="91" y="50" text-anchor="middle">고정 문자</text>
+  <text class="tx-s" x="288" y="50" text-anchor="middle">고정 문자</text>
+  <text class="tx-s" x="575" y="50" text-anchor="middle">고정</text>
+  <text class="tx-s tx-o" x="621" y="50" text-anchor="middle">끝</text>
+  <rect class="bx-o" x="20" y="70" width="30" height="40" rx="4"/>
+  <text class="tx-m tx-b" x="35" y="90" text-anchor="middle">|</text>
+  <rect class="bx" x="56" y="70" width="70" height="40" rx="4"/>
+  <text x="91" y="90" text-anchor="middle">이름:</text>
+  <rect class="bx-b" x="132" y="70" width="110" height="40" rx="4"/>
+  <text class="tx-m" x="187" y="90" text-anchor="middle">{ lv_name }</text>
+  <rect class="bx" x="248" y="70" width="80" height="40" rx="4"/>
+  <text x="288" y="90" text-anchor="middle">, 매출:</text>
+  <rect class="bx-b" x="334" y="70" width="210" height="40" rx="4"/>
+  <text class="tx-m" x="439" y="90" text-anchor="middle">{ lv_amt NUMBER = USER }</text>
+  <rect class="bx" x="550" y="70" width="50" height="40" rx="4"/>
+  <text x="575" y="90" text-anchor="middle">원</text>
+  <rect class="bx-o" x="606" y="70" width="30" height="40" rx="4"/>
+  <text class="tx-m tx-b" x="621" y="90" text-anchor="middle">|</text>
+  <text class="tx-s tx-c" x="187" y="128" text-anchor="middle">변수 삽입 { }</text>
+  <text class="tx-s tx-c" x="439" y="128" text-anchor="middle">변수 + 포맷 옵션</text>
+  <text class="tx-b" x="20" y="166">결과 →</text>
+  <text class="tx-m" x="90" y="166">이름: 홍길동, 매출: 1,234,567.89 원</text>
+</svg>
+<figcaption>그림 1. String Template — 파이프 사이의 고정 문자와 { } 안의 변수 · 포맷 옵션이 하나의 문자열이 된다</figcaption>
+</figure>
 <table>
   <tr><th>포맷 옵션</th><th>용도</th><th>예시</th></tr>
   <tr><td><code>ALPHA = OUT</code></td><td>앞의 0 제거</td><td>{ lv_matnr ALPHA = OUT }</td></tr>
@@ -1308,6 +2434,44 @@ reverse( s )                     <span class="c">" 뒤집기</span></pre>
 <span class="k">WRITE</span>: / lv_date+<span class="n">0</span>(<span class="n">4</span>),   <span class="c">" 2026  (0번째부터 4자리)</span>
          lv_date+<span class="n">4</span>(<span class="n">2</span>),   <span class="c">" 01</span>
          lv_date+<span class="n">6</span>(<span class="n">2</span>).   <span class="c">" 05</span></pre>
+<figure class="fig">
+<svg viewBox="0 0 720 190" role="img" aria-label="오프셋과 길이로 날짜 문자열 자르기">
+  <text class="tx-s" x="20" y="36">오프셋</text>
+  <text class="tx-s" x="164" y="36" text-anchor="middle">0</text>
+  <text class="tx-s" x="220" y="36" text-anchor="middle">1</text>
+  <text class="tx-s" x="276" y="36" text-anchor="middle">2</text>
+  <text class="tx-s" x="332" y="36" text-anchor="middle">3</text>
+  <text class="tx-s" x="388" y="36" text-anchor="middle">4</text>
+  <text class="tx-s" x="444" y="36" text-anchor="middle">5</text>
+  <text class="tx-s" x="500" y="36" text-anchor="middle">6</text>
+  <text class="tx-s" x="556" y="36" text-anchor="middle">7</text>
+  <text class="tx-m tx-b" x="20" y="72">lv_date</text>
+  <rect class="bx-b" x="136" y="50" width="56" height="44"/>
+  <text class="tx-l" x="164" y="72" text-anchor="middle">2</text>
+  <rect class="bx-b" x="192" y="50" width="56" height="44"/>
+  <text class="tx-l" x="220" y="72" text-anchor="middle">0</text>
+  <rect class="bx-b" x="248" y="50" width="56" height="44"/>
+  <text class="tx-l" x="276" y="72" text-anchor="middle">2</text>
+  <rect class="bx-b" x="304" y="50" width="56" height="44"/>
+  <text class="tx-l" x="332" y="72" text-anchor="middle">6</text>
+  <rect class="bx-o" x="360" y="50" width="56" height="44"/>
+  <text class="tx-l" x="388" y="72" text-anchor="middle">0</text>
+  <rect class="bx-o" x="416" y="50" width="56" height="44"/>
+  <text class="tx-l" x="444" y="72" text-anchor="middle">1</text>
+  <rect class="bx-g" x="472" y="50" width="56" height="44"/>
+  <text class="tx-l" x="500" y="72" text-anchor="middle">0</text>
+  <rect class="bx-g" x="528" y="50" width="56" height="44"/>
+  <text class="tx-l" x="556" y="72" text-anchor="middle">5</text>
+  <path class="ln-b" d="M140,104 V112 H356 V104"/>
+  <path class="ln-o" d="M364,104 V112 H468 V104"/>
+  <path class="ln-g" d="M476,104 V112 H580 V104"/>
+  <text class="tx-m tx-c" x="248" y="130" text-anchor="middle">+0(4) = '2026'</text>
+  <text class="tx-m tx-o" x="416" y="130" text-anchor="middle">+4(2) = '01'</text>
+  <text class="tx-m tx-g" x="528" y="130" text-anchor="middle">+6(2) = '05'</text>
+  <text class="tx-s" x="20" y="170">변수+오프셋(길이) : 오프셋은 0부터 세고, 괄호 안은 가져올 자리수</text>
+</svg>
+<figcaption>그림 2. 오프셋/길이 접근 — lv_date+4(2) 는 4번 위치부터 2자리('01')</figcaption>
+</figure>
 <div class="note">⚠️ 오프셋은 <b>0부터</b> 시작합니다. 그리고 <code>lv_date+4(2)</code>의 <code>+</code>는 덧셈이 아니라 오프셋 기호입니다. 그래서 산술 연산에는 공백이 필수였던 것입니다.</div>
 
 <h4>6. 2주차 핵심 요약</h4>
@@ -1406,6 +2570,52 @@ WRITE: / '길이       :', strlen( lv_src ),
        / 'reverse    :', reverse( lv_src ).`
     }
   ],
+  compare: [
+    {
+      topic: '문자열 조합과 포맷 — CONCATENATE vs String Template',
+      classic: `DATA: lv_matnr TYPE matnr VALUE '000000000000000100',
+      lv_mat_c TYPE c LENGTH 18,
+      lv_date  TYPE c LENGTH 10,
+      lv_msg   TYPE string.
+
+CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
+  EXPORTING
+    input  = lv_matnr
+  IMPORTING
+    output = lv_mat_c.
+
+WRITE sy-datum TO lv_date.
+
+CONCATENATE '자재' lv_mat_c '/ 조회일' lv_date
+       INTO lv_msg SEPARATED BY space.
+
+WRITE / lv_msg.`,
+      modern: `DATA lv_matnr TYPE matnr VALUE '000000000000000100'.
+
+DATA(lv_msg) = |자재 { lv_matnr ALPHA = OUT } / 조회일 { sy-datum DATE = USER }|.
+
+WRITE / lv_msg.`,
+      note: '변환 펑션 · WRITE TO · CONCATENATE 와 중간 변수 3개가 필요하던 작업이 포맷 옵션을 품은 String Template 한 줄로 끝납니다.'
+    },
+    {
+      topic: '금액을 천단위 구분해 문장에 넣기',
+      classic: `DATA: lv_amt   TYPE p LENGTH 13 DECIMALS 2 VALUE '1234567.89',
+      lv_amt_c TYPE c LENGTH 20,
+      lv_line  TYPE string.
+
+WRITE lv_amt TO lv_amt_c.        "사용자 형식 1,234,567.89 (오른쪽 정렬)
+CONDENSE lv_amt_c.               "앞 공백 제거
+
+CONCATENATE '금액 :' lv_amt_c '원'
+       INTO lv_line SEPARATED BY space.
+
+WRITE / lv_line.`,
+      modern: `DATA lv_amt TYPE p LENGTH 13 DECIMALS 2 VALUE '1234567.89'.
+
+WRITE / |금액 : { lv_amt NUMBER = USER } 원|.`,
+      note: 'WRITE TO 로 포맷한 뒤 공백을 지우고 이어 붙이던 3단계가 NUMBER = USER 옵션 하나로 대체됩니다.'
+    }
+  ],
   quiz: [
     { q: "DATA lv_d TYPE c LENGTH 8 VALUE '20260105'. 일 때 lv_d+4(2) 의 값은?", choices: ["'2026'", "'01'", "'05'", "'0105'"], answer: 1, explain: '오프셋은 0부터 시작하므로 4번째 위치부터 2자리는 월에 해당하는 01입니다.' },
     { q: "변수 lv_name에 '홍길동'이 들어있을 때, String Template으로 '안녕하세요 홍길동님'을 만드는 올바른 표기는?", choices: ["|안녕하세요 $lv_name 님|", "|안녕하세요 { lv_name }님|", "'안녕하세요 ' + lv_name + '님'", "|안녕하세요 [lv_name]님|"], answer: 1, explain: 'String Template은 파이프 | | 안에서 중괄호 { } 로 변수를 삽입합니다.' },
@@ -1447,7 +2657,64 @@ START-OF-SELECTION.
   ULINE.
   WRITE: / |합계금액 : { lv_total NUMBER = USER } 원|.
   ULINE.
-  WRITE: / |작성 { sy-datum DATE = USER } / { sy-uname }|.`
+  WRITE: / |작성 { sy-datum DATE = USER } / { sy-uname }|.`,
+    solutionClassic: `REPORT ztest_csv_parse.
+
+PARAMETERS p_line TYPE string LOWER CASE DEFAULT '1000,노트북,3,1500000'.
+
+DATA: lv_code  TYPE string,
+      lv_name  TYPE string,
+      lv_qty_c TYPE string,
+      lv_prc_c TYPE string,
+      lv_qty   TYPE i,
+      lv_price TYPE p,
+      lv_total TYPE p,
+      lv_out   TYPE c LENGTH 30,
+      lv_datc  TYPE c LENGTH 10,
+      lv_line  TYPE string.
+
+START-OF-SELECTION.
+
+  SPLIT p_line AT ',' INTO lv_code lv_name lv_qty_c lv_prc_c.
+
+  IF lv_prc_c IS INITIAL.
+    WRITE / '형식이 올바르지 않습니다. 예) 1000,노트북,3,1500000'.
+    RETURN.
+  ENDIF.
+
+* 숫자 타입 변수에 할당하면 자동 변환
+  lv_qty   = lv_qty_c.
+  lv_price = lv_prc_c.
+  lv_total = lv_qty * lv_price.
+
+  ULINE.
+  WRITE: / '===== 주문 내역 ====='.
+  ULINE.
+  CONCATENATE '자재코드 :' lv_code INTO lv_line SEPARATED BY space.
+  WRITE / lv_line.
+  CONCATENATE '자재명   :' lv_name INTO lv_line SEPARATED BY space.
+  WRITE / lv_line.
+
+  WRITE lv_qty TO lv_out.
+  CONDENSE lv_out.
+  CONCATENATE '수량     :' lv_out 'EA' INTO lv_line SEPARATED BY space.
+  WRITE / lv_line.
+
+  WRITE lv_price TO lv_out.        "천단위 구분 (사용자 형식)
+  CONDENSE lv_out.
+  CONCATENATE '단가     :' lv_out '원' INTO lv_line SEPARATED BY space.
+  WRITE / lv_line.
+  ULINE.
+
+  WRITE lv_total TO lv_out.
+  CONDENSE lv_out.
+  CONCATENATE '합계금액 :' lv_out '원' INTO lv_line SEPARATED BY space.
+  WRITE / lv_line.
+  ULINE.
+
+  WRITE sy-datum TO lv_datc.       "사용자 날짜 형식
+  CONCATENATE '작성' lv_datc '/' sy-uname INTO lv_line SEPARATED BY space.
+  WRITE / lv_line.`
   }
 }
 

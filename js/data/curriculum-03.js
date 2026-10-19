@@ -22,11 +22,36 @@ DDIC에 정의한 객체는 <b>전 시스템에서 공유</b>되며, ABAP 프로
 </table>
 
 <h4>2. 3계층 구조 — 가장 중요한 개념</h4>
-<pre class="code"><span class="c">[ 테이블 필드 ]  MARA-MATNR        &lt;- 실제 컬럼</span>
-<span class="c">       |</span>
-<span class="c">[ 데이터 엘리먼트 ] MATNR           &lt;- 의미 + 레이블 + F1 도움말</span>
-<span class="c">       |</span>
-<span class="c">[ 도메인 ]       MATNR             &lt;- 타입 CHAR 40 + 변환루틴 ALPHA</span></pre>
+<figure class="fig">
+<svg viewBox="0 0 720 300" role="img" aria-label="테이블 필드, 데이터 엘리먼트, 도메인의 3계층 구조">
+  <rect class="bx-b" x="40" y="20" width="300" height="64" rx="10"/>
+  <text class="tx-l" x="60" y="44">테이블 필드</text>
+  <text class="tx-m tx-c" x="60" y="68">MARA-MATNR</text>
+  <rect class="bx-a" x="40" y="118" width="300" height="64" rx="10"/>
+  <text class="tx-l" x="60" y="142">데이터 엘리먼트</text>
+  <text class="tx-m tx-a" x="60" y="166">MATNR</text>
+  <rect class="bx-g" x="40" y="216" width="300" height="64" rx="10"/>
+  <text class="tx-l" x="60" y="240">도메인</text>
+  <text class="tx-m tx-g" x="60" y="264">MATNR</text>
+  <path class="ln arr" d="M190,84 V114"/>
+  <path class="ln arr" d="M190,182 V212"/>
+  <text class="tx-s" x="200" y="100">참조</text>
+  <text class="tx-s" x="200" y="198">참조</text>
+  <path class="ln dash" d="M340,52 H380"/>
+  <path class="ln dash" d="M340,150 H380"/>
+  <path class="ln dash" d="M340,248 H380"/>
+  <rect class="bx" x="380" y="26" width="310" height="52" rx="8"/>
+  <text x="396" y="44" class="tx-b">실제 DB 컬럼</text>
+  <text x="396" y="64" class="tx-s">이름 · 키 여부 · NOT NULL</text>
+  <rect class="bx" x="380" y="124" width="310" height="52" rx="8"/>
+  <text x="396" y="142" class="tx-b">의미 (업무 관점)</text>
+  <text x="396" y="162" class="tx-s">필드 레이블 · F1 도움말 · 검색 도움말</text>
+  <rect class="bx" x="380" y="222" width="310" height="52" rx="8"/>
+  <text x="396" y="240" class="tx-b">기술 속성 (형식)</text>
+  <text x="396" y="260" class="tx-s">CHAR 40 · 값 범위 · 변환 루틴 ALPHA</text>
+</svg>
+<figcaption>그림 1. DDIC 3계층 — 필드는 데이터 엘리먼트를, 데이터 엘리먼트는 도메인을 참조한다</figcaption>
+</figure>
 <table>
   <tr><th>계층</th><th>정의하는 것</th><th>예</th></tr>
   <tr><td><b>Domain</b></td><td>데이터 타입, 길이, 소수점, 값 범위(Value Range), 변환 루틴</td><td>CHAR 40, ALPHA 변환</td></tr>
@@ -51,6 +76,29 @@ DDIC에 정의한 객체는 <b>전 시스템에서 공유</b>되며, ABAP 프로
   <li><code>ALPHA</code> — 가장 유명. 앞에 0을 채워 저장하고(INPUT), 화면에는 0을 떼고 표시(OUTPUT)</li>
   <li>펑션 이름 규칙: <code>CONVERSION_EXIT_ALPHA_INPUT</code> / <code>CONVERSION_EXIT_ALPHA_OUTPUT</code></li>
 </ul>
+<figure class="fig">
+<svg viewBox="0 0 720 200" role="img" aria-label="ALPHA 변환 루틴의 입력, 저장, 출력 흐름">
+  <rect class="bx" x="20" y="26" width="140" height="64" rx="8"/>
+  <text class="tx-b" x="90" y="48" text-anchor="middle">화면 입력</text>
+  <text class="tx-m" x="90" y="72" text-anchor="middle">100</text>
+  <rect class="bx-b" x="255" y="26" width="210" height="64" rx="8"/>
+  <text class="tx-b" x="360" y="48" text-anchor="middle">DB 저장값</text>
+  <text class="tx-m tx-c" x="360" y="72" text-anchor="middle">000000000000000100</text>
+  <rect class="bx" x="560" y="26" width="140" height="64" rx="8"/>
+  <text class="tx-b" x="630" y="48" text-anchor="middle">화면 표시</text>
+  <text class="tx-m" x="630" y="72" text-anchor="middle">100</text>
+  <path class="ln-b arr-b" d="M160,58 H251"/>
+  <path class="ln-b arr-b" d="M465,58 H556"/>
+  <text class="tx-s" x="207" y="44" text-anchor="middle">ALPHA INPUT</text>
+  <text class="tx-s" x="512" y="44" text-anchor="middle">ALPHA OUTPUT</text>
+  <path class="ln-o dash" d="M207,62 V124"/>
+  <path class="ln-o dash" d="M512,62 V124"/>
+  <rect class="bx-o" x="120" y="124" width="480" height="56" rx="8"/>
+  <text x="360" y="144" text-anchor="middle">도메인에 변환 루틴 ALPHA 지정 시 자동 실행</text>
+  <text class="tx-s" x="360" y="166" text-anchor="middle">CONVERSION_EXIT_ALPHA_INPUT / _OUTPUT — 코드 불필요</text>
+</svg>
+<figcaption>그림 2. ALPHA 변환 — 저장할 때 앞에 0을 채우고, 표시할 때 0을 뗀다</figcaption>
+</figure>
 <div class="note">⚠️ Day 6에서 배운 "자재번호 100이 000000000000000100으로 저장되는" 이유가 바로 이 ALPHA 변환 루틴 때문입니다.</div>
 
 <h4>5. 데이터 엘리먼트의 필드 레이블</h4>
@@ -64,6 +112,49 @@ DDIC에 정의한 객체는 <b>전 시스템에서 공유</b>되며, ABAP 프로
 <p>ALV 컬럼 제목이 자동으로 한글로 나오는 것은 데이터 엘리먼트의 Heading을 가져오기 때문입니다.</p>
 
 <h4>6. 생성 절차 (SE11)</h4>
+<figure class="fig">
+<svg viewBox="0 0 720 330" role="img" aria-label="SE11 초기 화면 모형 — Domain 선택 후 이름 입력, Create">
+  <rect class="bx" x="10" y="10" width="700" height="310" rx="6"/>
+  <rect class="bx-s" x="10" y="10" width="700" height="34" rx="6"/>
+  <text class="tx-w tx-b" x="26" y="27">ABAP Dictionary: Initial Screen</text>
+  <circle class="bx" cx="50" cy="70" r="7"/>
+  <text x="66" y="70">Database table</text>
+  <rect class="bx" x="200" y="58" width="220" height="24" rx="3"/>
+  <circle class="bx" cx="50" cy="100" r="7"/>
+  <text x="66" y="100">View</text>
+  <rect class="bx" x="200" y="88" width="220" height="24" rx="3"/>
+  <circle class="bx" cx="50" cy="130" r="7"/>
+  <text x="66" y="130">Data type</text>
+  <rect class="bx" x="200" y="118" width="220" height="24" rx="3"/>
+  <circle class="bx" cx="50" cy="160" r="7"/>
+  <text x="66" y="160">Type Group</text>
+  <rect class="bx" x="200" y="148" width="220" height="24" rx="3"/>
+  <circle class="bx-b" cx="50" cy="190" r="7"/>
+  <circle class="bx-s" cx="50" cy="190" r="3.5"/>
+  <text class="tx-b tx-c" x="66" y="190">Domain</text>
+  <rect class="bx-b" x="200" y="178" width="220" height="24" rx="3"/>
+  <text class="tx-m" x="210" y="190">ZDO_STATUS</text>
+  <circle class="bx" cx="50" cy="220" r="7"/>
+  <text x="66" y="220">Search help</text>
+  <rect class="bx" x="200" y="208" width="220" height="24" rx="3"/>
+  <circle class="bx" cx="50" cy="250" r="7"/>
+  <text x="66" y="250">Lock object</text>
+  <rect class="bx" x="200" y="238" width="220" height="24" rx="3"/>
+  <rect class="bx" x="200" y="276" width="80" height="28" rx="4"/>
+  <text x="240" y="290" text-anchor="middle">Display</text>
+  <rect class="bx" x="290" y="276" width="80" height="28" rx="4"/>
+  <text x="330" y="290" text-anchor="middle">Change</text>
+  <rect class="bx-b" x="380" y="276" width="80" height="28" rx="4"/>
+  <text class="tx-b tx-c" x="420" y="290" text-anchor="middle">Create</text>
+  <rect class="bx-o" x="480" y="120" width="210" height="100" rx="8"/>
+  <text x="496" y="144">① Domain 라디오 선택</text>
+  <text x="496" y="170">② 객체 이름 입력</text>
+  <text x="496" y="196">③ Create (F5)</text>
+  <path class="ln-o arr-o" d="M480,190 H426"/>
+  <path class="ln-o arr-o" d="M585,220 V290 H466"/>
+</svg>
+<figcaption>그림 3. SE11 초기 화면 — 만들 객체 종류를 라디오 버튼으로 고르고 이름을 입력한 뒤 Create</figcaption>
+</figure>
 <ol>
   <li><code>/nSE11</code> → <b>Domain</b> 라디오 선택 → <code>ZDO_STATUS</code> 입력 → Create</li>
   <li>Data Type <code>CHAR</code>, Length <code>1</code> → <b>Value Range</b> 탭에서 고정값 입력</li>
@@ -152,6 +243,79 @@ START-OF-SELECTION.
          / '금액           :', lv_amount.`
     }
   ],
+  compare: [
+    {
+      topic: '도메인 고정값 읽어서 출력하기 (변수 선언 · 루프 · 변환 루틴)',
+      classic: `DATA: lt_fix TYPE STANDARD TABLE OF dd07v,
+      ls_fix TYPE dd07v,
+      lv_out TYPE char40.
+
+CALL FUNCTION 'DD_DOMVALUES_GET'
+  EXPORTING
+    domname   = 'ZDO_ORDSTAT'
+    text      = 'X'
+    langu     = sy-langu
+  TABLES
+    dd07v_tab = lt_fix.
+
+LOOP AT lt_fix INTO ls_fix.
+  WRITE: / ls_fix-domvalue_l, '=', ls_fix-ddtext.
+ENDLOOP.
+
+CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
+  EXPORTING
+    input  = lv_matnr
+  IMPORTING
+    output = lv_out.
+WRITE: / '자재번호 :', lv_out.`,
+      modern: `DATA lt_fix TYPE STANDARD TABLE OF dd07v WITH EMPTY KEY.
+
+CALL FUNCTION 'DD_DOMVALUES_GET'
+  EXPORTING
+    domname   = 'ZDO_ORDSTAT'
+    text      = 'X'
+    langu     = sy-langu
+  TABLES
+    dd07v_tab = lt_fix.
+
+LOOP AT lt_fix INTO DATA(ls_fix).          "인라인 선언
+  WRITE: / ls_fix-domvalue_l, '=', ls_fix-ddtext.
+ENDLOOP.
+
+* 변환 루틴 호출 대신 String Template 포맷 옵션
+WRITE: / '자재번호 :', |{ lv_matnr ALPHA = OUT }|.`,
+      note: '작업 영역(ls_fix)과 출력용 변수(lv_out)를 미리 선언하던 부분이 인라인 선언 DATA( )와 ALPHA = OUT 옵션으로 사라집니다.'
+    },
+    {
+      topic: 'DDIC 타입 변수에 조건별 값 넣기 (등급 판정)',
+      classic: `DATA: lv_score TYPE zde_score,
+      lv_grade TYPE zde_grade.
+
+MOVE p_score TO lv_score.
+
+IF lv_score >= 90.
+  lv_grade = 'A'.
+ELSEIF lv_score >= 80.
+  lv_grade = 'B'.
+ELSEIF lv_score >= 70.
+  lv_grade = 'C'.
+ELSE.
+  lv_grade = 'D'.
+ENDIF.
+
+WRITE: / '등급 :', lv_grade.`,
+      modern: `DATA(lv_score) = CONV zde_score( p_score ).
+
+DATA(lv_grade) = COND zde_grade(
+    WHEN lv_score >= 90 THEN 'A'
+    WHEN lv_score >= 80 THEN 'B'
+    WHEN lv_score >= 70 THEN 'C'
+    ELSE 'D' ).
+
+WRITE: / '등급 :', lv_grade.`,
+      note: 'IF/ELSEIF 블록으로 변수에 값을 대입하던 것을 COND 표현식 하나로 쓰며, 결과 타입(zde_grade)도 그 자리에서 지정합니다.'
+    }
+  ],
   quiz: [
     { q: '데이터 타입, 길이, 고정값 범위, 변환 루틴을 정의하는 DDIC 객체는?', choices: ['Data Element', 'Domain', 'Structure', 'Search Help'], answer: 1, explain: 'Domain은 기술적 속성(타입·길이·값범위·변환루틴)을 담당합니다. 의미와 레이블은 Data Element가 담당합니다.' },
     { q: 'ALV 리스트의 컬럼 제목이 자동으로 표시되는 것은 어디에서 가져오는가?', choices: ['도메인의 고정값', '데이터 엘리먼트의 Field Label(Heading)', '테이블의 기술 설정', '프로그램의 텍스트 심볼'], answer: 1, explain: 'ALV는 필드의 데이터 엘리먼트에 정의된 Field Label(특히 Heading)을 컬럼 헤더로 사용합니다.' },
@@ -200,6 +364,35 @@ START-OF-SELECTION.
       WHEN lv_score >= 80 THEN 'B'
       WHEN lv_score >= 70 THEN 'C'
       ELSE 'D' ).
+
+  WRITE: / '점수 :', lv_score,
+         / '등급 :', lv_grade.
+
+* 선택화면에 PARAMETERS p_grade TYPE zde_grade 를 추가하면
+* 도메인 고정값이 F4 도움말로 자동 표시됩니다.`,
+    solutionClassic: `* ===== SE11 작업 내용은 위와 동일 =====
+
+* ===== 사용 확인 프로그램 (기존 문법) =====
+REPORT ztest_grade_ddic.
+
+DATA: lv_grade TYPE zde_grade,
+      lv_score TYPE zde_score.
+
+PARAMETERS: p_score TYPE zde_score DEFAULT 85.
+
+START-OF-SELECTION.
+
+  MOVE p_score TO lv_score.
+
+  IF lv_score >= 90.
+    lv_grade = 'A'.
+  ELSEIF lv_score >= 80.
+    lv_grade = 'B'.
+  ELSEIF lv_score >= 70.
+    lv_grade = 'C'.
+  ELSE.
+    lv_grade = 'D'.
+  ENDIF.
 
   WRITE: / '점수 :', lv_score,
          / '등급 :', lv_grade.
@@ -254,6 +447,79 @@ START-OF-SELECTION.
   <tr><td>Data element</td><td>참조할 데이터 엘리먼트</td></tr>
 </table>
 <div class="note">⚠️ <b>첫 번째 필드는 MANDT (데이터 엘리먼트 MANDT)</b>로 두는 것이 원칙입니다. 그래야 클라이언트 종속 테이블이 되고, SELECT 시 자동으로 현재 클라이언트만 조회됩니다. MANDT를 빼면 모든 클라이언트가 같은 데이터를 공유합니다.</div>
+<figure class="fig">
+<svg viewBox="0 0 720 330" role="img" aria-label="SE11 테이블 Fields 탭 화면 모형 — ZORDER 필드 정의">
+  <rect class="bx" x="10" y="10" width="700" height="310" rx="6"/>
+  <rect class="bx-s" x="10" y="10" width="700" height="34" rx="6"/>
+  <text class="tx-w tx-b" x="26" y="27">Dictionary: Change Table   ZORDER</text>
+  <rect class="bx" x="20" y="56" width="90" height="26" rx="3"/>
+  <text class="tx-s" x="65" y="69" text-anchor="middle">Attributes</text>
+  <rect class="bx" x="114" y="56" width="184" height="26" rx="3"/>
+  <text class="tx-s" x="206" y="69" text-anchor="middle">Delivery and Maintenance</text>
+  <rect class="bx-b" x="302" y="56" width="70" height="26" rx="3"/>
+  <text class="tx-s tx-b tx-c" x="337" y="69" text-anchor="middle">Fields</text>
+  <rect class="bx" x="376" y="56" width="184" height="26" rx="3"/>
+  <text class="tx-s" x="468" y="69" text-anchor="middle">Currency/Quantity Fields</text>
+  <rect class="bx-s" x="20" y="92" width="680" height="28"/>
+  <text class="tx-s tx-w" x="28" y="106">Field</text>
+  <text class="tx-s tx-w" x="142" y="106" text-anchor="middle">Key</text>
+  <text class="tx-s tx-w" x="187" y="106" text-anchor="middle">Init.</text>
+  <text class="tx-s tx-w" x="218" y="106">Data element</text>
+  <text class="tx-s tx-w" x="348" y="106">Type</text>
+  <text class="tx-s tx-w" x="418" y="106">Length</text>
+  <text class="tx-s tx-w" x="478" y="106">Short Description</text>
+  <rect class="bx-b" x="20" y="120" width="680" height="26"/>
+  <text class="tx-m" x="28" y="133">MANDT</text>
+  <rect class="bx-s" x="136" y="127" width="12" height="12"/>
+  <rect class="bx-s" x="181" y="127" width="12" height="12"/>
+  <text class="tx-m" x="218" y="133">MANDT</text>
+  <text class="tx-m" x="348" y="133">CLNT</text>
+  <text class="tx-m" x="418" y="133">3</text>
+  <text x="478" y="133">클라이언트</text>
+  <rect class="bx-b" x="20" y="146" width="680" height="26"/>
+  <text class="tx-m" x="28" y="159">ORDNO</text>
+  <rect class="bx-s" x="136" y="153" width="12" height="12"/>
+  <rect class="bx-s" x="181" y="153" width="12" height="12"/>
+  <text class="tx-m" x="218" y="159">ZDE_ORDNO</text>
+  <text class="tx-m" x="348" y="159">CHAR</text>
+  <text class="tx-m" x="418" y="159">10</text>
+  <text x="478" y="159">주문번호</text>
+  <rect class="bx" x="20" y="172" width="680" height="26"/>
+  <text class="tx-m" x="28" y="185">ORDDT</text>
+  <rect class="bx" x="136" y="179" width="12" height="12"/>
+  <rect class="bx" x="181" y="179" width="12" height="12"/>
+  <text class="tx-m" x="218" y="185">DATUM</text>
+  <text class="tx-m" x="348" y="185">DATS</text>
+  <text class="tx-m" x="418" y="185">8</text>
+  <text x="478" y="185">주문일자</text>
+  <rect class="bx" x="20" y="198" width="680" height="26"/>
+  <text class="tx-m" x="28" y="211">KUNNR</text>
+  <rect class="bx" x="136" y="205" width="12" height="12"/>
+  <rect class="bx" x="181" y="205" width="12" height="12"/>
+  <text class="tx-m" x="218" y="211">KUNNR</text>
+  <text class="tx-m" x="348" y="211">CHAR</text>
+  <text class="tx-m" x="418" y="211">10</text>
+  <text x="478" y="211">고객번호</text>
+  <rect class="bx" x="20" y="224" width="680" height="26"/>
+  <text class="tx-m" x="28" y="237">NETWR</text>
+  <rect class="bx" x="136" y="231" width="12" height="12"/>
+  <rect class="bx" x="181" y="231" width="12" height="12"/>
+  <text class="tx-m" x="218" y="237">NETWR_AP</text>
+  <text class="tx-m tx-o" x="348" y="237">CURR</text>
+  <text class="tx-m" x="418" y="237">15</text>
+  <text class="tx-o" x="478" y="237">금액 → WAERS 참조</text>
+  <rect class="bx" x="20" y="250" width="680" height="26"/>
+  <text class="tx-m" x="28" y="263">WAERS</text>
+  <rect class="bx" x="136" y="257" width="12" height="12"/>
+  <rect class="bx" x="181" y="257" width="12" height="12"/>
+  <text class="tx-m" x="218" y="263">WAERS</text>
+  <text class="tx-m tx-o" x="348" y="263">CUKY</text>
+  <text class="tx-m" x="418" y="263">5</text>
+  <text x="478" y="263">통화</text>
+  <text class="tx-s" x="360" y="300" text-anchor="middle">키 필드(파란 행)는 맨 앞에 연속 · 첫 필드는 MANDT · CURR 필드는 CUKY 필드 참조 필수</text>
+</svg>
+<figcaption>그림 1. SE11 Fields 탭 — 필드명, 키·NOT NULL 체크, 데이터 엘리먼트를 한 줄씩 정의한다</figcaption>
+</figure>
 
 <h4>5. 통화/수량 필드의 참조 설정</h4>
 <p>데이터 타입이 <b>CURR(통화)</b> 또는 <b>QUAN(수량)</b>인 필드는 반드시 참조 필드를 지정해야 활성화됩니다.</p>
@@ -282,6 +548,28 @@ START-OF-SELECTION.
   <tr><td>Single-record buffered</td><td>건건이 키로만 조회하는 큰 테이블</td></tr>
 </table>
 <div class="note">⚠️ 버퍼링된 테이블은 <b>변경이 즉시 보이지 않을 수 있습니다</b>(최대 수십 초 지연). 트랜잭션 데이터에 버퍼링을 켜면 심각한 정합성 문제가 생깁니다. 모르면 <b>Buffering not allowed</b>를 선택하세요.</div>
+<figure class="fig">
+<svg viewBox="0 0 720 280" role="img" aria-label="애플리케이션 서버 테이블 버퍼의 동기화 지연">
+  <rect class="bx" x="30" y="20" width="300" height="120" rx="10"/>
+  <text class="tx-b" x="46" y="42">애플리케이션 서버 1</text>
+  <rect class="bx-g" x="50" y="60" width="260" height="62" rx="8"/>
+  <text class="tx-s" x="66" y="78">테이블 버퍼</text>
+  <text class="tx-m tx-g" x="66" y="102">STATUS = C (갱신됨)</text>
+  <rect class="bx" x="390" y="20" width="300" height="120" rx="10"/>
+  <text class="tx-b" x="406" y="42">애플리케이션 서버 2</text>
+  <rect class="bx-r" x="410" y="60" width="260" height="62" rx="8"/>
+  <text class="tx-s" x="426" y="78">테이블 버퍼</text>
+  <text class="tx-m tx-r" x="426" y="102">STATUS = N (옛 값)</text>
+  <rect class="bx-b" x="210" y="200" width="300" height="64" rx="10"/>
+  <text class="tx-b" x="360" y="222" text-anchor="middle">데이터베이스</text>
+  <text class="tx-m tx-c" x="360" y="246" text-anchor="middle">ZORDER  STATUS = C</text>
+  <path class="ln-b arr-b" d="M180,140 L296,196"/>
+  <path class="ln-o dash arr-o" d="M424,196 L540,144"/>
+  <text class="tx-s" x="40" y="180">① 서버 1에서 변경·저장</text>
+  <text class="tx-s tx-o" x="530" y="180">② 동기화 전까지 옛 값</text>
+</svg>
+<figcaption>그림 2. 버퍼링된 테이블 — 다른 서버의 버퍼는 동기화 주기 동안 옛 값을 돌려줄 수 있다</figcaption>
+</figure>
 
 <h4>8. 인덱스(Index)</h4>
 <p>기본키 외의 필드로 자주 조회한다면 <b>Secondary Index</b>를 만듭니다. SE11 → 메뉴 Goto → Indexes.</p>
@@ -393,6 +681,74 @@ START-OF-SELECTION.
   WRITE: / '총', lines( lt_ord ), '건'.`
     }
   ],
+  compare: [
+    {
+      topic: '구조체를 채워 한 건 INSERT 하기',
+      classic: `DATA ls_ord TYPE zorder.
+
+CLEAR ls_ord.
+ls_ord-ordno  = '0000000001'.
+ls_ord-orddt  = sy-datum.
+ls_ord-kunnr  = '0000001000'.
+ls_ord-menge  = 10.
+ls_ord-meins  = 'EA'.
+ls_ord-netwr  = '1500000.00'.
+ls_ord-waers  = 'KRW'.
+ls_ord-status = 'N'.
+ls_ord-ernam  = sy-uname.
+ls_ord-erdat  = sy-datum.
+
+INSERT zorder FROM ls_ord.`,
+      modern: `DATA(ls_ord) = VALUE zorder( ordno  = '0000000001'
+                             orddt  = sy-datum
+                             kunnr  = '0000001000'
+                             menge  = 10
+                             meins  = 'EA'
+                             netwr  = '1500000.00'
+                             waers  = 'KRW'
+                             status = 'N'
+                             ernam  = sy-uname
+                             erdat  = sy-datum ).
+
+INSERT zorder FROM @ls_ord.`,
+      note: '필드마다 한 줄씩 대입하던 작업을 VALUE 생성 표현식 하나로 묶고, CLEAR 없이도 나머지 필드는 초기값이 됩니다.'
+    },
+    {
+      topic: 'Z 테이블 조회 후 건수 출력',
+      classic: `TYPES: BEGIN OF ty_ord,
+         ordno  TYPE zorder-ordno,
+         orddt  TYPE zorder-orddt,
+         netwr  TYPE zorder-netwr,
+         waers  TYPE zorder-waers,
+       END OF ty_ord.
+DATA: lt_ord TYPE STANDARD TABLE OF ty_ord,
+      ls_ord TYPE ty_ord,
+      lv_cnt TYPE i.
+
+SELECT ordno orddt netwr waers
+  FROM zorder
+  INTO TABLE lt_ord
+  UP TO 20 ROWS.
+
+LOOP AT lt_ord INTO ls_ord.
+  WRITE: / ls_ord-ordno, ls_ord-orddt, ls_ord-netwr, ls_ord-waers.
+ENDLOOP.
+
+DESCRIBE TABLE lt_ord LINES lv_cnt.
+WRITE: / '총', lv_cnt, '건'.`,
+      modern: `SELECT ordno, orddt, netwr, waers
+  FROM zorder
+  INTO TABLE @DATA(lt_ord)
+  UP TO 20 ROWS.
+
+LOOP AT lt_ord INTO DATA(ls_ord).
+  WRITE: / ls_ord-ordno, ls_ord-orddt, ls_ord-netwr, ls_ord-waers.
+ENDLOOP.
+
+WRITE: / '총', lines( lt_ord ), '건'.`,
+      note: '결과용 TYPES·내부 테이블 선언이 INTO TABLE @DATA( )로 대체되고, DESCRIBE TABLE 대신 내장 함수 lines( )를 씁니다.'
+    }
+  ],
   quiz: [
     { q: '고객 전용 Z 테이블의 첫 번째 필드로 MANDT를 두는 이유는?', choices: ['성능을 높이기 위해', '클라이언트 종속 테이블로 만들어 SELECT 시 현재 클라이언트만 자동 조회되게 하기 위해', '기본키 제약 때문에', '트랜스포트 요청에 포함시키기 위해'], answer: 1, explain: 'MANDT가 첫 키 필드이면 클라이언트 종속 테이블이 되어, Open SQL이 자동으로 sy-mandt 조건을 추가합니다.' },
     { q: 'CURR(통화) 타입 필드를 테이블에 정의할 때 반드시 함께 지정해야 하는 것은?', choices: ['Secondary Index', '통화 키(CUKY) 필드에 대한 참조', 'Delivery Class를 C로 설정', 'Buffering을 Fully buffered로 설정'], answer: 1, explain: 'CURR 필드는 어떤 통화인지 알아야 하므로 CUKY 타입 필드를 참조로 지정해야 활성화됩니다. QUAN 필드도 마찬가지로 UNIT 필드 참조가 필요합니다.' },
@@ -447,6 +803,61 @@ START-OF-SELECTION.
   SELECT * FROM zedu_enroll INTO TABLE @DATA(lt_chk).
   LOOP AT lt_chk INTO DATA(ls).
     WRITE: / ls-enrno, ls-pernr, ls-crscd, ls-finfl, ls-score.
+  ENDLOOP.`,
+    solutionClassic: `* ===== SE11 : ZEDU_ENROLL 설계는 위와 동일 =====
+
+* ===== 데이터 등록 프로그램 (기존 문법) =====
+REPORT ztest_edu_enroll.
+
+DATA: lt_ins TYPE STANDARD TABLE OF zedu_enroll,
+      ls_ins TYPE zedu_enroll,
+      lt_chk TYPE STANDARD TABLE OF zedu_enroll,
+      ls_chk TYPE zedu_enroll,
+      lv_cnt TYPE i.
+
+START-OF-SELECTION.
+
+* 공통 필드
+  ls_ins-ernam = sy-uname.
+  ls_ins-erdat = sy-datum.
+  ls_ins-appdt = sy-datum.
+
+  ls_ins-enrno = 'E000000001'.
+  ls_ins-pernr = '00001234'.
+  ls_ins-crscd = 'ABAP60'.
+  ls_ins-finfl = ' '.
+  ls_ins-score = 0.
+  APPEND ls_ins TO lt_ins.
+
+  ls_ins-enrno = 'E000000002'.
+  ls_ins-pernr = '00005678'.
+  ls_ins-crscd = 'ABAP60'.
+  ls_ins-finfl = 'X'.
+  ls_ins-score = 88.
+  APPEND ls_ins TO lt_ins.
+
+  ls_ins-enrno = 'E000000003'.
+  ls_ins-pernr = '00009999'.
+  ls_ins-crscd = 'HANA30'.
+  ls_ins-finfl = 'X'.
+  ls_ins-score = 94.
+  APPEND ls_ins TO lt_ins.
+
+  INSERT zedu_enroll FROM TABLE lt_ins ACCEPTING DUPLICATE KEYS.
+
+  IF sy-subrc = 0.
+    COMMIT WORK AND WAIT.
+    DESCRIBE TABLE lt_ins LINES lv_cnt.
+    WRITE: / '등록 완료 :', lv_cnt, '건'.
+  ELSE.
+    ROLLBACK WORK.
+    WRITE / '등록 실패'.
+  ENDIF.
+
+* 확인
+  SELECT * FROM zedu_enroll INTO TABLE lt_chk.
+  LOOP AT lt_chk INTO ls_chk.
+    WRITE: / ls_chk-enrno, ls_chk-pernr, ls_chk-crscd, ls_chk-finfl, ls_chk-score.
   ENDLOOP.`
   }
 },
@@ -460,8 +871,39 @@ START-OF-SELECTION.
 <h4>1. 외래키(Foreign Key)란?</h4>
 <p>어떤 필드의 값이 <b>다른 테이블에 존재하는 값인지 자동으로 검증</b>하게 하는 설정입니다.
 예: 주문 테이블의 플랜트 필드에 입력된 값이 플랜트 마스터(T001W)에 실제로 있는지 확인.</p>
-<pre class="code"><span class="c">ZORDER-WERKS  ----(Foreign Key)----&gt;  T001W-WERKS</span>
-<span class="c">  Foreign key table                    Check table</span></pre>
+<figure class="fig">
+<svg viewBox="0 0 720 270" role="img" aria-label="ZORDER-WERKS 가 체크 테이블 T001W-WERKS 를 참조하는 외래키 관계">
+  <rect class="bx-s" x="30" y="30" width="270" height="30" rx="4"/>
+  <text class="tx-w tx-b" x="44" y="45">ZORDER</text>
+  <text class="tx-w tx-s" x="286" y="45" text-anchor="end">Foreign key table</text>
+  <rect class="bx" x="30" y="60" width="270" height="28"/>
+  <text class="tx-m" x="44" y="74">MANDT  (key)</text>
+  <rect class="bx" x="30" y="88" width="270" height="28"/>
+  <text class="tx-m" x="44" y="102">ORDNO  (key)</text>
+  <rect class="bx-o" x="30" y="116" width="270" height="28"/>
+  <text class="tx-m tx-b" x="44" y="130">WERKS</text>
+  <text class="tx-s tx-o" x="286" y="130" text-anchor="end">검사 대상 필드</text>
+  <rect class="bx" x="30" y="144" width="270" height="28"/>
+  <text class="tx-m" x="44" y="158">KUNNR</text>
+  <rect class="bx-s" x="420" y="30" width="270" height="30" rx="4"/>
+  <text class="tx-w tx-b" x="434" y="45">T001W</text>
+  <text class="tx-w tx-s" x="676" y="45" text-anchor="end">Check table</text>
+  <rect class="bx" x="420" y="60" width="270" height="28"/>
+  <text class="tx-m" x="434" y="74">MANDT  (key)</text>
+  <rect class="bx-o" x="420" y="88" width="270" height="28"/>
+  <text class="tx-m tx-b" x="434" y="102">WERKS  (key)</text>
+  <text class="tx-s" x="676" y="102" text-anchor="end">1000, 2000 …</text>
+  <rect class="bx" x="420" y="116" width="270" height="28"/>
+  <text class="tx-m" x="434" y="130">NAME1</text>
+  <text class="tx-s" x="676" y="130" text-anchor="end">플랜트명</text>
+  <path class="ln-o arr-o" d="M300,130 H360 V102 H416"/>
+  <text class="tx-s tx-o" x="360" y="84" text-anchor="middle">Foreign Key</text>
+  <rect class="bx-r" x="30" y="196" width="660" height="58" rx="8"/>
+  <text x="360" y="216" text-anchor="middle">화면에서 WERKS = '9999' 입력 → T001W 에 없으면 자동 오류 · F4 도움말 자동 제공</text>
+  <text class="tx-s tx-r" x="360" y="238" text-anchor="middle">단, ABAP 의 INSERT / UPDATE 문은 외래키를 검사하지 않음</text>
+</svg>
+<figcaption>그림 1. 외래키 — 외래키 테이블의 필드 값이 체크 테이블의 키 값 중 하나인지 검증한다</figcaption>
+</figure>
 <ul>
   <li>화면에서 값을 입력하고 Enter를 치면 <b>SAP이 자동으로 검증</b>합니다. 코드 한 줄도 필요 없습니다.</li>
   <li>F4 입력 도움말도 자동으로 생깁니다.</li>
@@ -511,11 +953,78 @@ START-OF-SELECTION.
   <li>추가로 언어 키 필드 <b><code>SPRAS</code></b>(데이터 엘리먼트 SPRAS)를 가질 것</li>
   <li>마스터 테이블을 Check table로 하는 외래키를, <b>Field type = Key fields of a text table</b>로 설정할 것</li>
 </ol>
-<pre class="code"><span class="c">MARA (마스터)         MAKT (텍스트)</span>
-<span class="c">  MANDT  (key)          MANDT  (key)</span>
-<span class="c">  MATNR  (key)          MATNR  (key)   &lt;- 마스터 키 포함</span>
-<span class="c">  MTART                 SPRAS  (key)   &lt;- 언어 키</span>
-<span class="c">  MEINS                 MAKTX          &lt;- 설명</span></pre>
+<figure class="fig">
+<svg viewBox="0 0 720 240" role="img" aria-label="마스터 테이블 MARA 와 텍스트 테이블 MAKT 의 키 구조와 예시 데이터">
+  <text class="tx-b" x="20" y="22">MARA (마스터)</text>
+  <rect class="bx-s" x="20" y="40" width="60" height="28"/>
+  <text class="tx-s tx-w" x="50" y="54" text-anchor="middle">MANDT</text>
+  <rect class="bx-s" x="80" y="40" width="90" height="28"/>
+  <text class="tx-s tx-w" x="125" y="54" text-anchor="middle">MATNR</text>
+  <rect class="bx-s" x="170" y="40" width="70" height="28"/>
+  <text class="tx-s tx-w" x="205" y="54" text-anchor="middle">MTART</text>
+  <rect class="bx-s" x="240" y="40" width="80" height="28"/>
+  <text class="tx-s tx-w" x="280" y="54" text-anchor="middle">MEINS</text>
+  <rect class="bx-b" x="20" y="68" width="150" height="28"/>
+  <rect class="bx" x="170" y="68" width="150" height="28"/>
+  <text class="tx-m" x="50" y="82" text-anchor="middle">100</text>
+  <text class="tx-m" x="125" y="82" text-anchor="middle">100</text>
+  <text class="tx-m" x="205" y="82" text-anchor="middle">FERT</text>
+  <text class="tx-m" x="280" y="82" text-anchor="middle">EA</text>
+  <rect class="bx-b" x="20" y="96" width="150" height="28"/>
+  <rect class="bx" x="170" y="96" width="150" height="28"/>
+  <text class="tx-m" x="50" y="110" text-anchor="middle">100</text>
+  <text class="tx-m" x="125" y="110" text-anchor="middle">200</text>
+  <text class="tx-m" x="205" y="110" text-anchor="middle">ROH</text>
+  <text class="tx-m" x="280" y="110" text-anchor="middle">KG</text>
+  <text class="tx-s" x="170" y="146" text-anchor="middle">자재 1건당 언어 수만큼 텍스트 행</text>
+  <text class="tx-b" x="380" y="22">MAKT (텍스트 테이블)</text>
+  <rect class="bx-s" x="380" y="40" width="60" height="28"/>
+  <text class="tx-s tx-w" x="410" y="54" text-anchor="middle">MANDT</text>
+  <rect class="bx-s" x="440" y="40" width="70" height="28"/>
+  <text class="tx-s tx-w" x="475" y="54" text-anchor="middle">MATNR</text>
+  <rect class="bx-s" x="510" y="40" width="60" height="28"/>
+  <text class="tx-s tx-w" x="540" y="54" text-anchor="middle">SPRAS</text>
+  <rect class="bx-s" x="570" y="40" width="130" height="28"/>
+  <text class="tx-s tx-w" x="635" y="54" text-anchor="middle">MAKTX</text>
+  <rect class="bx-b" x="380" y="68" width="130" height="28"/>
+  <rect class="bx-a" x="510" y="68" width="60" height="28"/>
+  <rect class="bx" x="570" y="68" width="130" height="28"/>
+  <text class="tx-m" x="410" y="82" text-anchor="middle">100</text>
+  <text class="tx-m" x="475" y="82" text-anchor="middle">100</text>
+  <text class="tx-m tx-a" x="540" y="82" text-anchor="middle">3</text>
+  <text x="635" y="82" text-anchor="middle">볼트</text>
+  <rect class="bx-b" x="380" y="96" width="130" height="28"/>
+  <rect class="bx-a" x="510" y="96" width="60" height="28"/>
+  <rect class="bx" x="570" y="96" width="130" height="28"/>
+  <text class="tx-m" x="410" y="110" text-anchor="middle">100</text>
+  <text class="tx-m" x="475" y="110" text-anchor="middle">100</text>
+  <text class="tx-m tx-a" x="540" y="110" text-anchor="middle">E</text>
+  <text x="635" y="110" text-anchor="middle">Bolt</text>
+  <rect class="bx-b" x="380" y="124" width="130" height="28"/>
+  <rect class="bx-a" x="510" y="124" width="60" height="28"/>
+  <rect class="bx" x="570" y="124" width="130" height="28"/>
+  <text class="tx-m" x="410" y="138" text-anchor="middle">100</text>
+  <text class="tx-m" x="475" y="138" text-anchor="middle">200</text>
+  <text class="tx-m tx-a" x="540" y="138" text-anchor="middle">3</text>
+  <text x="635" y="138" text-anchor="middle">강판</text>
+  <rect class="bx-b" x="380" y="152" width="130" height="28"/>
+  <rect class="bx-a" x="510" y="152" width="60" height="28"/>
+  <rect class="bx" x="570" y="152" width="130" height="28"/>
+  <text class="tx-m" x="410" y="166" text-anchor="middle">100</text>
+  <text class="tx-m" x="475" y="166" text-anchor="middle">200</text>
+  <text class="tx-m tx-a" x="540" y="166" text-anchor="middle">E</text>
+  <text x="635" y="166" text-anchor="middle">Steel plate</text>
+  <path class="ln arr" d="M320,96 H376"/>
+  <text class="tx-s" x="348" y="84" text-anchor="middle">1 : N</text>
+  <path class="ln-b" d="M445,186 V200"/>
+  <text class="tx-s tx-c" x="445" y="214" text-anchor="middle">마스터 키 포함</text>
+  <path class="ln-a" d="M540,186 V200"/>
+  <text class="tx-s tx-a" x="540" y="214" text-anchor="middle">언어 키</text>
+  <path class="ln" d="M635,186 V200"/>
+  <text class="tx-s" x="635" y="214" text-anchor="middle">설명</text>
+</svg>
+<figcaption>그림 2. 텍스트 테이블 — 마스터 키(MANDT·MATNR)에 언어 키 SPRAS 를 더한 키 구조 (파란·보라 칸이 키)</figcaption>
+</figure>
 
 <h4>6. 언어 키 SPRAS 다루기</h4>
 <pre class="code"><span class="k">SELECT</span> <span class="k">SINGLE</span> maktx <span class="k">FROM</span> makt
@@ -626,6 +1135,63 @@ START-OF-SELECTION.
   ENDIF.`
     }
   ],
+  compare: [
+    {
+      topic: '마스터 + 텍스트 테이블 LEFT OUTER JOIN',
+      classic: `TYPES: BEGIN OF ty_mat,
+         matnr TYPE mara-matnr,
+         mtart TYPE mara-mtart,
+         maktx TYPE makt-maktx,
+       END OF ty_mat.
+DATA: lt_mat TYPE STANDARD TABLE OF ty_mat,
+      ls_mat TYPE ty_mat.
+
+SELECT a~matnr a~mtart b~maktx
+  INTO TABLE lt_mat
+  FROM mara AS a
+  LEFT OUTER JOIN makt AS b
+    ON  b~matnr = a~matnr
+    AND b~spras = p_spras
+  UP TO 20 ROWS.
+
+LOOP AT lt_mat INTO ls_mat.
+  WRITE: / ls_mat-matnr, ls_mat-mtart, ls_mat-maktx.
+ENDLOOP.`,
+      modern: `SELECT a~matnr, a~mtart, b~maktx
+  FROM mara AS a
+  LEFT OUTER JOIN makt AS b
+    ON  b~matnr = a~matnr
+    AND b~spras = @p_spras
+  INTO TABLE @DATA(lt_mat)
+  UP TO 20 ROWS.
+
+LOOP AT lt_mat INTO DATA(ls_mat).
+  WRITE: / ls_mat-matnr, ls_mat-mtart, ls_mat-maktx.
+ENDLOOP.`,
+      note: '결과 구조를 TYPES로 먼저 정의하던 것이 @DATA( ) 인라인 선언으로 바뀌고, 필드는 콤마로, 호스트 변수는 @로 구분합니다.'
+    },
+    {
+      topic: '첫 행의 텍스트 꺼내기 (없으면 기본값)',
+      classic: `DATA: ls_row  TYPE ty_row,
+      lv_text TYPE string,
+      lv_line TYPE string.
+
+READ TABLE lt INTO ls_row INDEX 1.
+IF sy-subrc = 0.
+  lv_text = ls_row-crstx.
+ELSE.
+  lv_text = '(과정명 미등록)'.
+ENDIF.
+
+CONCATENATE '과정 :' p_crscd lv_text
+       INTO lv_line SEPARATED BY space.
+WRITE / lv_line.`,
+      modern: `DATA(lv_text) = VALUE #( lt[ 1 ]-crstx DEFAULT '(과정명 미등록)' ).
+
+WRITE / |과정 : { p_crscd } { lv_text }|.`,
+      note: 'READ TABLE + sy-subrc 분기 + CONCATENATE 세 단계가 테이블 표현식 lt[ 1 ]의 DEFAULT 옵션과 String Template 한 줄로 줄어듭니다.'
+    }
+  ],
   quiz: [
     { q: '텍스트 테이블이 갖춰야 할 조건이 아닌 것은?', choices: ['마스터 테이블의 전체 기본키를 포함해야 한다', '언어 키 필드 SPRAS를 가져야 한다', '마스터 테이블과 1:1 외래키를 Key fields of a text table 타입으로 설정해야 한다', '반드시 Delivery Class를 C로 설정해야 한다'], answer: 3, explain: 'Delivery Class는 텍스트 테이블 조건과 무관합니다. 마스터 키 포함 + SPRAS 필드 + 텍스트 테이블 타입 외래키, 이 세 가지가 조건입니다.' },
     { q: 'ABAP 프로그램에서 INSERT 문으로 데이터를 넣을 때 외래키 제약은 어떻게 동작하는가?', choices: ['자동으로 검증되어 존재하지 않는 값이면 오류가 난다', '검증되지 않으므로 직접 검증 로직을 작성해야 한다', 'COMMIT WORK 시점에 검증된다', 'sy-subrc가 4로 설정된다'], answer: 1, explain: '외래키는 DDIC/화면 입력 레벨의 논리 제약입니다. Open SQL의 INSERT/UPDATE는 외래키를 검사하지 않으므로 프로그램에서 직접 확인해야 합니다.' },
@@ -694,6 +1260,89 @@ START-OF-SELECTION.
   IF lv_fin > 0.
     WRITE: / |수료자 평균 점수 : { lv_sum / lv_fin }|.
   ENDIF.
+  ULINE.`,
+    solutionClassic: `REPORT ztest_enroll_list.
+
+TYPES: BEGIN OF ty_row,
+         enrno  TYPE zedu_enroll-enrno,
+         pernr  TYPE zedu_enroll-pernr,
+         crscd  TYPE zedu_enroll-crscd,
+         appdt  TYPE zedu_enroll-appdt,
+         finfl  TYPE zedu_enroll-finfl,
+         score  TYPE zedu_enroll-score,
+         duratn TYPE zcourse-duratn,
+         crstx  TYPE zcourset-crstx,
+       END OF ty_row.
+
+DATA: lt      TYPE STANDARD TABLE OF ty_row,
+      ls      TYPE ty_row,
+      lv_text TYPE zcourset-crstx,
+      lv_mark TYPE c LENGTH 4,
+      lv_fin  TYPE i,
+      lv_sum  TYPE i,
+      lv_tot  TYPE i,
+      lv_rate TYPE p,
+      lv_avg  TYPE p DECIMALS 2.
+
+PARAMETERS p_crscd TYPE zcourse-crscd OBLIGATORY DEFAULT 'ABAP60'.
+
+START-OF-SELECTION.
+
+  SELECT e~enrno e~pernr e~crscd e~appdt e~finfl e~score
+         c~duratn t~crstx
+    INTO TABLE lt
+    FROM zedu_enroll AS e
+    LEFT OUTER JOIN zcourse AS c
+      ON c~crscd = e~crscd
+    LEFT OUTER JOIN zcourset AS t
+      ON  t~crscd = e~crscd
+      AND t~spras = sy-langu
+    WHERE e~crscd = p_crscd
+    ORDER BY e~enrno.
+
+  IF lt IS INITIAL.
+    WRITE / '해당 과정의 수강 내역이 없습니다.'.
+    RETURN.
+  ENDIF.
+
+  READ TABLE lt INTO ls INDEX 1.
+  IF sy-subrc = 0.
+    lv_text = ls-crstx.
+  ELSE.
+    lv_text = '(과정명 미등록)'.
+  ENDIF.
+
+  ULINE.
+  WRITE: / '과정 :', p_crscd, lv_text.
+  ULINE.
+  WRITE: / '수강번호     사번      신청일     수료 점수'.
+  ULINE.
+
+  LOOP AT lt INTO ls.
+    IF ls-finfl = 'X'.
+      lv_mark = ' O  '.
+      lv_fin = lv_fin + 1.
+      lv_sum = lv_sum + ls-score.
+    ELSE.
+      lv_mark = ' -  '.
+    ENDIF.
+
+    WRITE: / ls-enrno,
+             ls-pernr,
+             ls-appdt,
+             lv_mark,
+             ls-score.
+  ENDLOOP.
+
+  ULINE.
+  DESCRIBE TABLE lt LINES lv_tot.
+  lv_rate = lv_fin * 100 / lv_tot.
+  WRITE: / '신청', lv_tot, '명 / 수료', lv_fin, '명 / 수료율', lv_rate, '%'.
+
+  IF lv_fin > 0.
+    lv_avg = lv_sum / lv_fin.
+    WRITE: / '수료자 평균 점수 :', lv_avg.
+  ENDIF.
   ULINE.`
   }
 },
@@ -725,6 +1374,63 @@ START-OF-SELECTION.
 </ol>
 <div class="note">⚠️ Database View는 <b>항상 INNER JOIN</b>입니다. OUTER JOIN이 필요하면 ABAP에서 직접 JOIN하거나 CDS View를 쓰세요.<br>
 또한 조인하는 모든 테이블은 <b>외래키 관계</b>가 정의되어 있어야 조인 조건을 제안받을 수 있습니다.</div>
+<figure class="fig">
+<svg viewBox="0 0 720 280" role="img" aria-label="ZEDU_ENROLL 과 ZCOURSE 를 INNER JOIN 한 Database View ZV_ENROLL 의 예시 데이터">
+  <text class="tx-b" x="20" y="20">ZEDU_ENROLL</text>
+  <rect class="bx-s" x="20" y="32" width="320" height="26"/>
+  <text class="tx-s tx-w" x="75" y="45" text-anchor="middle">ENRNO</text>
+  <text class="tx-s tx-w" x="185" y="45" text-anchor="middle">CRSCD</text>
+  <text class="tx-s tx-w" x="290" y="45" text-anchor="middle">SCORE</text>
+  <rect class="bx" x="20" y="58" width="320" height="26"/>
+  <text class="tx-m" x="75" y="71" text-anchor="middle">E01</text>
+  <text class="tx-m" x="185" y="71" text-anchor="middle">ABAP60</text>
+  <text class="tx-m" x="290" y="71" text-anchor="middle">88</text>
+  <rect class="bx" x="20" y="84" width="320" height="26"/>
+  <text class="tx-m" x="75" y="97" text-anchor="middle">E02</text>
+  <text class="tx-m" x="185" y="97" text-anchor="middle">HANA30</text>
+  <text class="tx-m" x="290" y="97" text-anchor="middle">94</text>
+  <rect class="bx-r" x="20" y="110" width="320" height="26"/>
+  <text class="tx-m tx-r" x="75" y="123" text-anchor="middle">E03</text>
+  <text class="tx-m tx-r" x="185" y="123" text-anchor="middle">JAVA10</text>
+  <text class="tx-m tx-r" x="290" y="123" text-anchor="middle">70</text>
+  <text class="tx-b" x="20" y="170">ZCOURSE</text>
+  <rect class="bx-s" x="20" y="182" width="320" height="26"/>
+  <text class="tx-s tx-w" x="75" y="195" text-anchor="middle">CRSCD</text>
+  <text class="tx-s tx-w" x="185" y="195" text-anchor="middle">DURATN</text>
+  <text class="tx-s tx-w" x="290" y="195" text-anchor="middle">LEVELC</text>
+  <rect class="bx" x="20" y="208" width="320" height="26"/>
+  <text class="tx-m" x="75" y="221" text-anchor="middle">ABAP60</text>
+  <text class="tx-m" x="185" y="221" text-anchor="middle">60</text>
+  <text class="tx-m" x="290" y="221" text-anchor="middle">B</text>
+  <rect class="bx" x="20" y="234" width="320" height="26"/>
+  <text class="tx-m" x="75" y="247" text-anchor="middle">HANA30</text>
+  <text class="tx-m" x="185" y="247" text-anchor="middle">30</text>
+  <text class="tx-m" x="290" y="247" text-anchor="middle">I</text>
+  <path class="ln-b arr-b" d="M340,97 L416,124"/>
+  <path class="ln-b arr-b" d="M340,221 L416,164"/>
+  <text class="tx-s tx-c" x="380" y="142" text-anchor="middle">INNER</text>
+  <text class="tx-s tx-c" x="380" y="158" text-anchor="middle">JOIN</text>
+  <text class="tx-b tx-c" x="420" y="90">ZV_ENROLL (Database View)</text>
+  <rect class="bx-s" x="420" y="102" width="280" height="26"/>
+  <text class="tx-s tx-w" x="455" y="115" text-anchor="middle">ENRNO</text>
+  <text class="tx-s tx-w" x="525" y="115" text-anchor="middle">CRSCD</text>
+  <text class="tx-s tx-w" x="595" y="115" text-anchor="middle">SCORE</text>
+  <text class="tx-s tx-w" x="665" y="115" text-anchor="middle">DURATN</text>
+  <rect class="bx-b" x="420" y="128" width="280" height="26"/>
+  <text class="tx-m" x="455" y="141" text-anchor="middle">E01</text>
+  <text class="tx-m" x="525" y="141" text-anchor="middle">ABAP60</text>
+  <text class="tx-m" x="595" y="141" text-anchor="middle">88</text>
+  <text class="tx-m" x="665" y="141" text-anchor="middle">60</text>
+  <rect class="bx-b" x="420" y="154" width="280" height="26"/>
+  <text class="tx-m" x="455" y="167" text-anchor="middle">E02</text>
+  <text class="tx-m" x="525" y="167" text-anchor="middle">HANA30</text>
+  <text class="tx-m" x="595" y="167" text-anchor="middle">94</text>
+  <text class="tx-m" x="665" y="167" text-anchor="middle">30</text>
+  <text class="tx-s tx-r" x="560" y="204" text-anchor="middle">E03 은 ZCOURSE 에 짝이 없어 제외됨</text>
+  <text class="tx-s" x="560" y="226" text-anchor="middle">조인 조건 : MANDT, CRSCD</text>
+</svg>
+<figcaption>그림 1. Database View — 두 테이블을 INNER JOIN 한 결과를 하나의 이름(ZV_ENROLL)으로 재사용한다</figcaption>
+</figure>
 
 <h4>3. 뷰 사용</h4>
 <p>뷰는 ABAP에서 테이블과 똑같이 사용합니다.</p>
@@ -750,6 +1456,42 @@ START-OF-SELECTION.
   <tr><td>LPos / SPos</td><td>목록(List) / 선택화면(Selection) 에서의 열 순서</td></tr>
 </table>
 <div class="note">⚠️ 사용자가 선택한 값을 화면 필드에 돌려주려면 해당 파라미터에 <b>EXP 체크가 반드시</b> 되어 있어야 합니다. 가장 흔한 실수입니다.</div>
+<figure class="fig">
+<svg viewBox="0 0 720 270" role="img" aria-label="검색 도움말의 IMP, EXP 파라미터 흐름과 F4 팝업 모형">
+  <rect class="bx" x="20" y="90" width="170" height="80" rx="8"/>
+  <text class="tx-b" x="105" y="112" text-anchor="middle">선택화면 필드</text>
+  <rect class="bx-b" x="45" y="130" width="120" height="26" rx="3"/>
+  <text class="tx-m" x="105" y="143" text-anchor="middle">P_CRSCD</text>
+  <rect class="bx" x="260" y="30" width="230" height="200" rx="6"/>
+  <rect class="bx-s" x="260" y="30" width="230" height="28" rx="6"/>
+  <text class="tx-w tx-b" x="274" y="44">F4 : ZSH_COURSE</text>
+  <text class="tx-s" x="274" y="72">과정코드</text>
+  <text class="tx-s" x="374" y="72">일수</text>
+  <text class="tx-s" x="430" y="72">난이도</text>
+  <rect class="bx-b" x="266" y="84" width="218" height="24"/>
+  <text class="tx-m" x="274" y="96">ABAP60</text>
+  <text class="tx-m" x="374" y="96">60</text>
+  <text class="tx-m" x="430" y="96">B</text>
+  <text class="tx-m" x="274" y="122">HANA30</text>
+  <text class="tx-m" x="374" y="122">30</text>
+  <text class="tx-m" x="430" y="122">I</text>
+  <text class="tx-m" x="274" y="148">JAVA10</text>
+  <text class="tx-m" x="374" y="148">20</text>
+  <text class="tx-m" x="430" y="148">B</text>
+  <text class="tx-s tx-g" x="375" y="208" text-anchor="middle">CRSCD 에 EXP 체크 → 값 반환</text>
+  <rect class="bx-g" x="560" y="90" width="140" height="80" rx="8"/>
+  <text class="tx-s" x="630" y="112" text-anchor="middle">Selection method</text>
+  <text class="tx-m tx-b" x="630" y="140" text-anchor="middle">ZCOURSE</text>
+  <path class="ln arr" d="M556,130 H494"/>
+  <text class="tx-s" x="525" y="118" text-anchor="middle">읽기</text>
+  <path class="ln-o dash arr-o" d="M190,108 H256"/>
+  <text class="tx-s tx-o" x="223" y="96" text-anchor="middle">IMP</text>
+  <path class="ln-g arr-g" d="M260,152 H194"/>
+  <text class="tx-s tx-g" x="223" y="166" text-anchor="middle">EXP</text>
+  <text class="tx-s" x="360" y="254" text-anchor="middle">IMP = 화면 → 도움말 (필터 값) · EXP = 도움말 → 화면 (선택 결과 반환)</text>
+</svg>
+<figcaption>그림 2. 검색 도움말 — IMP 로 필터 값이 들어가고, 사용자가 고른 행의 EXP 필드 값이 화면으로 돌아온다</figcaption>
+</figure>
 
 <h4>6. 검색 도움말 연결 방법 (4가지)</h4>
 <ol>
@@ -888,6 +1630,65 @@ START-OF-SELECTION.
          / '선택한 난이도 :', p_level.`
     }
   ],
+  compare: [
+    {
+      topic: 'F4 값 목록용 내부 테이블 채우기',
+      classic: `TYPES: BEGIN OF ty_lv,
+         levelc TYPE c LENGTH 1,
+         ltext  TYPE string,
+       END OF ty_lv.
+DATA: lt_lv TYPE STANDARD TABLE OF ty_lv,
+      ls_lv TYPE ty_lv.
+
+ls_lv-levelc = 'B'.
+ls_lv-ltext  = '초급 (Basic)'.
+APPEND ls_lv TO lt_lv.
+
+ls_lv-levelc = 'I'.
+ls_lv-ltext  = '중급 (Intermediate)'.
+APPEND ls_lv TO lt_lv.
+
+ls_lv-levelc = 'A'.
+ls_lv-ltext  = '고급 (Advanced)'.
+APPEND ls_lv TO lt_lv.`,
+      modern: `TYPES: BEGIN OF ty_lv,
+         levelc TYPE c LENGTH 1,
+         ltext  TYPE string,
+       END OF ty_lv.
+
+DATA(lt_lv) = VALUE STANDARD TABLE OF ty_lv WITH EMPTY KEY (
+    ( levelc = 'B' ltext = '초급 (Basic)' )
+    ( levelc = 'I' ltext = '중급 (Intermediate)' )
+    ( levelc = 'A' ltext = '고급 (Advanced)' ) ).`,
+      note: '작업 영역에 값을 넣고 APPEND 를 반복하던 코드가 VALUE 생성 표현식 안의 행 목록 ( ... ) 으로 바뀝니다.'
+    },
+    {
+      topic: '뷰 조회 — 체크박스에 따라 조건 추가',
+      classic: `RANGES r_fin FOR zv_enroll-finfl.
+DATA: lt TYPE STANDARD TABLE OF zv_enroll,
+      ls TYPE zv_enroll.
+
+IF p_fin = 'X'.
+  r_fin-sign   = 'I'.
+  r_fin-option = 'EQ'.
+  r_fin-low    = 'X'.
+  APPEND r_fin.
+ENDIF.
+
+SELECT * FROM zv_enroll
+  INTO TABLE lt
+  WHERE crscd IN s_crscd
+    AND finfl IN r_fin
+  ORDER BY crscd score DESCENDING.`,
+      modern: `SELECT enrno, crscd, finfl, score
+  FROM zv_enroll
+  INTO TABLE @DATA(lt)
+  WHERE crscd IN @s_crscd
+    AND ( @p_fin = ' ' OR finfl = 'X' )
+  ORDER BY crscd, score DESCENDING.`,
+      note: '예전에는 선택 조건을 RANGES 로 만들어 넘겼지만, 7.50 이후 ABAP SQL 은 호스트 변수를 조건식 왼쪽에 둘 수 있어 한 문장으로 처리됩니다.'
+    }
+  ],
   quiz: [
     { q: 'DDIC의 Database View에 대한 설명으로 옳은 것은?', choices: ['LEFT OUTER JOIN을 지원한다', '항상 INNER JOIN으로만 동작한다', '데이터 수정이 자유롭게 가능하다', '여러 클라이언트의 데이터를 동시에 조회한다'], answer: 1, explain: 'Database View는 INNER JOIN만 지원하며 읽기 전용입니다. OUTER JOIN이 필요하면 ABAP의 SELECT JOIN이나 CDS View를 사용합니다.' },
     { q: '검색 도움말에서 사용자가 선택한 값이 화면 필드로 돌아오게 하려면 파라미터에 무엇을 체크해야 하는가?', choices: ['IMP', 'EXP', 'LPos', 'SPos'], answer: 1, explain: 'EXP(Export)가 체크된 파라미터의 값이 화면 필드로 반환됩니다. IMP는 화면에서 도움말로 전달되는 필터 값입니다.' },
@@ -944,7 +1745,79 @@ START-OF-SELECTION.
   ENDLOOP.
 
   ULINE.
-  WRITE: / '총', lines( lt ), '건'.`
+  WRITE: / '총', lines( lt ), '건'.`,
+    solutionClassic: `* ===== 1) View ZV_ENROLL, 2) Search Help ZSH_COURSE 는 위와 동일 =====
+
+* ===== 3) 확인 리포트 (기존 문법) =====
+REPORT ztest_view_f4.
+
+TABLES zv_enroll.
+
+TYPES: BEGIN OF ty_row,
+         enrno  TYPE zv_enroll-enrno,
+         pernr  TYPE zv_enroll-pernr,
+         crscd  TYPE zv_enroll-crscd,
+         appdt  TYPE zv_enroll-appdt,
+         finfl  TYPE zv_enroll-finfl,
+         score  TYPE zv_enroll-score,
+         duratn TYPE zv_enroll-duratn,
+         levelc TYPE zv_enroll-levelc,
+       END OF ty_row.
+
+DATA: lt     TYPE STANDARD TABLE OF ty_row,
+      ls     TYPE ty_row,
+      lv_fin TYPE c LENGTH 3,
+      lv_cnt TYPE i.
+
+RANGES r_fin FOR zv_enroll-finfl.
+
+SELECT-OPTIONS: s_crscd FOR zv_enroll-crscd,
+                s_appdt FOR zv_enroll-appdt.
+
+PARAMETERS: p_fin AS CHECKBOX DEFAULT 'X'.
+
+START-OF-SELECTION.
+
+* 체크박스가 켜져 있으면 수료자만
+  IF p_fin = 'X'.
+    r_fin-sign   = 'I'.
+    r_fin-option = 'EQ'.
+    r_fin-low    = 'X'.
+    APPEND r_fin.
+  ENDIF.
+
+  SELECT enrno pernr crscd appdt finfl score duratn levelc
+    FROM zv_enroll
+    INTO TABLE lt
+    WHERE crscd IN s_crscd
+      AND appdt IN s_appdt
+      AND finfl IN r_fin
+    ORDER BY crscd score DESCENDING.
+
+  IF sy-subrc <> 0.
+    MESSAGE '조회 결과가 없습니다.' TYPE 'S' DISPLAY LIKE 'W'.
+    RETURN.
+  ENDIF.
+
+  ULINE.
+  WRITE: / '과정      난이도 일수  수강번호     사번      수료 점수'.
+  ULINE.
+
+  LOOP AT lt INTO ls.
+    IF ls-finfl = 'X'.
+      lv_fin = ' O '.
+    ELSE.
+      lv_fin = ' - '.
+    ENDIF.
+    WRITE: / ls-crscd, ls-levelc, ls-duratn,
+             ls-enrno, ls-pernr,
+             lv_fin,
+             ls-score.
+  ENDLOOP.
+
+  ULINE.
+  DESCRIBE TABLE lt LINES lv_cnt.
+  WRITE: / '총', lv_cnt, '건'.`
   }
 },
 
@@ -971,6 +1844,26 @@ SAP은 DB 락과 별개로 <b>애플리케이션 레벨의 논리적 잠금(Enqu
   <li><b>Lock parameter</b> 탭: 잠금 키로 쓸 필드 (자동으로 키 필드가 제안됨)</li>
   <li>활성화 → <b>펑션 2개가 자동 생성됨</b>: <code>ENQUEUE_EZ_ORDER</code>, <code>DEQUEUE_EZ_ORDER</code></li>
 </ol>
+<figure class="fig">
+<svg viewBox="0 0 720 230" role="img" aria-label="Lock Object EZ_ORDER 활성화 시 ENQUEUE, DEQUEUE 펑션이 자동 생성됨">
+  <rect class="bx-a" x="20" y="54" width="240" height="120" rx="10"/>
+  <text class="tx-s" x="38" y="76">Lock Object (SE11)</text>
+  <text class="tx-l tx-m" x="38" y="102">EZ_ORDER</text>
+  <text class="tx-s" x="38" y="128">Table : ZORDER · Mode : E</text>
+  <text class="tx-s" x="38" y="152">Lock param : MANDT, ORDNO</text>
+  <rect class="bx-g" x="400" y="24" width="300" height="64" rx="10"/>
+  <text class="tx-m tx-b" x="418" y="46">ENQUEUE_EZ_ORDER</text>
+  <text class="tx-s" x="418" y="70">잠금 획득 펑션 (자동 생성)</text>
+  <rect class="bx-g" x="400" y="140" width="300" height="64" rx="10"/>
+  <text class="tx-m tx-b" x="418" y="162">DEQUEUE_EZ_ORDER</text>
+  <text class="tx-s" x="418" y="186">잠금 해제 펑션 (자동 생성)</text>
+  <path class="ln-g arr-g" d="M260,100 L396,58"/>
+  <path class="ln-g arr-g" d="M260,128 L396,170"/>
+  <text class="tx-s tx-g" x="318" y="114">활성화</text>
+  <text class="tx-s tx-r" x="140" y="200" text-anchor="middle">이름은 반드시 EZ* / EY*</text>
+</svg>
+<figcaption>그림 1. Lock Object — 활성화하면 ENQUEUE_/DEQUEUE_ 펑션 모듈 한 쌍이 만들어진다</figcaption>
+</figure>
 <div class="note">⚠️ Lock Object 이름은 반드시 <b><code>EZ</code> 또는 <code>EY</code>로 시작</b>해야 합니다. 일반 Z/Y가 아닙니다.</div>
 
 <h4>3. Lock Mode</h4>
@@ -1009,12 +1902,82 @@ SAP은 DB 락과 별개로 <b>애플리케이션 레벨의 논리적 잠금(Enqu
     mandt       = sy-mandt
     ordno       = lv_ordno.</pre>
 <div class="tip">💡 <code>foreign_lock</code> 예외가 발생하면 <code>sy-msgv1</code>에 <b>점유 중인 사용자 ID</b>가 들어 있습니다. 사용자에게 "홍길동님이 사용 중"이라고 알려줄 수 있습니다.</div>
+<figure class="fig">
+<svg viewBox="0 0 720 400" role="img" aria-label="두 사용자가 같은 주문을 잠그려 할 때의 ENQUEUE, DEQUEUE 순서도">
+  <rect class="bx-b" x="40" y="14" width="160" height="36" rx="8"/>
+  <text class="tx-b" x="120" y="32" text-anchor="middle">사용자 A</text>
+  <rect class="bx-a" x="280" y="14" width="160" height="36" rx="8"/>
+  <text class="tx-b" x="360" y="32" text-anchor="middle">Enqueue 서버</text>
+  <rect class="bx-o" x="520" y="14" width="160" height="36" rx="8"/>
+  <text class="tx-b" x="600" y="32" text-anchor="middle">사용자 B</text>
+  <path class="ln dash" d="M120,50 V390"/>
+  <path class="ln dash" d="M360,50 V390"/>
+  <path class="ln dash" d="M600,50 V390"/>
+  <rect class="bx-b" x="114" y="90" width="12" height="200"/>
+  <path class="ln arr" d="M126,90 H356"/>
+  <text class="tx-s" x="241" y="78" text-anchor="middle">① ENQUEUE (ORDNO = 1)</text>
+  <path class="ln-g dash arr-g" d="M356,122 H130"/>
+  <text class="tx-s tx-g" x="241" y="110" text-anchor="middle">잠금 획득 · sy-subrc = 0</text>
+  <path class="ln arr" d="M600,160 H364"/>
+  <text class="tx-s" x="480" y="148" text-anchor="middle">② ENQUEUE (ORDNO = 1)</text>
+  <path class="ln-r dash arr-r" d="M360,192 H596"/>
+  <text class="tx-s tx-r" x="480" y="180" text-anchor="middle">foreign_lock · sy-msgv1 = A</text>
+  <rect class="bx-o" x="132" y="216" width="190" height="34" rx="6"/>
+  <text class="tx-s" x="227" y="233" text-anchor="middle">③ UPDATE · COMMIT WORK</text>
+  <path class="ln arr" d="M126,290 H356"/>
+  <text class="tx-s" x="241" y="278" text-anchor="middle">④ DEQUEUE (ORDNO = 1)</text>
+  <path class="ln arr" d="M600,330 H364"/>
+  <text class="tx-s" x="480" y="318" text-anchor="middle">⑤ ENQUEUE 재시도</text>
+  <path class="ln-g dash arr-g" d="M360,364 H596"/>
+  <text class="tx-s tx-g" x="480" y="350" text-anchor="middle">이번에는 잠금 획득</text>
+  <text class="tx-s tx-c" x="20" y="190">잠금</text>
+  <text class="tx-s tx-c" x="20" y="206">보유 중</text>
+</svg>
+<figcaption>그림 2. Enqueue 순서 — A가 잠금을 가진 동안 B는 foreign_lock 을 받고, A의 DEQUEUE 후에야 잠글 수 있다</figcaption>
+</figure>
 
 <h4>5. 와일드카드 잠금</h4>
 <p>키 파라미터에 <b>초기값(공백)</b>을 넘기면 해당 필드의 <b>모든 값</b>을 잠급니다(generic lock). 의도치 않게 테이블 전체를 잠글 수 있으니 주의하세요.</p>
 <ul>
   <li>SM12 — 현재 걸려 있는 잠금 목록 조회 및 강제 해제</li>
 </ul>
+<figure class="fig">
+<svg viewBox="0 0 720 220" role="img" aria-label="SM12 잠금 목록 화면 모형">
+  <rect class="bx" x="10" y="10" width="700" height="200" rx="6"/>
+  <rect class="bx-s" x="10" y="10" width="700" height="34" rx="6"/>
+  <text class="tx-w tx-b" x="26" y="27">SM12 : Select Lock Entries — List</text>
+  <rect class="bx-b" x="20" y="56" width="680" height="28"/>
+  <text class="tx-s tx-b" x="30" y="70">Cli</text>
+  <text class="tx-s tx-b" x="76" y="70">User</text>
+  <text class="tx-s tx-b" x="166" y="70">Time</text>
+  <text class="tx-s tx-b" x="256" y="70">Mode</text>
+  <text class="tx-s tx-b" x="306" y="70">Table</text>
+  <text class="tx-s tx-b" x="446" y="70">Lock argument</text>
+  <rect class="bx" x="20" y="84" width="680" height="28"/>
+  <text class="tx-m" x="30" y="98">100</text>
+  <text class="tx-m" x="76" y="98">HONG</text>
+  <text class="tx-m" x="166" y="98">10:21:05</text>
+  <text class="tx-m" x="256" y="98">E</text>
+  <text class="tx-m" x="306" y="98">ZORDER</text>
+  <text class="tx-m" x="446" y="98">1000000000001</text>
+  <rect class="bx" x="20" y="112" width="680" height="28"/>
+  <text class="tx-m" x="30" y="126">100</text>
+  <text class="tx-m" x="76" y="126">KIM</text>
+  <text class="tx-m" x="166" y="126">10:22:40</text>
+  <text class="tx-m" x="256" y="126">E</text>
+  <text class="tx-m" x="306" y="126">ZEDU_ENROLL</text>
+  <text class="tx-m" x="446" y="126">100E000000002</text>
+  <rect class="bx-r" x="20" y="140" width="680" height="28"/>
+  <text class="tx-m tx-r" x="30" y="154">100</text>
+  <text class="tx-m tx-r" x="76" y="154">PARK</text>
+  <text class="tx-m tx-r" x="166" y="154">10:23:10</text>
+  <text class="tx-m tx-r" x="256" y="154">E</text>
+  <text class="tx-m tx-r" x="306" y="154">ZORDER</text>
+  <text class="tx-m tx-r" x="446" y="154">100##########</text>
+  <text class="tx-s tx-r" x="690" y="190" text-anchor="end">마지막 행 : ORDNO 를 비워 보낸 generic lock → 클라이언트 100 의 주문 전체가 잠김</text>
+</svg>
+<figcaption>그림 3. SM12 — 잠금 인수(Lock argument)는 키 값을 이어 붙인 것이며, 비운 자리는 # 로 표시되는 와일드카드다</figcaption>
+</figure>
 
 <h4>6. 5주차 핵심 요약</h4>
 <table>
@@ -1173,6 +2136,91 @@ START-OF-SELECTION.
   ENDLOOP.`
     }
   ],
+  compare: [
+    {
+      topic: '존재 확인 → 잠금 실패 시 점유자 메시지',
+      classic: `DATA: ls_chk TYPE zorder,
+      lv_msg TYPE string.
+
+SELECT SINGLE * FROM zorder
+  INTO ls_chk
+  WHERE ordno = p_ordno.
+
+CALL FUNCTION 'ENQUEUE_EZ_ORDER'
+  EXPORTING
+    mode_zorder    = 'E'
+    mandt          = sy-mandt
+    ordno          = p_ordno
+  EXCEPTIONS
+    foreign_lock   = 1
+    system_failure = 2
+    OTHERS         = 3.
+
+IF sy-subrc <> 0.
+  CONCATENATE '주문' p_ordno '는 사용자' sy-msgv1 '가 처리 중입니다.'
+         INTO lv_msg SEPARATED BY space.
+  MESSAGE lv_msg TYPE 'E'.
+ENDIF.`,
+      modern: `SELECT SINGLE ordno, status
+  FROM zorder
+  WHERE ordno = @p_ordno
+  INTO @DATA(ls_chk).
+
+CALL FUNCTION 'ENQUEUE_EZ_ORDER'
+  EXPORTING
+    mode_zorder    = 'E'
+    mandt          = sy-mandt
+    ordno          = p_ordno
+  EXCEPTIONS
+    foreign_lock   = 1
+    system_failure = 2
+    OTHERS         = 3.
+
+IF sy-subrc <> 0.
+  MESSAGE |주문 { p_ordno } 는 사용자 { sy-msgv1 } 가 처리 중입니다.| TYPE 'E'.
+ENDIF.`,
+      note: 'ENQUEUE 호출 자체는 펑션 모듈이라 같지만, 결과 변수 선언과 CONCATENATE 로 메시지를 조립하던 부분이 인라인 선언과 String Template 으로 바뀝니다.'
+    },
+    {
+      topic: 'DDIC 필드 정보 출력 (키 표시)',
+      classic: `DATA: lt_fields TYPE STANDARD TABLE OF dfies,
+      ls_f      TYPE dfies,
+      lv_key    TYPE c LENGTH 3.
+
+CALL FUNCTION 'DDIF_FIELDINFO_GET'
+  EXPORTING
+    tabname   = p_tab
+  TABLES
+    dfies_tab = lt_fields
+  EXCEPTIONS
+    OTHERS    = 1.
+
+LOOP AT lt_fields INTO ls_f.
+  IF ls_f-keyflag = 'X'.
+    lv_key = ' K '.
+  ELSE.
+    lv_key = '   '.
+  ENDIF.
+  WRITE: / ls_f-fieldname(14), lv_key, ls_f-rollname.
+ENDLOOP.`,
+      modern: `DATA lt_fields TYPE STANDARD TABLE OF dfies WITH EMPTY KEY.
+
+CALL FUNCTION 'DDIF_FIELDINFO_GET'
+  EXPORTING
+    tabname   = p_tab
+  TABLES
+    dfies_tab = lt_fields
+  EXCEPTIONS
+    OTHERS    = 1.
+
+LOOP AT lt_fields INTO DATA(ls_f).
+  WRITE: / |{ ls_f-fieldname WIDTH = 14 }|,
+           COND string( WHEN ls_f-keyflag = 'X' THEN ' K ' ELSE '   ' ),
+           ls_f-rollname.
+ENDLOOP.`,
+      note: '키 표시용 보조 변수와 IF 분기가 COND 표현식으로, 오프셋 길이 지정 (14) 가 String Template 의 WIDTH 옵션으로 바뀝니다.'
+    }
+  ],
   quiz: [
     { q: 'Lock Object의 이름은 무엇으로 시작해야 하는가?', choices: ['Z 또는 Y', 'EZ 또는 EY', 'L_ 또는 LOCK_', 'ENQ_'], answer: 1, explain: 'Lock Object는 고객 네임스페이스에서 EZ 또는 EY로 시작해야 합니다. 활성화하면 ENQUEUE_/DEQUEUE_ 펑션이 자동 생성됩니다.' },
     { q: 'ENQUEUE 펑션 호출 시 foreign_lock 예외가 발생했다면?', choices: ['Lock Object가 활성화되지 않았다', '다른 사용자가 이미 해당 객체를 잠그고 있다', '키 파라미터가 잘못되었다', '권한이 부족하다'], answer: 1, explain: 'foreign_lock은 다른 사용자/세션이 이미 잠금을 보유 중일 때 발생합니다. sy-msgv1에서 점유자 ID를 확인할 수 있습니다.' },
@@ -1248,6 +2296,100 @@ FORM update_score.
     WRITE: / |[성공] { p_enrno } 점수 { ls_old-score } -> { p_score }|,
            / |       수료 여부 : { COND string( WHEN lv_fin = 'X'
                                                 THEN '수료' ELSE '미수료' ) }|.
+  ELSE.
+    ROLLBACK WORK.
+    WRITE: / '[실패] 업데이트에 실패했습니다.'.
+  ENDIF.
+
+*---- 5) 잠금 해제 (성공/실패 무관하게 반드시)
+  CALL FUNCTION 'DEQUEUE_EZ_EDU_ENROLL'
+    EXPORTING
+      mode_zedu_enroll = 'E'
+      mandt            = sy-mandt
+      enrno            = p_enrno.
+
+ENDFORM.`,
+    solutionClassic: `* ===== SE11 : Lock object EZ_EDU_ENROLL 은 위와 동일 =====
+
+REPORT ztest_score_upd.
+
+PARAMETERS: p_enrno TYPE zedu_enroll-enrno OBLIGATORY,
+            p_score TYPE zedu_enroll-score OBLIGATORY,
+            p_fin   AS CHECKBOX DEFAULT 'X'.
+
+START-OF-SELECTION.
+  PERFORM update_score.
+
+*&---------------------------------------------------------------------*
+FORM update_score.
+
+  DATA: ls_old  TYPE zedu_enroll,
+        lv_fin  TYPE zedu_enroll-finfl,
+        lv_msg  TYPE string,
+        lv_text TYPE string,
+        lv_c1   TYPE c LENGTH 12,
+        lv_c2   TYPE c LENGTH 12.
+
+*---- 1) 입력 검증
+  IF p_score < 0 OR p_score > 100.
+    MESSAGE '점수는 0 ~ 100 사이여야 합니다.' TYPE 'E'.
+    RETURN.
+  ENDIF.
+
+*---- 2) 존재 확인
+  SELECT SINGLE * FROM zedu_enroll
+    INTO ls_old
+    WHERE enrno = p_enrno.
+
+  IF sy-subrc <> 0.
+    CONCATENATE '수강번호' p_enrno '가 존재하지 않습니다.'
+           INTO lv_msg SEPARATED BY space.
+    MESSAGE lv_msg TYPE 'E'.
+    RETURN.
+  ENDIF.
+
+*---- 3) 잠금
+  CALL FUNCTION 'ENQUEUE_EZ_EDU_ENROLL'
+    EXPORTING
+      mode_zedu_enroll = 'E'
+      mandt            = sy-mandt
+      enrno            = p_enrno
+    EXCEPTIONS
+      foreign_lock     = 1
+      system_failure   = 2
+      OTHERS           = 3.
+
+  IF sy-subrc <> 0.
+    CONCATENATE '사용자' sy-msgv1 '가 처리 중입니다. 잠시 후 다시 시도하세요.'
+           INTO lv_msg SEPARATED BY space.
+    MESSAGE lv_msg TYPE 'E'.
+    RETURN.
+  ENDIF.
+
+*---- 4) 변경
+  IF p_fin = 'X' AND p_score >= 70.
+    lv_fin = 'X'.
+  ELSE.
+    lv_fin = ' '.
+  ENDIF.
+
+  UPDATE zedu_enroll
+     SET score = p_score
+         finfl = lv_fin
+   WHERE enrno = p_enrno.
+
+  IF sy-subrc = 0.
+    COMMIT WORK AND WAIT.
+    WRITE ls_old-score TO lv_c1.  "숫자 -> 문자 (classic WRITE TO)
+    WRITE p_score      TO lv_c2.
+    CONDENSE: lv_c1, lv_c2.
+    IF lv_fin = 'X'.
+      lv_text = '수료'.
+    ELSE.
+      lv_text = '미수료'.
+    ENDIF.
+    WRITE: / '[성공]', p_enrno, '점수', lv_c1, '->', lv_c2,
+           / '       수료 여부 :', lv_text.
   ELSE.
     ROLLBACK WORK.
     WRITE: / '[실패] 업데이트에 실패했습니다.'.

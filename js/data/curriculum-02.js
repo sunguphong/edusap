@@ -54,6 +54,43 @@ window.CURRICULUM.push(
 <span class="k">ELSE</span>.
   <span class="c">" 나머지</span>
 <span class="k">ENDIF</span>.</pre>
+<figure class="fig">
+<svg viewBox="0 0 720 350" role="img" aria-label="IF ELSEIF ELSE 흐름도">
+  <rect class="bx" x="110" y="10" width="120" height="34" rx="17"/>
+  <text x="170" y="27" text-anchor="middle">시작</text>
+  <path class="ln arr" d="M170,44 V56"/>
+  <polygon class="bx-o" points="170,58 250,90 170,122 90,90"/>
+  <text class="tx-b" x="170" y="90" text-anchor="middle">조건1 참?</text>
+  <text class="tx-m tx-c" x="20" y="90">IF</text>
+  <path class="ln-g arr-g" d="M250,90 H316"/>
+  <text class="tx-s" x="284" y="80" text-anchor="middle">참</text>
+  <rect class="bx-g" x="320" y="70" width="200" height="40" rx="8"/>
+  <text x="420" y="90" text-anchor="middle">처리1 실행</text>
+  <path class="ln arr" d="M170,122 V144"/>
+  <text class="tx-s" x="180" y="134">거짓</text>
+  <polygon class="bx-o" points="170,148 250,180 170,212 90,180"/>
+  <text class="tx-b" x="170" y="180" text-anchor="middle">조건2 참?</text>
+  <text class="tx-m tx-c" x="20" y="180">ELSEIF</text>
+  <path class="ln-g arr-g" d="M250,180 H316"/>
+  <text class="tx-s" x="284" y="170" text-anchor="middle">참</text>
+  <rect class="bx-g" x="320" y="160" width="200" height="40" rx="8"/>
+  <text x="420" y="180" text-anchor="middle">처리2 실행</text>
+  <path class="ln arr" d="M170,212 V234"/>
+  <text class="tx-s" x="180" y="224">거짓</text>
+  <rect class="bx-r" x="90" y="238" width="160" height="40" rx="8"/>
+  <text x="170" y="258" text-anchor="middle">나머지 처리</text>
+  <text class="tx-m tx-c" x="20" y="258">ELSE</text>
+  <rect class="bx-s" x="300" y="300" width="240" height="40" rx="8"/>
+  <text class="tx-w tx-b" x="420" y="320" text-anchor="middle">ENDIF. 다음 문장</text>
+  <path class="ln arr" d="M520,90 H600 V320 H544"/>
+  <path class="ln" d="M520,180 H600"/>
+  <path class="ln arr" d="M170,278 V320 H296"/>
+  <text class="tx-s" x="612" y="200">처음 참인</text>
+  <text class="tx-s" x="612" y="218">블록 하나만</text>
+  <text class="tx-s" x="612" y="236">실행</text>
+</svg>
+<figcaption>그림 1. IF ~ ELSEIF ~ ELSE 흐름 — 위에서부터 평가하고, 처음 참이 되는 블록 하나만 실행한 뒤 ENDIF 다음으로 간다</figcaption>
+</figure>
 <ul>
   <li><code>ELSEIF</code>는 한 단어입니다. <code>ELSE IF</code> 가 아닙니다.</li>
   <li>조건은 위에서부터 평가되고, <b>처음 참이 되는 블록 하나만</b> 실행됩니다.</li>
@@ -76,6 +113,39 @@ window.CURRICULUM.push(
 <span class="k">IF</span> lv_werks <span class="k">IS</span> <span class="k">INITIAL</span>. <span class="k">RETURN</span>. <span class="k">ENDIF</span>.
 <span class="k">IF</span> lv_qty &lt;= <span class="n">0</span>.        <span class="k">RETURN</span>. <span class="k">ENDIF</span>.
 <span class="c">" 실제 로직 (들여쓰기 0칸)</span></pre>
+<figure class="fig">
+<svg viewBox="0 0 720 250" role="img" aria-label="깊은 중첩과 조기 반환 패턴 비교">
+  <text class="tx-b tx-r" x="185" y="20" text-anchor="middle">나쁜 예 : 깊은 중첩</text>
+  <rect class="bx" x="20" y="40" width="330" height="190" rx="8"/>
+  <text class="tx-m" x="34" y="58">IF lv_matnr IS NOT INITIAL.</text>
+  <rect class="bx-b" x="40" y="74" width="290" height="144" rx="8"/>
+  <text class="tx-m" x="54" y="92">IF lv_werks IS NOT INITIAL.</text>
+  <rect class="bx-a" x="60" y="108" width="250" height="98" rx="8"/>
+  <text class="tx-m" x="74" y="126">IF lv_qty &gt; 0.</text>
+  <rect class="bx-g" x="80" y="146" width="210" height="44" rx="8"/>
+  <text x="185" y="168" text-anchor="middle">실제 로직 (들여쓰기 6칸)</text>
+  <text class="tx-b tx-g" x="540" y="20" text-anchor="middle">좋은 예 : 조기 반환</text>
+  <rect class="bx-o" x="380" y="40" width="220" height="34" rx="8"/>
+  <text class="tx-m" x="392" y="57">matnr 비었나?</text>
+  <rect class="bx-o" x="380" y="84" width="220" height="34" rx="8"/>
+  <text class="tx-m" x="392" y="101">werks 비었나?</text>
+  <rect class="bx-o" x="380" y="128" width="220" height="34" rx="8"/>
+  <text class="tx-m" x="392" y="145">qty &lt;= 0 ?</text>
+  <path class="ln-r arr-r" d="M600,57 H640"/>
+  <path class="ln-r arr-r" d="M600,101 H640"/>
+  <path class="ln-r arr-r" d="M600,145 H640"/>
+  <text class="tx-m tx-r" x="646" y="57">RETURN</text>
+  <text class="tx-m tx-r" x="646" y="101">RETURN</text>
+  <text class="tx-m tx-r" x="646" y="145">RETURN</text>
+  <path class="ln arr" d="M490,74 V82"/>
+  <path class="ln arr" d="M490,118 V126"/>
+  <path class="ln arr" d="M490,162 V182"/>
+  <text class="tx-s" x="500" y="172">모두 통과</text>
+  <rect class="bx-g" x="380" y="186" width="220" height="44" rx="8"/>
+  <text x="490" y="208" text-anchor="middle">실제 로직 (들여쓰기 0칸)</text>
+</svg>
+<figcaption>그림 2. 같은 검증 로직 — 중첩 IF(왼쪽)보다 예외를 먼저 걸러내는 조기 반환(오른쪽)이 읽기 쉽다</figcaption>
+</figure>
 `,
   code: [
     {
@@ -161,6 +231,56 @@ FORM check_and_process.
 ENDFORM.`
     }
   ],
+  compare: [
+    {
+      topic: '길이 검증 후 결과 메시지 만들기 (선언 · 문자열 결합)',
+      classic: `DATA: lv_len   TYPE i,
+      lv_len_c TYPE c LENGTH 10,
+      lv_msg   TYPE string.
+
+lv_len = strlen( p_id ).
+
+IF lv_len < 4 OR lv_len > 10.
+  lv_len_c = lv_len.
+  CONDENSE lv_len_c.
+  CONCATENATE '[오류] 길이 오류 :' lv_len_c '자'
+         INTO lv_msg SEPARATED BY space.
+ELSE.
+  CONCATENATE '[정상]' p_id INTO lv_msg SEPARATED BY space.
+ENDIF.
+
+WRITE / lv_msg.`,
+      modern: `DATA(lv_len) = strlen( p_id ).
+
+DATA(lv_msg) = COND string(
+  WHEN lv_len < 4 OR lv_len > 10
+    THEN |[오류] 길이 오류 : { lv_len } 자|
+  ELSE |[정상] { p_id }| ).
+
+WRITE / lv_msg.`,
+      note: '변수를 맨 위에 모두 선언하고 CONCATENATE로 이어 붙이던 코드가, 인라인 DATA( )와 String Template 덕분에 필요한 곳에서 한 번에 만들어집니다.'
+    },
+    {
+      topic: '조건 결과를 플래그 변수에 담기',
+      classic: `DATA lv_valid TYPE abap_bool.
+
+IF p_matnr IS NOT INITIAL AND p_qty > 0.
+  lv_valid = abap_true.
+ELSE.
+  lv_valid = abap_false.
+ENDIF.
+
+IF lv_valid = abap_true.
+  WRITE / '검증 통과'.
+ENDIF.`,
+      modern: `DATA(lv_valid) = xsdbool( p_matnr IS NOT INITIAL AND p_qty > 0 ).
+
+IF lv_valid = abap_true.
+  WRITE / '검증 통과'.
+ENDIF.`,
+      note: '플래그를 세우려고 쓰던 IF ~ ELSE 블록이 xsdbool( ) 한 줄로 바뀝니다 (Day 14에서 자세히 학습).'
+    }
+  ],
   quiz: [
     { q: "문자열 변수 lv_s가 숫자로만 이루어져 있는지 검사하는 가장 ABAP다운 방법은?", choices: ["IF lv_s CS '0123456789'.", "IF lv_s CO '0123456789'.", "IF lv_s CP '0123456789'.", "IF lv_s CA '0123456789'."], answer: 1, explain: 'CO(Contains Only)는 해당 문자 집합으로만 구성되어 있는지 검사합니다. CS는 포함, CA는 하나라도 포함, CP는 패턴 일치입니다.' },
     { q: 'IF a = 1 OR b = 2 AND c = 3. 은 어떻게 해석되는가?', choices: ['( a=1 OR b=2 ) AND c=3', 'a=1 OR ( b=2 AND c=3 )', '세 조건 모두 AND', '구문 오류'], answer: 1, explain: '논리 연산자 우선순위는 NOT > AND > OR 이므로 AND가 먼저 묶입니다. 혼동을 막으려면 괄호를 명시하세요.' },
@@ -207,6 +327,46 @@ FORM check_id USING iv_id TYPE string.
 
   WRITE: / '[정상] 사용 가능한 ID 입니다 :', iv_id.
 
+ENDFORM.`,
+    solutionClassic: `REPORT ztest_id_check.
+
+CONSTANTS: gc_alpha TYPE string VALUE 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+           gc_alnum TYPE string VALUE 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'.
+
+PARAMETERS p_id TYPE string LOWER CASE DEFAULT 'abap01'.
+
+START-OF-SELECTION.
+  PERFORM check_id USING p_id.
+
+*&---------------------------------------------------------------------*
+FORM check_id USING iv_id TYPE string.
+
+  DATA lv_len TYPE i.            "구문법 : 변수는 블록 맨 위에 선언
+
+  IF iv_id IS INITIAL.
+    WRITE / '[오류] ID를 입력하세요.'.
+    RETURN.
+  ENDIF.
+
+  lv_len = strlen( iv_id ).
+
+  IF lv_len < 4 OR lv_len > 10.
+    WRITE: / '[오류] ID는 4~10자여야 합니다. 현재', lv_len, '자'.
+    RETURN.
+  ENDIF.
+
+  IF NOT iv_id+0(1) CO gc_alpha.
+    WRITE / '[오류] ID는 영문자로 시작해야 합니다.'.
+    RETURN.
+  ENDIF.
+
+  IF NOT iv_id CO gc_alnum.
+    WRITE / '[오류] ID는 영문자와 숫자만 사용할 수 있습니다.'.
+    RETURN.
+  ENDIF.
+
+  WRITE: / '[정상] 사용 가능한 ID 입니다 :', iv_id.
+
 ENDFORM.`
   }
 },
@@ -231,6 +391,39 @@ ENDFORM.`
   <li>일치하는 WHEN 블록 <b>하나만</b> 실행되고 자동으로 ENDCASE로 빠져나갑니다. (C언어의 break 불필요)</li>
   <li><code>WHEN OTHERS</code>는 항상 마지막에 두며, <b>반드시 넣는 습관</b>을 들이세요.</li>
 </ul>
+<figure class="fig">
+<svg viewBox="0 0 720 290" role="img" aria-label="CASE 문 분기 흐름도">
+  <rect class="bx-s" x="260" y="16" width="200" height="40" rx="8"/>
+  <text class="tx-m tx-w" x="360" y="36" text-anchor="middle">CASE lv_grade.</text>
+  <path class="ln" d="M360,56 V80"/>
+  <path class="ln" d="M130,80 H590"/>
+  <path class="ln arr" d="M130,80 V102"/>
+  <path class="ln arr" d="M360,80 V102"/>
+  <path class="ln arr" d="M590,80 V102"/>
+  <rect class="bx-b" x="40" y="106" width="180" height="40" rx="8"/>
+  <text class="tx-m" x="130" y="126" text-anchor="middle">WHEN 'A'.</text>
+  <rect class="bx-b" x="270" y="106" width="180" height="40" rx="8"/>
+  <text class="tx-m" x="360" y="126" text-anchor="middle">WHEN 'B'.</text>
+  <rect class="bx-o" x="500" y="106" width="180" height="40" rx="8"/>
+  <text class="tx-m" x="590" y="126" text-anchor="middle">WHEN OTHERS.</text>
+  <path class="ln arr" d="M130,146 V166"/>
+  <path class="ln arr" d="M360,146 V166"/>
+  <path class="ln arr" d="M590,146 V166"/>
+  <rect class="bx" x="40" y="170" width="180" height="36" rx="8"/>
+  <text x="130" y="188" text-anchor="middle">'우수' 출력</text>
+  <rect class="bx" x="270" y="170" width="180" height="36" rx="8"/>
+  <text x="360" y="188" text-anchor="middle">'양호' 출력</text>
+  <rect class="bx" x="500" y="170" width="180" height="36" rx="8"/>
+  <text x="590" y="188" text-anchor="middle">'해당 없음' 출력</text>
+  <rect class="bx-s" x="260" y="222" width="200" height="36" rx="8"/>
+  <text class="tx-m tx-w" x="360" y="240" text-anchor="middle">ENDCASE.</text>
+  <path class="ln arr" d="M130,206 V240 H256"/>
+  <path class="ln arr" d="M590,206 V240 H464"/>
+  <path class="ln arr" d="M360,206 V218"/>
+  <text class="tx-s" x="360" y="276" text-anchor="middle">값이 일치하는 WHEN 블록 하나만 실행하고 바로 ENDCASE 로 — C 언어의 break 가 필요 없다</text>
+</svg>
+<figcaption>그림 1. CASE 분기 — 하나의 변수 값을 여러 고정값과 비교해 해당 WHEN 블록 하나만 실행</figcaption>
+</figure>
 
 <h4>2. OR 로 여러 값 묶기</h4>
 <pre class="code"><span class="k">CASE</span> lv_mtart.
@@ -259,6 +452,33 @@ ENDFORM.`
   <tr><td>여러 변수의 복합 조건</td><td><b>IF</b></td></tr>
   <tr><td>객체 타입 판별</td><td><b>CASE TYPE OF</b></td></tr>
 </table>
+<figure class="fig">
+<svg viewBox="0 0 720 220" role="img" aria-label="IF와 CASE 선택 기준 결정 트리">
+  <rect class="bx" x="250" y="14" width="220" height="40" rx="8"/>
+  <text class="tx-b" x="360" y="34" text-anchor="middle">어떤 분기인가?</text>
+  <path class="ln" d="M360,54 V70"/>
+  <path class="ln" d="M120,70 H600"/>
+  <path class="ln arr" d="M120,70 V88"/>
+  <path class="ln arr" d="M360,70 V88"/>
+  <path class="ln arr" d="M600,70 V88"/>
+  <rect class="bx-b" x="15" y="90" width="210" height="44" rx="8"/>
+  <text x="120" y="112" text-anchor="middle">변수 하나 = 고정값 여러 개</text>
+  <rect class="bx-b" x="255" y="90" width="210" height="44" rx="8"/>
+  <text x="360" y="112" text-anchor="middle">범위 · 복합 조건 비교</text>
+  <rect class="bx-b" x="495" y="90" width="210" height="44" rx="8"/>
+  <text x="600" y="112" text-anchor="middle">객체 타입 판별</text>
+  <path class="ln arr" d="M120,134 V162"/>
+  <path class="ln arr" d="M360,134 V162"/>
+  <path class="ln arr" d="M600,134 V162"/>
+  <rect class="bx-g" x="35" y="166" width="170" height="40" rx="8"/>
+  <text class="tx-m tx-b" x="120" y="186" text-anchor="middle">CASE / SWITCH</text>
+  <rect class="bx-o" x="275" y="166" width="170" height="40" rx="8"/>
+  <text class="tx-m tx-b" x="360" y="186" text-anchor="middle">IF / COND</text>
+  <rect class="bx-a" x="515" y="166" width="170" height="40" rx="8"/>
+  <text class="tx-m tx-b" x="600" y="186" text-anchor="middle">CASE TYPE OF</text>
+</svg>
+<figcaption>그림 2. 분기 방식 선택 — 값 일치는 CASE, 범위·복합 조건은 IF, 객체 타입은 CASE TYPE OF</figcaption>
+</figure>
 
 <h4>5. CASE TYPE OF (OO ABAP)</h4>
 <pre class="code"><span class="k">CASE</span> <span class="k">TYPE</span> <span class="k">OF</span> lo_object.
@@ -370,6 +590,59 @@ START-OF-SELECTION.
   ENDIF.`
     }
   ],
+  compare: [
+    {
+      topic: 'CASE 로 값 할당하기 → SWITCH 표현식',
+      classic: `DATA lv_desc TYPE string.
+
+CASE p_mtart.
+  WHEN 'FERT'.
+    lv_desc = '완제품'.
+  WHEN 'HALB'.
+    lv_desc = '반제품'.
+  WHEN 'ROH'.
+    lv_desc = '원자재'.
+  WHEN OTHERS.
+    CONCATENATE '알 수 없는 자재유형 :' p_mtart
+           INTO lv_desc SEPARATED BY space.
+ENDCASE.
+
+WRITE: / '설명 :', lv_desc.`,
+      modern: `DATA(lv_desc) = SWITCH string( p_mtart
+  WHEN 'FERT' THEN '완제품'
+  WHEN 'HALB' THEN '반제품'
+  WHEN 'ROH'  THEN '원자재'
+  ELSE |알 수 없는 자재유형 : { p_mtart }| ).
+
+WRITE: / '설명 :', lv_desc.`,
+      note: '값을 대입하기 위한 CASE 블록은 SWITCH 표현식으로 바꾸면 변수 선언과 반복되는 "lv_desc =" 가 사라집니다.'
+    },
+    {
+      topic: 'BAPI 리턴 테이블에서 오류 건수 세기',
+      classic: `DATA: ls_ret TYPE bapiret2,
+      lv_err TYPE i.
+
+LOOP AT lt_return INTO ls_ret.
+  CASE ls_ret-type.
+    WHEN 'E' OR 'A'.
+      lv_err = lv_err + 1.
+  ENDCASE.
+ENDLOOP.
+
+IF lv_err > 0.
+  WRITE: / '오류', lv_err, '건으로 처리를 중단합니다.'.
+ENDIF.`,
+      modern: `DATA(lv_err) = REDUCE i( INIT n = 0
+                         FOR ls_ret IN lt_return
+                         WHERE ( type = 'E' OR type = 'A' )
+                         NEXT n = n + 1 ).
+
+IF lv_err > 0.
+  WRITE: / '오류', lv_err, '건으로 처리를 중단합니다.'.
+ENDIF.`,
+      note: '작업 영역을 선언하고 LOOP + CASE 로 세던 집계를 REDUCE 한 문장으로 표현합니다 (REDUCE 는 Day 20에서 학습).'
+    }
+  ],
   quiz: [
     { q: 'CASE 문의 WHEN 절에 사용할 수 없는 것은?', choices: ["문자 리터럴 'A'", '상수 gc_max', '숫자 리터럴 10', "조건식 lv_x > 10"], answer: 3, explain: 'CASE의 WHEN에는 비교할 값만 올 수 있습니다. 범위·조건식 비교가 필요하면 IF ~ ELSEIF를 사용해야 합니다.' },
     { q: 'ABAP의 CASE 문에서 특정 WHEN 블록이 실행된 뒤의 동작은?', choices: ['다음 WHEN 블록도 계속 실행된다', '자동으로 ENDCASE로 빠져나간다', 'break 문을 써야 빠져나간다', 'WHEN OTHERS도 반드시 실행된다'], answer: 1, explain: 'ABAP의 CASE는 C/Java와 달리 fall-through가 없습니다. 일치하는 블록 하나만 실행하고 ENDCASE로 이동합니다.' },
@@ -418,6 +691,45 @@ START-OF-SELECTION.
   WRITE: / |날짜 : { p_date DATE = USER }|,
          / |요일 : { lv_name }|,
          / |구분 : { lv_kind }|.
+  ULINE.`,
+    solutionClassic: `REPORT ztest_weekday.
+
+PARAMETERS p_date TYPE d DEFAULT sy-datum.
+
+DATA: lv_day  TYPE p,
+      lv_name TYPE string,
+      lv_kind TYPE string.
+
+START-OF-SELECTION.
+
+  CALL FUNCTION 'DATE_COMPUTE_DAY'
+    EXPORTING
+      date = p_date
+    IMPORTING
+      day  = lv_day.
+
+  CASE lv_day.
+    WHEN 1. lv_name = '월요일'.
+    WHEN 2. lv_name = '화요일'.
+    WHEN 3. lv_name = '수요일'.
+    WHEN 4. lv_name = '목요일'.
+    WHEN 5. lv_name = '금요일'.
+    WHEN 6. lv_name = '토요일'.
+    WHEN 7. lv_name = '일요일'.
+    WHEN OTHERS. lv_name = '알 수 없음'.
+  ENDCASE.
+
+  CASE lv_day.
+    WHEN 6 OR 7.
+      lv_kind = '휴무일'.
+    WHEN OTHERS.
+      lv_kind = '영업일'.
+  ENDCASE.
+
+  ULINE.
+  WRITE: / '날짜 :', p_date,          "날짜 필드는 사용자 형식으로 출력됨
+         / '요일 :', lv_name,
+         / '구분 :', lv_kind.
   ULINE.`
   }
 },
@@ -463,6 +775,50 @@ START-OF-SELECTION.
   <tr><td>조건이 만족될 때까지</td><td><code>WHILE</code></td></tr>
   <tr><td>내부 테이블 순회</td><td><code>LOOP AT</code> (Day 19)</td></tr>
 </table>
+<figure class="fig">
+<svg viewBox="0 0 720 320" role="img" aria-label="DO n TIMES 와 WHILE 반복 흐름도">
+  <text class="tx-l" x="180" y="18" text-anchor="middle">DO n TIMES</text>
+  <rect class="bx" x="100" y="36" width="160" height="36" rx="8"/>
+  <text class="tx-m" x="180" y="54" text-anchor="middle">sy-index = 1</text>
+  <path class="ln arr" d="M180,72 V86"/>
+  <polygon class="bx-o" points="180,90 275,122 180,154 85,122"/>
+  <text class="tx-m" x="180" y="122" text-anchor="middle">sy-index &lt;= n ?</text>
+  <path class="ln arr" d="M180,154 V172"/>
+  <text class="tx-s" x="190" y="164">참</text>
+  <rect class="bx-b" x="100" y="176" width="160" height="36" rx="8"/>
+  <text x="180" y="194" text-anchor="middle">반복 본문</text>
+  <path class="ln arr" d="M180,212 V226"/>
+  <rect class="bx" x="100" y="230" width="160" height="36" rx="8"/>
+  <text class="tx-m" x="180" y="248" text-anchor="middle">sy-index + 1</text>
+  <path class="ln arr" d="M100,248 H50 V122 H81"/>
+  <text class="tx-s" x="56" y="186">자동</text>
+  <path class="ln arr" d="M275,122 H300 V295 H264"/>
+  <text class="tx-s" x="290" y="110" text-anchor="middle">거짓</text>
+  <rect class="bx-s" x="100" y="278" width="160" height="34" rx="8"/>
+  <text class="tx-w tx-b" x="180" y="295" text-anchor="middle">ENDDO 다음</text>
+  <path class="ln dash" d="M360,10 V310"/>
+  <text class="tx-l" x="540" y="18" text-anchor="middle">WHILE 조건</text>
+  <rect class="bx" x="460" y="36" width="160" height="36" rx="8"/>
+  <text x="540" y="54" text-anchor="middle">루프 진입</text>
+  <path class="ln arr" d="M540,72 V86"/>
+  <polygon class="bx-o" points="540,90 635,122 540,154 445,122"/>
+  <text class="tx-b" x="540" y="122" text-anchor="middle">조건 참?</text>
+  <path class="ln arr" d="M540,154 V172"/>
+  <text class="tx-s" x="550" y="164">참</text>
+  <rect class="bx-b" x="460" y="176" width="160" height="36" rx="8"/>
+  <text x="540" y="194" text-anchor="middle">반복 본문</text>
+  <path class="ln arr" d="M540,212 V226"/>
+  <rect class="bx-r" x="460" y="230" width="160" height="36" rx="8"/>
+  <text x="540" y="248" text-anchor="middle">카운터 증가 (필수)</text>
+  <path class="ln arr" d="M460,248 H410 V122 H441"/>
+  <text class="tx-s" x="416" y="186">직접</text>
+  <path class="ln arr" d="M635,122 H660 V295 H624"/>
+  <text class="tx-s" x="650" y="110" text-anchor="middle">거짓</text>
+  <rect class="bx-s" x="460" y="278" width="160" height="34" rx="8"/>
+  <text class="tx-w tx-b" x="540" y="295" text-anchor="middle">ENDWHILE 다음</text>
+</svg>
+<figcaption>그림 1. DO n TIMES 는 sy-index 를 시스템이 올려 주고, WHILE 은 조건을 바꾸는 코드를 본문에 직접 넣어야 끝난다</figcaption>
+</figure>
 
 <h4>5. 흐름 제어 — EXIT / CONTINUE / CHECK</h4>
 <table>
@@ -475,6 +831,55 @@ START-OF-SELECTION.
   <span class="k">CHECK</span> sy-index <span class="k">MOD</span> <span class="n">2</span> = <span class="n">0</span>.   <span class="c">" 짝수가 아니면 건너뜀</span>
   <span class="k">WRITE</span> / sy-index.                <span class="c">" 2 4 6 8 10</span>
 <span class="k">ENDDO</span>.</pre>
+<figure class="fig">
+<svg viewBox="0 0 720 240" role="img" aria-label="CONTINUE, CHECK, EXIT 의 회차별 동작 비교">
+  <text class="tx-s" x="20" y="18">DO 5 TIMES 에서 sy-index = 3 일 때</text>
+  <text class="tx-s" x="278" y="18" text-anchor="middle">1</text>
+  <text class="tx-s" x="348" y="18" text-anchor="middle">2</text>
+  <text class="tx-s" x="418" y="18" text-anchor="middle">3</text>
+  <text class="tx-s" x="488" y="18" text-anchor="middle">4</text>
+  <text class="tx-s" x="558" y="18" text-anchor="middle">5</text>
+  <text class="tx-s" x="665" y="18" text-anchor="middle">출력</text>
+  <text class="tx-m tx-b" x="20" y="54">IF ... CONTINUE.</text>
+  <rect class="bx-g" x="250" y="36" width="56" height="36" rx="6"/>
+  <text x="278" y="54" text-anchor="middle">실행</text>
+  <rect class="bx-g" x="320" y="36" width="56" height="36" rx="6"/>
+  <text x="348" y="54" text-anchor="middle">실행</text>
+  <rect class="bx-o" x="390" y="36" width="56" height="36" rx="6"/>
+  <text class="tx-s" x="418" y="54" text-anchor="middle">건너뜀</text>
+  <rect class="bx-g" x="460" y="36" width="56" height="36" rx="6"/>
+  <text x="488" y="54" text-anchor="middle">실행</text>
+  <rect class="bx-g" x="530" y="36" width="56" height="36" rx="6"/>
+  <text x="558" y="54" text-anchor="middle">실행</text>
+  <text class="tx-m" x="665" y="54" text-anchor="middle">1 2 4 5</text>
+  <text class="tx-m tx-b" x="20" y="114">CHECK sy-index &lt;&gt; 3.</text>
+  <rect class="bx-g" x="250" y="96" width="56" height="36" rx="6"/>
+  <text x="278" y="114" text-anchor="middle">실행</text>
+  <rect class="bx-g" x="320" y="96" width="56" height="36" rx="6"/>
+  <text x="348" y="114" text-anchor="middle">실행</text>
+  <rect class="bx-o" x="390" y="96" width="56" height="36" rx="6"/>
+  <text class="tx-s" x="418" y="114" text-anchor="middle">건너뜀</text>
+  <rect class="bx-g" x="460" y="96" width="56" height="36" rx="6"/>
+  <text x="488" y="114" text-anchor="middle">실행</text>
+  <rect class="bx-g" x="530" y="96" width="56" height="36" rx="6"/>
+  <text x="558" y="114" text-anchor="middle">실행</text>
+  <text class="tx-m" x="665" y="114" text-anchor="middle">1 2 4 5</text>
+  <text class="tx-m tx-b" x="20" y="174">IF ... EXIT.</text>
+  <rect class="bx-g" x="250" y="156" width="56" height="36" rx="6"/>
+  <text x="278" y="174" text-anchor="middle">실행</text>
+  <rect class="bx-g" x="320" y="156" width="56" height="36" rx="6"/>
+  <text x="348" y="174" text-anchor="middle">실행</text>
+  <rect class="bx-r" x="390" y="156" width="56" height="36" rx="6"/>
+  <text class="tx-r tx-b" x="418" y="174" text-anchor="middle">탈출</text>
+  <rect class="bx dash" x="460" y="156" width="56" height="36" rx="6"/>
+  <text class="tx-s" x="488" y="174" text-anchor="middle">미실행</text>
+  <rect class="bx dash" x="530" y="156" width="56" height="36" rx="6"/>
+  <text class="tx-s" x="558" y="174" text-anchor="middle">미실행</text>
+  <text class="tx-m" x="665" y="174" text-anchor="middle">1 2</text>
+  <text class="tx-s" x="360" y="222" text-anchor="middle">CONTINUE · CHECK : 이번 회차의 나머지만 건너뛰고 다음 회차로  /  EXIT : 루프 전체를 끝냄</text>
+</svg>
+<figcaption>그림 2. 같은 3회차에서 CONTINUE · CHECK 는 그 회차만 건너뛰고, EXIT 는 루프를 완전히 빠져나간다</figcaption>
+</figure>
 <div class="note">⚠️ <b>EXIT의 함정</b>: 루프 <u>밖</u>에서 EXIT를 쓰면 현재 처리 블록(FORM/METHOD 등)을 빠져나갑니다. 서브루틴을 끝낼 의도라면 <code>RETURN</code>을 쓰는 것이 명확합니다.</div>
 
 <h4>6. 중첩 루프</h4>
@@ -569,6 +974,51 @@ START-OF-SELECTION.
   ENDDO.`
     }
   ],
+  compare: [
+    {
+      topic: '반복하면서 결과 문자열 이어 붙이기',
+      classic: `DATA: lv_out TYPE string,
+      lv_num TYPE c LENGTH 10.
+
+DO 10 TIMES.
+  CHECK sy-index MOD 2 = 0.
+  lv_num = sy-index.
+  CONDENSE lv_num.
+  CONCATENATE lv_out lv_num INTO lv_out SEPARATED BY space.
+ENDDO.
+
+WRITE / lv_out.`,
+      modern: `DATA lv_out TYPE string.
+
+DO 10 TIMES.
+  CHECK sy-index MOD 2 = 0.
+  lv_out = |{ lv_out } { sy-index }|.
+ENDDO.
+
+WRITE / lv_out.`,
+      note: '숫자를 문자 변수로 옮기고 CONDENSE 한 뒤 CONCATENATE 하던 세 줄이 String Template 한 줄로 줄어듭니다.'
+    },
+    {
+      topic: '1부터 N까지 합계 (DO 루프 → REDUCE)',
+      classic: `PARAMETERS p_n TYPE i DEFAULT 100.
+
+DATA lv_sum TYPE i.
+
+DO p_n TIMES.
+  lv_sum = lv_sum + sy-index.
+ENDDO.
+
+WRITE: / '합계 :', lv_sum.`,
+      modern: `PARAMETERS p_n TYPE i DEFAULT 100.
+
+DATA(lv_sum) = REDUCE i( INIT s = 0
+                         FOR i = 1 UNTIL i > p_n
+                         NEXT s = s + i ).
+
+WRITE: / '합계 :', lv_sum.`,
+      note: '누적 변수를 선언하고 DO 로 더하던 반복을 REDUCE + FOR ... UNTIL 반복 표현식 하나로 씁니다.'
+    }
+  ],
   quiz: [
     { q: 'DO 5 TIMES. 루프 안에서 sy-index의 첫 번째 값은?', choices: ['0', '1', '5', '정의되지 않음'], answer: 1, explain: 'ABAP의 sy-index는 1부터 시작합니다. 0부터 시작하는 다른 언어와 다릅니다.' },
     { q: 'CHECK lv_x > 10. 이 루프 안에 있을 때, lv_x가 5라면 어떻게 되는가?', choices: ['루프를 완전히 종료한다', '다음 반복으로 건너뛴다', '프로그램이 중단된다', '아무 일도 일어나지 않고 계속 진행한다'], answer: 1, explain: 'CHECK는 조건이 거짓일 때 CONTINUE처럼 동작하여 이번 회차의 남은 코드를 건너뛰고 다음 반복으로 넘어갑니다.' },
@@ -617,6 +1067,53 @@ START-OF-SELECTION.
   WRITE: / lv_out.
   SKIP.
   WRITE: / |총 { lv_cnt } 개|.
+  ULINE.`,
+    solutionClassic: `REPORT ztest_prime.
+
+PARAMETERS p_max TYPE i DEFAULT 50.
+
+DATA: lv_cnt      TYPE i,
+      lv_out      TYPE string,
+      lv_num      TYPE c LENGTH 10,
+      lv_n        TYPE i,
+      lv_d        TYPE i,
+      lv_limit    TYPE i,
+      lv_is_prime TYPE abap_bool.
+
+START-OF-SELECTION.
+
+  lv_n = 2.
+
+  WHILE lv_n <= p_max.
+
+    lv_is_prime = abap_true.
+    lv_limit    = sqrt( lv_n ).     "정수 변수에 대입하면서 반올림
+    lv_d        = 2.
+
+    WHILE lv_d <= lv_limit.
+      IF lv_n MOD lv_d = 0.
+        lv_is_prime = abap_false.
+        EXIT.                      "더 볼 필요 없음
+      ENDIF.
+      lv_d = lv_d + 1.
+    ENDWHILE.
+
+    IF lv_is_prime = abap_true.
+      lv_cnt = lv_cnt + 1.
+      lv_num = lv_n.
+      CONDENSE lv_num.
+      CONCATENATE lv_out lv_num INTO lv_out SEPARATED BY space.
+    ENDIF.
+
+    lv_n = lv_n + 1.
+  ENDWHILE.
+
+  ULINE.
+  WRITE: / '1 ~', p_max, '사이의 소수'.
+  ULINE.
+  WRITE: / lv_out.
+  SKIP.
+  WRITE: / '총', lv_cnt, '개'.
   ULINE.`
   }
 },
@@ -651,6 +1148,33 @@ START-OF-SELECTION.
   <li>타입을 추론할 수 있으면 <code>COND #( ... )</code> 처럼 <b>#</b>로 줄일 수 있습니다.</li>
   <li><b>ELSE를 생략</b>하면 어떤 조건도 맞지 않을 때 해당 타입의 <b>초기값</b>이 반환됩니다.</li>
 </ul>
+<figure class="fig">
+<svg viewBox="0 0 720 240" role="img" aria-label="COND 표현식의 평가 순서">
+  <rect class="bx" x="20" y="100" width="150" height="50" rx="8"/>
+  <text class="tx-s" x="95" y="116" text-anchor="middle">입력</text>
+  <text class="tx-m" x="95" y="136" text-anchor="middle">lv_score = 85</text>
+  <path class="ln arr" d="M170,125 H200"/>
+  <rect class="bx" x="204" y="20" width="310" height="36" rx="6"/>
+  <text class="tx-m" x="216" y="38">WHEN score &gt;= 90 THEN 'A'</text>
+  <text class="tx-s" x="502" y="38" text-anchor="end">거짓</text>
+  <path class="ln arr" d="M359,56 V64"/>
+  <rect class="bx-g" x="204" y="66" width="310" height="36" rx="6"/>
+  <text class="tx-m tx-b" x="216" y="84">WHEN score &gt;= 80 THEN 'B'</text>
+  <text class="tx-s tx-g" x="502" y="84" text-anchor="end">참 → 선택</text>
+  <rect class="bx dash" x="204" y="112" width="310" height="36" rx="6"/>
+  <text class="tx-m tx-s" x="216" y="130">WHEN score &gt;= 70 THEN 'C'</text>
+  <text class="tx-s" x="502" y="130" text-anchor="end">평가 안 함</text>
+  <rect class="bx dash" x="204" y="158" width="310" height="36" rx="6"/>
+  <text class="tx-m tx-s" x="216" y="176">ELSE 'D'</text>
+  <text class="tx-s" x="502" y="176" text-anchor="end">평가 안 함</text>
+  <path class="ln-g arr-g" d="M514,84 H537 V125 H556"/>
+  <rect class="bx-s" x="560" y="100" width="145" height="50" rx="8"/>
+  <text class="tx-s tx-w" x="632" y="116" text-anchor="middle">결과</text>
+  <text class="tx-m tx-w" x="632" y="136" text-anchor="middle">lv_grade = 'B'</text>
+  <text class="tx-s" x="360" y="222" text-anchor="middle">위에서부터 차례로 평가 → 처음 참인 WHEN 의 THEN 값을 반환 (ELSE 생략 시 타입의 초기값)</text>
+</svg>
+<figcaption>그림 1. COND 의 동작 — IF ~ ELSEIF 와 같은 순서로 평가하지만, 블록을 실행하는 대신 값 하나를 돌려준다</figcaption>
+</figure>
 
 <h4>3. SWITCH — 값 비교 기반</h4>
 <pre class="code"><span class="k">DATA</span>(lv_desc) = <span class="k">SWITCH</span> string( lv_mtart
@@ -663,6 +1187,28 @@ START-OF-SELECTION.
   <tr><td>기준</td><td>조건식 (크다/작다 가능)</td><td>하나의 값과 일치 비교</td></tr>
   <tr><td>대응</td><td>IF ~ ELSEIF</td><td>CASE ~ WHEN</td></tr>
 </table>
+<figure class="fig">
+<svg viewBox="0 0 720 230" role="img" aria-label="제어문과 조건 표현식의 대응 관계">
+  <text class="tx-b" x="170" y="22" text-anchor="middle">문장 — 블록으로 분기</text>
+  <text class="tx-b tx-c" x="550" y="22" text-anchor="middle">표현식 — 값을 반환 (7.40+)</text>
+  <rect class="bx" x="40" y="44" width="260" height="44" rx="8"/>
+  <text class="tx-m" x="170" y="66" text-anchor="middle">IF ~ ELSEIF ~ ENDIF</text>
+  <path class="ln-b arr-b" d="M300,66 H416"/>
+  <rect class="bx-b" x="420" y="44" width="260" height="44" rx="8"/>
+  <text class="tx-m" x="550" y="66" text-anchor="middle">COND #( WHEN ... THEN ... )</text>
+  <rect class="bx" x="40" y="104" width="260" height="44" rx="8"/>
+  <text class="tx-m" x="170" y="126" text-anchor="middle">CASE ~ WHEN ~ ENDCASE</text>
+  <path class="ln-b arr-b" d="M300,126 H416"/>
+  <rect class="bx-b" x="420" y="104" width="260" height="44" rx="8"/>
+  <text class="tx-m" x="550" y="126" text-anchor="middle">SWITCH #( val WHEN ... )</text>
+  <rect class="bx" x="40" y="164" width="260" height="44" rx="8"/>
+  <text class="tx-m" x="170" y="186" text-anchor="middle">IF 조건. flag = 'X'. ENDIF.</text>
+  <path class="ln-b arr-b" d="M300,186 H416"/>
+  <rect class="bx-b" x="420" y="164" width="260" height="44" rx="8"/>
+  <text class="tx-m" x="550" y="186" text-anchor="middle">flag = xsdbool( 조건 )</text>
+</svg>
+<figcaption>그림 2. 값을 대입하려고 쓰던 제어문은 각각 대응하는 조건 표현식으로 바꿀 수 있다</figcaption>
+</figure>
 
 <h4>4. 예외 발생시키기</h4>
 <pre class="code"><span class="k">DATA</span>(lv_x) = <span class="k">COND</span> i(
@@ -754,6 +1300,61 @@ START-OF-SELECTION.
   WRITE: / '(검증) 예전 방식 결과 :', lv_old.`
     }
   ],
+  compare: [
+    {
+      topic: '점수 → 등급 (IF 블록 → COND)',
+      classic: `DATA lv_grade TYPE string.
+
+IF p_score >= 90.
+  lv_grade = 'A (우수)'.
+ELSEIF p_score >= 80.
+  lv_grade = 'B (양호)'.
+ELSEIF p_score >= 70.
+  lv_grade = 'C (보통)'.
+ELSE.
+  lv_grade = 'F (재이수)'.
+ENDIF.
+
+WRITE: / '등급 :', lv_grade.`,
+      modern: `DATA(lv_grade) = COND string(
+  WHEN p_score >= 90 THEN 'A (우수)'
+  WHEN p_score >= 80 THEN 'B (양호)'
+  WHEN p_score >= 70 THEN 'C (보통)'
+  ELSE 'F (재이수)' ).
+
+WRITE: / '등급 :', lv_grade.`,
+      note: '대입 대상(lv_grade)을 분기마다 반복하던 IF 블록이, 결과값만 나열하는 COND 표현식 하나로 바뀝니다.'
+    },
+    {
+      topic: '임시 기준값과 합격 플래그 (상수 · IF → LET · xsdbool)',
+      classic: `CONSTANTS lc_base TYPE i VALUE 100000.
+
+DATA: lv_bonus  TYPE i,
+      lv_passed TYPE abap_bool.
+
+IF p_score >= 90.
+  lv_bonus = lc_base * 2.
+ELSEIF p_score >= 80.
+  lv_bonus = lc_base.
+ELSE.
+  lv_bonus = 0.
+ENDIF.
+
+IF p_score >= 60.
+  lv_passed = abap_true.
+ELSE.
+  lv_passed = abap_false.
+ENDIF.`,
+      modern: `DATA(lv_bonus) = COND i(
+  LET base = 100000 IN
+  WHEN p_score >= 90 THEN base * 2
+  WHEN p_score >= 80 THEN base
+  ELSE 0 ).
+
+DATA(lv_passed) = xsdbool( p_score >= 60 ).`,
+      note: '표현식 안에서만 쓰는 기준값은 LET 으로, 참/거짓 플래그는 xsdbool( ) 로 만들어 별도 선언과 IF 블록이 필요 없습니다.'
+    }
+  ],
   quiz: [
     { q: '하나의 변수를 여러 고정값과 비교해 값을 반환하는 현대 ABAP 표현식은?', choices: ['COND', 'SWITCH', 'REDUCE', 'FILTER'], answer: 1, explain: 'SWITCH는 CASE ~ WHEN의 표현식 버전입니다. 크다/작다 같은 조건식 비교에는 COND를 씁니다.' },
     { q: 'COND 표현식에서 ELSE를 생략하고 어떤 WHEN 조건도 만족하지 않으면 결과는?', choices: ['런타임 덤프가 발생한다', '해당 타입의 초기값이 반환된다', '첫 번째 WHEN 값이 반환된다', '컴파일 오류가 발생한다'], answer: 1, explain: 'ELSE를 생략하면 지정한 타입의 초기값(숫자 0, 문자 공백 등)이 반환됩니다.' },
@@ -812,6 +1413,73 @@ START-OF-SELECTION.
          / |정가   : { lv_base NUMBER = USER }|,
          / |할인액 : { lv_discount NUMBER = USER }|,
          / |결제액 : { lv_base - lv_discount NUMBER = USER }|.
+  ULINE.`,
+    solutionClassic: `REPORT ztest_weekday_v2.
+
+PARAMETERS p_date TYPE d DEFAULT sy-datum.
+
+DATA: lv_day      TYPE p,
+      lv_name     TYPE string,
+      lv_weekend  TYPE abap_bool,
+      lv_kind     TYPE string,
+      lv_rate     TYPE p LENGTH 3 DECIMALS 2,
+      lv_base     TYPE i VALUE 100000,
+      lv_discount TYPE p LENGTH 13 DECIMALS 0,
+      lv_pay      TYPE p LENGTH 13 DECIMALS 0.
+
+START-OF-SELECTION.
+
+  CALL FUNCTION 'DATE_COMPUTE_DAY'
+    EXPORTING
+      date = p_date
+    IMPORTING
+      day  = lv_day.
+
+* CASE 문으로 요일명
+  CASE lv_day.
+    WHEN 1. lv_name = '월요일'.
+    WHEN 2. lv_name = '화요일'.
+    WHEN 3. lv_name = '수요일'.
+    WHEN 4. lv_name = '목요일'.
+    WHEN 5. lv_name = '금요일'.
+    WHEN 6. lv_name = '토요일'.
+    WHEN 7. lv_name = '일요일'.
+    WHEN OTHERS. lv_name = '알 수 없음'.
+  ENDCASE.
+
+* 주말 여부 플래그 - IF 로 직접 세팅
+  IF lv_day = 6 OR lv_day = 7.
+    lv_weekend = abap_true.
+  ELSE.
+    lv_weekend = abap_false.
+  ENDIF.
+
+  IF lv_weekend = abap_true.
+    lv_kind = '휴무일'.
+  ELSE.
+    lv_kind = '영업일'.
+  ENDIF.
+
+* IF / ELSEIF 로 할인율 계산
+  IF lv_weekend = abap_true.
+    lv_rate = '0.15'.
+  ELSEIF lv_day = 5.
+    lv_rate = '0.10'.
+  ELSE.
+    lv_rate = 0.
+  ENDIF.
+
+  lv_discount = lv_base * lv_rate.
+  lv_pay      = lv_base - lv_discount.
+
+  ULINE.
+  WRITE: / '날짜   :', p_date,
+         / '요일   :', lv_name,
+         / '구분   :', lv_kind,
+         / '할인율 :', lv_rate,
+         / '정가   :', lv_base,
+         / '할인액 :', lv_discount,
+         / '결제액 :', lv_pay.
   ULINE.`
   }
 },
@@ -853,6 +1521,33 @@ START-OF-SELECTION.
   <li>반복 안에서 같은 계산을 반복하지 말고 <b>루프 밖으로</b> 빼세요.</li>
   <li>루프 안에서 <b>SELECT를 돌리지 마세요</b> (성능 최악 — Day 28에서 자세히).</li>
 </ol>
+<figure class="fig">
+<svg viewBox="0 0 720 220" role="img" aria-label="루프 안 SELECT 와 일괄 SELECT 의 DB 왕복 횟수 비교">
+  <text class="tx-b tx-r" x="185" y="20" text-anchor="middle">나쁜 예 : 루프 안에서 SELECT</text>
+  <rect class="bx-b" x="30" y="44" width="110" height="150" rx="8"/>
+  <text class="tx-b" x="85" y="110" text-anchor="middle">ABAP</text>
+  <text class="tx-s" x="85" y="130" text-anchor="middle">LOOP 1000회</text>
+  <rect class="bx-o" x="230" y="44" width="110" height="150" rx="8"/>
+  <text class="tx-b" x="285" y="110" text-anchor="middle">DB</text>
+  <text class="tx-s" x="285" y="130" text-anchor="middle">1000번 왕복</text>
+  <path class="ln-r arr-r" d="M142,64 H226"/>
+  <path class="ln-r arr-r" d="M142,94 H226"/>
+  <path class="ln-r arr-r" d="M142,124 H226"/>
+  <path class="ln-r arr-r" d="M142,154 H226"/>
+  <path class="ln-r arr-r" d="M142,184 H226"/>
+  <path class="ln dash" d="M360,10 V210"/>
+  <text class="tx-b tx-g" x="540" y="20" text-anchor="middle">좋은 예 : 한 번 읽고 메모리에서 처리</text>
+  <rect class="bx-o" x="390" y="44" width="100" height="150" rx="8"/>
+  <text class="tx-b" x="440" y="110" text-anchor="middle">DB</text>
+  <text class="tx-s" x="440" y="130" text-anchor="middle">1번 왕복</text>
+  <path class="ln-g arr-g" d="M490,119 H584"/>
+  <text class="tx-s" x="537" y="105" text-anchor="middle">SELECT 1회</text>
+  <rect class="bx-g" x="590" y="44" width="115" height="150" rx="8"/>
+  <text class="tx-b" x="647" y="110" text-anchor="middle">내부 테이블</text>
+  <text class="tx-s" x="647" y="130" text-anchor="middle">LOOP 1000회</text>
+</svg>
+<figcaption>그림 1. 루프 안 SELECT 는 반복 횟수만큼 DB 를 왕복한다 — 한 번에 읽어 내부 테이블에서 처리하는 것이 원칙</figcaption>
+</figure>
 
 <h4>4. 오늘의 종합 과제 — 간이 급여 계산기</h4>
 <p>아래 요구사항을 보고 직접 설계해 본 뒤, 모범답안과 비교하세요.</p>
@@ -863,6 +1558,43 @@ START-OF-SELECTION.
   <li>세율 구간 적용 (300만 이하 6%, 500만 이하 15%, 초과 24%) → <b>IF/ELSEIF</b></li>
   <li>실수령액 = 총지급액 − 세금</li>
 </ul>
+<figure class="fig">
+<svg viewBox="0 0 720 245" role="img" aria-label="급여 계산기 처리 흐름">
+  <rect class="bx" x="20" y="30" width="150" height="56" rx="8"/>
+  <text class="tx-b" x="95" y="50" text-anchor="middle">선택 화면 입력</text>
+  <text class="tx-s" x="95" y="70" text-anchor="middle">직급 · 근속 · 초과근무</text>
+  <rect class="bx-r" x="200" y="30" width="150" height="56" rx="8"/>
+  <text class="tx-b" x="275" y="50" text-anchor="middle">직급 검증</text>
+  <text class="tx-s" x="275" y="70" text-anchor="middle">잘못되면 RETURN</text>
+  <rect class="bx-b" x="380" y="30" width="150" height="56" rx="8"/>
+  <text class="tx-b" x="455" y="50" text-anchor="middle">기본급</text>
+  <text class="tx-m tx-c" x="455" y="70" text-anchor="middle">SWITCH</text>
+  <rect class="bx-b" x="560" y="30" width="150" height="56" rx="8"/>
+  <text class="tx-b" x="635" y="50" text-anchor="middle">근속 가산</text>
+  <text class="tx-m tx-c" x="635" y="70" text-anchor="middle">COND</text>
+  <path class="ln arr" d="M170,58 H196"/>
+  <path class="ln arr" d="M350,58 H376"/>
+  <path class="ln arr" d="M530,58 H556"/>
+  <path class="ln arr" d="M635,86 V113 H95 V136"/>
+  <rect class="bx-b" x="20" y="140" width="150" height="56" rx="8"/>
+  <text class="tx-b" x="95" y="160" text-anchor="middle">초과근무 수당</text>
+  <text class="tx-s" x="95" y="180" text-anchor="middle">시급 × 1.5 × 시간</text>
+  <rect class="bx-g" x="200" y="140" width="150" height="56" rx="8"/>
+  <text class="tx-b" x="275" y="160" text-anchor="middle">총지급액</text>
+  <text class="tx-s" x="275" y="180" text-anchor="middle">기본 + 근속 + 초과</text>
+  <rect class="bx-o" x="380" y="140" width="150" height="56" rx="8"/>
+  <text class="tx-b" x="455" y="160" text-anchor="middle">세율 구간</text>
+  <text class="tx-m tx-o" x="455" y="180" text-anchor="middle">IF / ELSEIF</text>
+  <rect class="bx-s" x="560" y="140" width="150" height="56" rx="8"/>
+  <text class="tx-b tx-w" x="635" y="160" text-anchor="middle">명세서 출력</text>
+  <text class="tx-s tx-w" x="635" y="180" text-anchor="middle">String Template</text>
+  <path class="ln arr" d="M170,168 H196"/>
+  <path class="ln arr" d="M350,168 H376"/>
+  <path class="ln arr" d="M530,168 H556"/>
+  <text class="tx-s" x="360" y="226" text-anchor="middle">입력 → 검증 → 계산 → 출력 : 단계마다 FORM 으로 나누면 읽기 쉬운 프로그램이 된다</text>
+</svg>
+<figcaption>그림 2. 간이 급여 계산기의 처리 순서와 단계별로 쓰는 제어 구문</figcaption>
+</figure>
 <div class="tip">🎓 오늘 학습을 마치면 <b>3주차 평가</b>에 응시하세요.</div>
 `,
   code: [
@@ -956,6 +1688,53 @@ FORM calc_payroll.
 ENDFORM.`
     }
   ],
+  compare: [
+    {
+      topic: '세율 구간 적용과 세액 계산 (IF 블록 → COND · CONV)',
+      classic: `DATA: lv_tax_rate TYPE p LENGTH 3 DECIMALS 2,
+      lv_tax      TYPE p LENGTH 13 DECIMALS 0,
+      lv_net      TYPE p LENGTH 13 DECIMALS 0.
+
+IF lv_gross <= 3000000.
+  lv_tax_rate = '0.06'.
+ELSEIF lv_gross <= 5000000.
+  lv_tax_rate = '0.15'.
+ELSE.
+  lv_tax_rate = '0.24'.
+ENDIF.
+
+lv_tax = lv_gross * lv_tax_rate.
+lv_net = lv_gross - lv_tax.`,
+      modern: `TYPES: ty_rate TYPE p LENGTH 3 DECIMALS 2,
+       ty_amt  TYPE p LENGTH 13 DECIMALS 0.
+
+DATA(lv_tax_rate) = COND ty_rate(
+  WHEN lv_gross <= 3000000 THEN '0.06'
+  WHEN lv_gross <= 5000000 THEN '0.15'
+  ELSE '0.24' ).
+
+DATA(lv_tax) = CONV ty_amt( lv_gross * lv_tax_rate ).
+DATA(lv_net) = CONV ty_amt( lv_gross - lv_tax ).`,
+      note: '결과 변수를 미리 선언하는 대신 COND 와 CONV 로 타입을 지정하면서 그 자리에서 값을 만듭니다.'
+    },
+    {
+      topic: '명세서 한 줄 출력 (WRITE TO + CONCATENATE → String Template)',
+      classic: `DATA: lv_amt_c TYPE c LENGTH 20,
+      lv_line  TYPE string.
+
+WRITE lv_gross TO lv_amt_c RIGHT-JUSTIFIED.
+CONCATENATE '총지급액   :' lv_amt_c
+       INTO lv_line SEPARATED BY space.
+WRITE / lv_line.
+
+CONCATENATE '성명       :' p_name '(' lv_rank_nm ')'
+       INTO lv_line SEPARATED BY space.
+WRITE / lv_line.`,
+      modern: `WRITE: / |총지급액   : { lv_gross NUMBER = USER WIDTH = 14 ALIGN = RIGHT }|,
+       / |성명       : { p_name }  ({ lv_rank_nm })|.`,
+      note: '숫자 서식은 WRITE TO 로, 결합은 CONCATENATE 로 나눠 하던 일을 String Template 의 포맷 옵션(NUMBER · WIDTH · ALIGN)이 한 번에 처리합니다.'
+    }
+  ],
   quiz: [
     { q: '다음 코드의 출력 결과는?', code: `DATA lv_sum TYPE i.\nDO 5 TIMES.\n  CHECK sy-index <> 3.\n  lv_sum = lv_sum + sy-index.\nENDDO.\nWRITE lv_sum.`, choices: ['15', '12', '10', '3'], answer: 1, explain: '1+2+4+5 = 12 입니다. CHECK 조건이 거짓인 sy-index = 3 회차는 건너뜁니다.' },
     { q: '반복문 안에서 성능상 반드시 피해야 하는 것은?', choices: ['변수 할당', 'WRITE 출력', 'SELECT 문 실행', 'IF 조건 검사'], answer: 2, explain: '루프 안의 SELECT는 반복 횟수만큼 DB를 왕복하여 성능을 치명적으로 떨어뜨립니다. 데이터를 한 번에 읽어 내부 테이블에 담아 처리해야 합니다.' },
@@ -976,15 +1755,25 @@ PARAMETERS: p_rank  TYPE c LENGTH 4 DEFAULT 'M2',
 
 DATA: gv_base   TYPE p LENGTH 13 DECIMALS 0,
       gv_gross  TYPE p LENGTH 13 DECIMALS 0,
-      gv_tax    TYPE p LENGTH 13 DECIMALS 0.
+      gv_tax    TYPE p LENGTH 13 DECIMALS 0,
+      gv_ok     TYPE abap_bool.
 
 START-OF-SELECTION.
-  IF check_input( ) = abap_false.
+  PERFORM check_input CHANGING gv_ok.
+  IF gv_ok = abap_false.
     RETURN.
   ENDIF.
   PERFORM calc_gross.
   PERFORM calc_tax.
   PERFORM display.
+
+*&---------------------------------------------------------------------*
+FORM check_input CHANGING cv_ok TYPE abap_bool.
+  cv_ok = xsdbool( p_rank = 'S1' OR p_rank = 'M1' OR p_rank = 'M2' OR p_rank = 'M3' ).
+  IF cv_ok = abap_false.
+    WRITE / |[오류] 직급 코드 { p_rank } 가 올바르지 않습니다 (S1/M1/M2/M3).|.
+  ENDIF.
+ENDFORM.
 
 *&---------------------------------------------------------------------*
 FORM calc_gross.
@@ -1019,6 +1808,92 @@ FORM display.
          / |소득세   : { gv_tax   NUMBER = USER }|,
          / |실수령액 : { gv_gross - gv_tax NUMBER = USER }|.
   ULINE.
+ENDFORM.`,
+    solutionClassic: `* FORM 분리 버전을 구문법(7.40 이전 스타일)으로 작성한 예입니다.
+
+REPORT ztest_payroll_v2.
+
+PARAMETERS: p_rank  TYPE c LENGTH 4 DEFAULT 'M2',
+            p_years TYPE i DEFAULT 7,
+            p_ot    TYPE i DEFAULT 12.
+
+DATA: gv_base  TYPE p LENGTH 13 DECIMALS 0,
+      gv_gross TYPE p LENGTH 13 DECIMALS 0,
+      gv_tax   TYPE p LENGTH 13 DECIMALS 0,
+      gv_ok    TYPE abap_bool.
+
+START-OF-SELECTION.
+  PERFORM check_input CHANGING gv_ok.
+  IF gv_ok = abap_false.
+    RETURN.
+  ENDIF.
+  PERFORM calc_gross.
+  PERFORM calc_tax.
+  PERFORM display.
+
+*&---------------------------------------------------------------------*
+FORM check_input CHANGING cv_ok TYPE abap_bool.
+  CASE p_rank.
+    WHEN 'S1' OR 'M1' OR 'M2' OR 'M3'.
+      cv_ok = abap_true.
+    WHEN OTHERS.
+      cv_ok = abap_false.
+      WRITE / '[오류] 직급 코드가 올바르지 않습니다 (S1/M1/M2/M3).'.
+  ENDCASE.
+ENDFORM.
+
+*&---------------------------------------------------------------------*
+FORM calc_gross.
+  DATA: lv_rate   TYPE p LENGTH 3 DECIMALS 2,
+        lv_senior TYPE p LENGTH 13 DECIMALS 0,
+        lv_ot     TYPE p LENGTH 13 DECIMALS 0.
+
+  CASE p_rank.
+    WHEN 'S1'. gv_base = 3000000.
+    WHEN 'M1'. gv_base = 3800000.
+    WHEN 'M2'. gv_base = 4600000.
+    WHEN 'M3'. gv_base = 5800000.
+    WHEN OTHERS. gv_base = 0.
+  ENDCASE.
+
+  IF p_years >= 10.
+    lv_rate = '0.20'.
+  ELSEIF p_years >= 5.
+    lv_rate = '0.10'.
+  ELSE.
+    lv_rate = 0.
+  ENDIF.
+  lv_senior = gv_base * lv_rate.
+
+  IF p_ot > 0.
+    lv_ot = gv_base / 209 * '1.5' * p_ot.
+  ELSE.
+    lv_ot = 0.
+  ENDIF.
+
+  gv_gross = gv_base + lv_senior + lv_ot.
+ENDFORM.
+
+*&---------------------------------------------------------------------*
+FORM calc_tax.
+  DATA lv_rate TYPE p LENGTH 3 DECIMALS 2.
+  IF     gv_gross <= 3000000. lv_rate = '0.06'.
+  ELSEIF gv_gross <= 5000000. lv_rate = '0.15'.
+  ELSE.                       lv_rate = '0.24'.
+  ENDIF.
+  gv_tax = gv_gross * lv_rate.
+ENDFORM.
+
+*&---------------------------------------------------------------------*
+FORM display.
+  DATA lv_net TYPE p LENGTH 13 DECIMALS 0.
+  lv_net = gv_gross - gv_tax.
+
+  ULINE.
+  WRITE: / '총지급액 :', gv_gross,
+         / '소득세   :', gv_tax,
+         / '실수령액 :', lv_net.
+  ULINE.
 ENDFORM.`
   }
 },
@@ -1039,6 +1914,35 @@ ENDFORM.`
        <span class="k">END</span> <span class="k">OF</span> ty_order.
 
 <span class="k">DATA</span> ls_order <span class="k">TYPE</span> ty_order.</pre>
+<figure class="fig">
+<svg viewBox="0 0 720 245" role="img" aria-label="구조체 ls_order 의 필드 구성과 접근 방식">
+  <text class="tx-m tx-b" x="20" y="22">ls_order</text>
+  <text class="tx-s" x="100" y="22">TYPE ty_order  (한 행 = 필드 4개의 묶음)</text>
+  <rect class="ln-b dash" x="12" y="38" width="700" height="94" rx="10"/>
+  <rect class="bx-b" x="20" y="50" width="165" height="72" rx="8"/>
+  <text class="tx-m tx-b" x="102" y="68" text-anchor="middle">vbeln</text>
+  <text class="tx-s" x="102" y="88" text-anchor="middle">vbeln_va · 주문번호</text>
+  <text class="tx-m tx-c" x="102" y="108" text-anchor="middle">'0000012345'</text>
+  <rect class="bx-b" x="195" y="50" width="165" height="72" rx="8"/>
+  <text class="tx-m tx-b" x="277" y="68" text-anchor="middle">matnr</text>
+  <text class="tx-s" x="277" y="88" text-anchor="middle">matnr · 자재번호</text>
+  <text class="tx-m tx-c" x="277" y="108" text-anchor="middle">'000…000100'</text>
+  <rect class="bx-b" x="370" y="50" width="165" height="72" rx="8"/>
+  <text class="tx-m tx-b" x="452" y="68" text-anchor="middle">kwmeng</text>
+  <text class="tx-s" x="452" y="88" text-anchor="middle">kwmeng · 수량</text>
+  <text class="tx-m tx-c" x="452" y="108" text-anchor="middle">10</text>
+  <rect class="bx-b" x="545" y="50" width="160" height="72" rx="8"/>
+  <text class="tx-m tx-b" x="625" y="68" text-anchor="middle">netwr</text>
+  <text class="tx-s" x="625" y="88" text-anchor="middle">netwr_ap · 금액</text>
+  <text class="tx-m tx-c" x="625" y="108" text-anchor="middle">150000.00</text>
+  <path class="ln-b arr-b" d="M277,160 V126"/>
+  <text class="tx-m tx-b" x="277" y="174" text-anchor="middle">ls_order-matnr</text>
+  <text class="tx-s" x="380" y="174">구조체명-필드명 : 하이픈(-) 으로 필드에 접근</text>
+  <rect class="bx-d" x="20" y="200" width="685" height="34" rx="8"/>
+  <text class="tx-s tx-w" x="362" y="217" text-anchor="middle">DB 테이블의 한 행(레코드) = 구조체 하나  ·  같은 구조의 여러 행 = 내부 테이블 (Day 17)</text>
+</svg>
+<figcaption>그림 1. 구조체는 타입이 서로 다른 필드를 한 덩어리로 묶은 것 — 각 필드는 "구조체명-필드명" 으로 접근한다</figcaption>
+</figure>
 
 <h4>2. 필드 접근 — 하이픈(-)</h4>
 <pre class="code">ls_order-vbeln  = <span class="s">'0000012345'</span>.
@@ -1089,6 +1993,40 @@ ls_cust-addr-city = <span class="s">'서울'</span>.      <span class="c">" 하�
        <span class="k">END</span> <span class="k">OF</span> ty_item.
 
 <span class="c">" 접근 : ls_item-city  (ls_item-addr-city 가 아님)</span></pre>
+<figure class="fig">
+<svg viewBox="0 0 720 250" role="img" aria-label="중첩 구조체와 INCLUDE TYPE 의 필드 배치 비교">
+  <text class="tx-b" x="185" y="20" text-anchor="middle">중첩 구조체 (addr TYPE ty_addr)</text>
+  <rect class="bx-b" x="20" y="40" width="330" height="150" rx="10"/>
+  <text class="tx-m tx-c" x="32" y="56">ls_cust</text>
+  <rect class="bx" x="36" y="70" width="90" height="34" rx="6"/>
+  <text class="tx-m" x="81" y="87" text-anchor="middle">kunnr</text>
+  <rect class="bx" x="136" y="70" width="90" height="34" rx="6"/>
+  <text class="tx-m" x="181" y="87" text-anchor="middle">name</text>
+  <rect class="bx-a" x="236" y="70" width="100" height="110" rx="6"/>
+  <text class="tx-m tx-a" x="286" y="86" text-anchor="middle">addr</text>
+  <rect class="bx" x="246" y="100" width="80" height="30" rx="6"/>
+  <text class="tx-m" x="286" y="115" text-anchor="middle">city</text>
+  <rect class="bx" x="246" y="140" width="80" height="30" rx="6"/>
+  <text class="tx-m" x="286" y="155" text-anchor="middle">zip</text>
+  <text class="tx-m tx-b" x="185" y="212" text-anchor="middle">ls_cust-addr-city</text>
+  <text class="tx-s" x="185" y="234" text-anchor="middle">하이픈 두 번 (구조 안의 구조)</text>
+  <path class="ln dash" d="M365,10 V240"/>
+  <text class="tx-b" x="540" y="20" text-anchor="middle">INCLUDE TYPE ty_addr (평평하게)</text>
+  <rect class="bx-g" x="380" y="40" width="320" height="150" rx="10"/>
+  <text class="tx-m tx-g" x="392" y="56">ls_item</text>
+  <rect class="bx-a" x="396" y="90" width="90" height="40" rx="6"/>
+  <text class="tx-m" x="441" y="110" text-anchor="middle">city</text>
+  <rect class="bx-a" x="496" y="90" width="90" height="40" rx="6"/>
+  <text class="tx-m" x="541" y="110" text-anchor="middle">zip</text>
+  <rect class="bx" x="596" y="90" width="90" height="40" rx="6"/>
+  <text class="tx-m" x="641" y="110" text-anchor="middle">qty</text>
+  <path class="ln-a" d="M396,140 V148 H586 V140"/>
+  <text class="tx-s tx-a" x="491" y="166" text-anchor="middle">ty_addr 에서 펼쳐진 필드</text>
+  <text class="tx-m tx-b" x="540" y="212" text-anchor="middle">ls_item-city</text>
+  <text class="tx-s" x="540" y="234" text-anchor="middle">하이픈 한 번 (같은 높이의 필드)</text>
+</svg>
+<figcaption>그림 2. 중첩 구조체는 필드 안에 구조체가 들어가고, INCLUDE TYPE 은 다른 구조체의 필드를 같은 높이로 펼쳐 넣는다</figcaption>
+</figure>
 
 <h4>7. 구조체 비교와 복사</h4>
 <ul>
@@ -1210,6 +2148,56 @@ START-OF-SELECTION.
   ENDIF.`
     }
   ],
+  compare: [
+    {
+      topic: '구조체 값 채우기와 일부만 바꾼 복사본 (필드별 할당 → VALUE · BASE)',
+      classic: `DATA: ls_cust  TYPE ty_customer,
+      ls_cust3 TYPE ty_customer.
+
+CLEAR ls_cust.
+ls_cust-kunnr       = '0000002000'.
+ls_cust-name        = '민국물산'.
+ls_cust-grade       = 'B'.
+ls_cust-addr-zip    = '48058'.
+ls_cust-addr-city   = '부산광역시'.
+ls_cust-addr-street = '해운대로 55'.
+ls_cust-limit       = '20000000.00'.
+
+* 통째로 복사한 뒤 일부 필드만 변경
+ls_cust3       = ls_cust.
+ls_cust3-kunnr = '0000003000'.
+ls_cust3-name  = '민국물산 2지점'.`,
+      modern: `DATA(ls_cust) = VALUE ty_customer(
+    kunnr = '0000002000'
+    name  = '민국물산'
+    grade = 'B'
+    addr  = VALUE #( zip    = '48058'
+                     city   = '부산광역시'
+                     street = '해운대로 55' )
+    limit = '20000000.00' ).
+
+* BASE : 기존 값을 바탕으로 일부만 변경
+DATA(ls_cust3) = VALUE ty_customer( BASE ls_cust
+                                    kunnr = '0000003000'
+                                    name  = '민국물산 2지점' ).`,
+      note: '구조체명을 매 줄 반복하던 필드별 할당이 VALUE 생성자 하나로 묶이고, "복사 후 수정" 은 BASE 옵션으로 표현합니다.'
+    },
+    {
+      topic: '이름이 같은 필드만 복사 (MOVE-CORRESPONDING → CORRESPONDING)',
+      classic: `DATA ls_disp TYPE ty_disp.
+
+CLEAR ls_disp.
+MOVE-CORRESPONDING ls_mara TO ls_disp.
+ls_disp-maktx = ls_makt-maktx.
+
+WRITE: / ls_disp-matnr, ls_disp-mtart, ls_disp-maktx.`,
+      modern: `DATA(ls_disp) = CORRESPONDING ty_disp( ls_mara ).
+ls_disp-maktx = ls_makt-maktx.
+
+WRITE: / ls_disp-matnr, ls_disp-mtart, ls_disp-maktx.`,
+      note: 'MOVE-CORRESPONDING 문장 대신 CORRESPONDING 생성 연산자를 쓰면 대상 변수 선언과 복사를 한 줄에서 끝냅니다.'
+    }
+  ],
   quiz: [
     { q: '구조체 ls_cust 안에 중첩된 구조체 addr의 city 필드에 접근하는 올바른 표기는?', choices: ['ls_cust->addr->city', 'ls_cust-addr-city', 'ls_cust.addr.city', 'ls_cust[addr][city]'], answer: 1, explain: '구조체 필드 접근은 하이픈(-)을 사용합니다. 화살표(->)는 객체 참조의 멤버 접근에 씁니다.' },
     { q: 'ls_order = VALUE #( kwmeng = 5 ). 를 실행했을 때, 기존에 값이 들어있던 vbeln 필드는 어떻게 되는가?', choices: ['기존 값이 그대로 유지된다', '초기값으로 비워진다', '구문 오류가 발생한다', '랜덤 값이 들어간다'], answer: 1, explain: 'VALUE #( )는 구조체를 새로 만들어 할당하므로 명시하지 않은 필드는 초기값이 됩니다. 기존 값을 유지하려면 BASE 옵션을 사용해야 합니다.' },
@@ -1278,6 +2266,76 @@ FORM print_book USING is_b TYPE ty_book.
          / |  가격   : { is_b-price NUMBER = USER } 원|,
          / |  재고   : { is_b-stock } 권|.
 
+ENDFORM.`,
+    solutionClassic: `REPORT ztest_book.
+
+TYPES: BEGIN OF ty_pub,
+         name  TYPE string,
+         pdate TYPE d,
+       END OF ty_pub,
+
+       BEGIN OF ty_book,
+         code   TYPE c LENGTH 8,
+         title  TYPE string,
+         author TYPE string,
+         pub    TYPE ty_pub,
+         price  TYPE p LENGTH 9 DECIMALS 0,
+         stock  TYPE i,
+       END OF ty_book.
+
+DATA: ls_b1 TYPE ty_book,
+      ls_b2 TYPE ty_book,
+      ls_b3 TYPE ty_book.
+
+START-OF-SELECTION.
+
+  ls_b1-code      = 'B0000001'.
+  ls_b1-title     = 'ABAP 완전정복'.
+  ls_b1-author    = '김개발'.
+  ls_b1-pub-name  = '한빛출판'.
+  ls_b1-pub-pdate = '20250310'.
+  ls_b1-price     = 38000.
+  ls_b1-stock     = 12.
+
+  ls_b2-code      = 'B0000002'.
+  ls_b2-title     = 'SAP S/4HANA 실무'.
+  ls_b2-author    = '이컨설'.
+  ls_b2-pub-name  = '위키북스'.
+  ls_b2-pub-pdate = '20240820'.
+  ls_b2-price     = 45000.
+  ls_b2-stock     = 0.
+
+* BASE 대신 : 통째로 복사한 뒤 일부만 변경
+  ls_b3       = ls_b1.
+  ls_b3-code  = 'B0000003'.
+  ls_b3-title = 'ABAP 완전정복 2판'.
+  ls_b3-price = 42000.
+  ls_b3-stock = 5.
+
+  PERFORM print_book USING ls_b1.
+  PERFORM print_book USING ls_b2.
+  PERFORM print_book USING ls_b3.
+
+*&---------------------------------------------------------------------*
+FORM print_book USING is_b TYPE ty_book.
+
+  DATA lv_status TYPE string.
+
+  IF is_b-stock = 0.
+    lv_status = '[품절]'.
+  ELSEIF is_b-stock <= 5.
+    lv_status = '[재고부족]'.
+  ELSE.
+    lv_status = '[판매중]'.
+  ENDIF.
+
+  ULINE.
+  WRITE: / is_b-code, is_b-title, lv_status,
+         / '  저자   :', is_b-author,
+         / '  출판사 :', is_b-pub-name, '(', is_b-pub-pdate, ')',
+         / '  가격   :', is_b-price, '원',
+         / '  재고   :', is_b-stock, '권'.
+
 ENDFORM.`
   }
 },
@@ -1304,6 +2362,71 @@ DB에서 읽은 데이터는 거의 항상 내부 테이블에 담아 처리합�
   <tr><td>추가(APPEND)</td><td>빠름</td><td>정렬 위치 유지 필요</td><td>INSERT만 가능</td></tr>
   <tr><td>적합한 용도</td><td>일반 처리, 순차 루프</td><td>정렬된 상태 유지 + 범위 조회</td><td>키로 1건씩 빈번 조회</td></tr>
 </table>
+<figure class="fig">
+<svg viewBox="0 0 720 290" role="img" aria-label="STANDARD, SORTED, HASHED 내부 테이블의 저장과 검색 방식">
+  <text class="tx-b" x="125" y="20" text-anchor="middle">STANDARD</text>
+  <text class="tx-s" x="125" y="40" text-anchor="middle">입력 순서 · 선형 O(n)</text>
+  <rect class="bx" x="15" y="56" width="34" height="32" rx="4"/>
+  <text class="tx-s" x="32" y="72" text-anchor="middle">1</text>
+  <rect class="bx" x="53" y="56" width="182" height="32" rx="4"/>
+  <text class="tx-m" x="65" y="72">id = 3   마우스</text>
+  <rect class="bx" x="15" y="92" width="34" height="32" rx="4"/>
+  <text class="tx-s" x="32" y="108" text-anchor="middle">2</text>
+  <rect class="bx" x="53" y="92" width="182" height="32" rx="4"/>
+  <text class="tx-m" x="65" y="108">id = 1   키보드</text>
+  <rect class="bx" x="15" y="128" width="34" height="32" rx="4"/>
+  <text class="tx-s" x="32" y="144" text-anchor="middle">3</text>
+  <rect class="bx-g" x="53" y="128" width="182" height="32" rx="4"/>
+  <text class="tx-m" x="65" y="144">id = 2   모니터</text>
+  <rect class="bx" x="15" y="164" width="34" height="32" rx="4"/>
+  <text class="tx-s" x="32" y="180" text-anchor="middle">4</text>
+  <rect class="bx-o" x="53" y="164" width="182" height="32" rx="4"/>
+  <text class="tx-m" x="65" y="180">id = 1   키보드2</text>
+  <text class="tx-s" x="125" y="254" text-anchor="middle">id = 2 : 1행부터 차례로 비교</text>
+  <text class="tx-s" x="125" y="274" text-anchor="middle">키 중복 허용 (주황 행)</text>
+  <path class="ln dash" d="M242,10 V280"/>
+  <text class="tx-b" x="360" y="20" text-anchor="middle">SORTED</text>
+  <text class="tx-s" x="360" y="40" text-anchor="middle">키 순서 · 이진 O(log n)</text>
+  <rect class="bx" x="250" y="56" width="34" height="32" rx="4"/>
+  <text class="tx-s" x="267" y="72" text-anchor="middle">1</text>
+  <rect class="bx" x="288" y="56" width="182" height="32" rx="4"/>
+  <text class="tx-m" x="300" y="72">id = 1   키보드</text>
+  <rect class="bx" x="250" y="92" width="34" height="32" rx="4"/>
+  <text class="tx-s" x="267" y="108" text-anchor="middle">2</text>
+  <rect class="bx-g" x="288" y="92" width="182" height="32" rx="4"/>
+  <text class="tx-m" x="300" y="108">id = 2   모니터</text>
+  <rect class="bx" x="250" y="128" width="34" height="32" rx="4"/>
+  <text class="tx-s" x="267" y="144" text-anchor="middle">3</text>
+  <rect class="bx" x="288" y="128" width="182" height="32" rx="4"/>
+  <text class="tx-m" x="300" y="144">id = 3   마우스</text>
+  <rect class="bx" x="250" y="164" width="34" height="32" rx="4"/>
+  <text class="tx-s" x="267" y="180" text-anchor="middle">4</text>
+  <rect class="bx" x="288" y="164" width="182" height="32" rx="4"/>
+  <text class="tx-m" x="300" y="180">id = 4   허브</text>
+  <text class="tx-s" x="360" y="254" text-anchor="middle">id = 2 : 가운데부터 반씩 좁혀 탐색</text>
+  <text class="tx-s" x="360" y="274" text-anchor="middle">UNIQUE / NON-UNIQUE 선택</text>
+  <path class="ln dash" d="M477,10 V280"/>
+  <text class="tx-b" x="595" y="20" text-anchor="middle">HASHED</text>
+  <text class="tx-s" x="595" y="40" text-anchor="middle">해시 · 직접 접근 O(1)</text>
+  <rect class="bx-o" x="485" y="56" width="100" height="32" rx="6"/>
+  <text class="tx-m" x="535" y="72" text-anchor="middle">id = 2</text>
+  <path class="ln arr" d="M585,72 H601"/>
+  <rect class="bx-a" x="605" y="56" width="100" height="32" rx="6"/>
+  <text x="655" y="72" text-anchor="middle">해시 함수</text>
+  <rect class="bx" x="485" y="100" width="220" height="28" rx="4"/>
+  <text class="tx-m" x="497" y="114">id = 3   마우스</text>
+  <rect class="bx" x="485" y="134" width="220" height="28" rx="4"/>
+  <text class="tx-m" x="497" y="148">id = 1   키보드</text>
+  <rect class="bx-g" x="485" y="168" width="220" height="28" rx="4"/>
+  <text class="tx-m" x="497" y="182">id = 2   모니터</text>
+  <rect class="bx" x="485" y="202" width="220" height="28" rx="4"/>
+  <text class="tx-m" x="497" y="216">id = 4   허브</text>
+  <path class="ln-a arr-a" d="M705,72 H713 V182 H709"/>
+  <text class="tx-s" x="595" y="254" text-anchor="middle">인덱스 없음 · 위치를 바로 계산</text>
+  <text class="tx-s" x="595" y="274" text-anchor="middle">UNIQUE KEY 필수</text>
+</svg>
+<figcaption>그림 1. 세 가지 내부 테이블 — 같은 id = 2 를 찾을 때 STANDARD 는 처음부터 훑고, SORTED 는 반씩 좁히고, HASHED 는 해시로 위치를 바로 계산한다</figcaption>
+</figure>
 
 <h4>3. 선언 문법</h4>
 <pre class="code"><span class="c">" STANDARD - 가장 많이 씀</span>
@@ -1329,6 +2452,35 @@ DB에서 읽은 데이터는 거의 항상 내부 테이블에 담아 처리합�
 <h4>5. 헤더 라인(Header Line) — 쓰지 마세요</h4>
 <pre class="code"><span class="c">" 구문법 : 테이블과 동명의 작업영역이 자동 생성됨</span>
 <span class="k">DATA</span> lt_old <span class="k">TYPE</span> <span class="k">TABLE</span> <span class="k">OF</span> ty_order <span class="k">WITH</span> <span class="k">HEADER</span> <span class="k">LINE</span>.</pre>
+<figure class="fig">
+<svg viewBox="0 0 720 200" role="img" aria-label="헤더 라인과 명시적 작업 영역 비교">
+  <text class="tx-b tx-r" x="185" y="20" text-anchor="middle">헤더 라인 : 이름 하나가 두 대상</text>
+  <rect class="bx-r" x="30" y="90" width="100" height="40" rx="8"/>
+  <text class="tx-m" x="80" y="110" text-anchor="middle">lt_old</text>
+  <rect class="bx-o" x="190" y="44" width="150" height="40" rx="8"/>
+  <text x="265" y="64" text-anchor="middle">작업영역 (헤더)</text>
+  <rect class="bx" x="190" y="110" width="150" height="70" rx="8"/>
+  <text x="265" y="132" text-anchor="middle">테이블 본문</text>
+  <text class="tx-s" x="265" y="156" text-anchor="middle">여러 행</text>
+  <path class="ln-r arr-r" d="M130,102 L186,68"/>
+  <path class="ln-r arr-r" d="M130,118 L186,140"/>
+  <text class="tx-b tx-r" x="150" y="110" text-anchor="middle">?</text>
+  <path class="ln dash" d="M365,10 V190"/>
+  <text class="tx-b tx-g" x="540" y="20" text-anchor="middle">명시적 작업 영역 : 이름마다 대상 하나</text>
+  <rect class="bx-g" x="390" y="44" width="100" height="40" rx="8"/>
+  <text class="tx-m" x="440" y="64" text-anchor="middle">ls_wa</text>
+  <path class="ln-g arr-g" d="M490,64 H546"/>
+  <rect class="bx-o" x="550" y="44" width="150" height="40" rx="8"/>
+  <text x="625" y="64" text-anchor="middle">작업영역 (1행)</text>
+  <rect class="bx-g" x="390" y="125" width="100" height="40" rx="8"/>
+  <text class="tx-m" x="440" y="145" text-anchor="middle">lt_tab</text>
+  <path class="ln-g arr-g" d="M490,145 H546"/>
+  <rect class="bx" x="550" y="110" width="150" height="70" rx="8"/>
+  <text x="625" y="132" text-anchor="middle">테이블 본문</text>
+  <text class="tx-s" x="625" y="156" text-anchor="middle">여러 행</text>
+</svg>
+<figcaption>그림 2. 헤더 라인은 lt_old 라는 이름이 문맥에 따라 작업영역도 되고 테이블도 되어 혼란을 준다 — 신규 코드는 작업영역을 따로 둔다</figcaption>
+</figure>
 <div class="note">⚠️ 헤더 라인은 테이블 이름이 상황에 따라 "테이블 전체"를 의미하기도 하고 "작업 영역"을 의미하기도 해서 버그의 온상입니다.
 <b>OO 컨텍스트(클래스·메소드)에서는 아예 사용 금지</b>입니다. 오래된 코드를 읽을 때만 알아두세요. 신규 코드는 반드시 <code>INTO ls_wa</code> 방식을 씁니다.</div>
 
@@ -1452,6 +2604,56 @@ START-OF-SELECTION.
   ENDIF.`
     }
   ],
+  compare: [
+    {
+      topic: '내부 테이블 선언과 채우기 (OCCURS · 헤더 라인 → 테이블 타입 · VALUE)',
+      classic: `* 구문법 - 오래된 코드 읽기용 (OO 에서는 사용 금지)
+DATA: BEGIN OF lt_old OCCURS 0,
+        id   TYPE i,
+        name TYPE string,
+      END OF lt_old.
+
+lt_old-id   = 1.
+lt_old-name = '키보드'.
+APPEND lt_old.                "헤더 라인 -> 본문으로 추가
+
+LOOP AT lt_old.               "본문 행이 헤더 라인으로 복사됨
+  WRITE: / lt_old-id, lt_old-name.
+ENDLOOP.`,
+      modern: `TYPES: BEGIN OF ty_item,
+         id   TYPE i,
+         name TYPE string,
+       END OF ty_item.
+
+DATA lt_item TYPE STANDARD TABLE OF ty_item WITH EMPTY KEY.
+
+lt_item = VALUE #( ( id = 1 name = '키보드' ) ).
+
+LOOP AT lt_item INTO DATA(ls_item).
+  WRITE: / ls_item-id, ls_item-name.
+ENDLOOP.`,
+      note: '이름 하나가 테이블과 작업영역을 겸하던 헤더 라인 대신, 테이블 타입과 별도의 작업영역(인라인 선언)을 명확히 구분합니다.'
+    },
+    {
+      topic: '행 개수와 존재 여부 확인 (DESCRIBE · READ NO FIELDS → lines · line_exists)',
+      classic: `DATA lv_cnt TYPE i.
+
+DESCRIBE TABLE lt_hsh LINES lv_cnt.
+WRITE: / '행 수 :', lv_cnt.
+
+READ TABLE lt_hsh TRANSPORTING NO FIELDS
+     WITH TABLE KEY key = 1.
+IF sy-subrc = 0.
+  WRITE: / 'key=1 행이 존재합니다.'.
+ENDIF.`,
+      modern: `WRITE: / '행 수 :', lines( lt_hsh ).
+
+IF line_exists( lt_hsh[ key = 1 ] ).
+  WRITE: / 'key=1 행이 존재합니다.'.
+ENDIF.`,
+      note: '결과를 받을 변수와 sy-subrc 검사가 필요하던 문장이 lines( ) · line_exists( ) 내장 함수로 조건식 안에 바로 들어갑니다.'
+    }
+  ],
   quiz: [
     { q: '유일한 키로 특정 1건을 매우 자주 조회해야 할 때 가장 적합한 내부 테이블 종류는?', choices: ['STANDARD TABLE', 'SORTED TABLE', 'HASHED TABLE', 'INDEX TABLE'], answer: 2, explain: 'HASHED 테이블은 해시 알고리즘으로 키 접근이 O(1)입니다. 단 인덱스 접근은 불가능하고 UNIQUE KEY가 필수입니다.' },
     { q: 'HASHED TABLE에 대한 설명으로 틀린 것은?', choices: ['UNIQUE KEY 지정이 필수다', 'READ TABLE ... INDEX 로 접근할 수 있다', 'APPEND를 사용할 수 없고 INSERT를 써야 한다', '키 기반 검색 속도가 건수와 무관하게 일정하다'], answer: 1, explain: 'HASHED 테이블은 인덱스 개념이 없어 INDEX 접근이 불가능합니다. 반드시 WITH TABLE KEY로 접근해야 합니다.' },
@@ -1521,6 +2723,78 @@ START-OF-SELECTION.
          / |SORTED   : { lv_srt WIDTH = 10 ALIGN = RIGHT }|,
          / |HASHED   : { lv_hsh WIDTH = 10 ALIGN = RIGHT }|.
   ULINE.
+  WRITE: / '==> 건수가 많을수록 HASHED/SORTED 의 우위가 커집니다.'.`,
+    solutionClassic: `REPORT ztest_itab_perf.
+
+TYPES: BEGIN OF ty_row,
+         id   TYPE i,
+         text TYPE string,
+       END OF ty_row.
+
+DATA: lt_std TYPE STANDARD TABLE OF ty_row WITH EMPTY KEY,
+      lt_srt TYPE SORTED   TABLE OF ty_row WITH UNIQUE KEY id,
+      lt_hsh TYPE HASHED   TABLE OF ty_row WITH UNIQUE KEY id.
+
+DATA: lv_t1     TYPE i,
+      lv_t2     TYPE i,
+      ls        TYPE ty_row,
+      ls_row    TYPE ty_row,
+      lv_num    TYPE c LENGTH 10,
+      lv_target TYPE i,
+      lv_std    TYPE i,
+      lv_srt    TYPE i,
+      lv_hsh    TYPE i.
+
+CONSTANTS: gc_rows TYPE i VALUE 1000,
+           gc_loop TYPE i VALUE 1000.
+
+START-OF-SELECTION.
+
+* 1) 데이터 적재 - 작업영역을 채운 뒤 각 테이블에 추가
+  DO gc_rows TIMES.
+    CLEAR ls_row.
+    ls_row-id = sy-index.
+    lv_num = sy-index.
+    CONDENSE lv_num.
+    CONCATENATE 'ROW' lv_num INTO ls_row-text.
+    APPEND ls_row TO lt_std.
+    INSERT ls_row INTO TABLE lt_srt.
+    INSERT ls_row INTO TABLE lt_hsh.
+  ENDDO.
+
+  lv_target = gc_rows.          "최악의 경우 - 마지막 행
+
+* 2) STANDARD : 선형 탐색
+  GET RUN TIME FIELD lv_t1.
+  DO gc_loop TIMES.
+    READ TABLE lt_std INTO ls WITH KEY id = lv_target.
+  ENDDO.
+  GET RUN TIME FIELD lv_t2.
+  lv_std = lv_t2 - lv_t1.
+
+* 3) SORTED : 이진 탐색
+  GET RUN TIME FIELD lv_t1.
+  DO gc_loop TIMES.
+    READ TABLE lt_srt INTO ls WITH TABLE KEY id = lv_target.
+  ENDDO.
+  GET RUN TIME FIELD lv_t2.
+  lv_srt = lv_t2 - lv_t1.
+
+* 4) HASHED : 해시 접근
+  GET RUN TIME FIELD lv_t1.
+  DO gc_loop TIMES.
+    READ TABLE lt_hsh INTO ls WITH TABLE KEY id = lv_target.
+  ENDDO.
+  GET RUN TIME FIELD lv_t2.
+  lv_hsh = lv_t2 - lv_t1.
+
+  ULINE.
+  WRITE: / '데이터', gc_rows, '건 / 조회', gc_loop, '회 (단위: 마이크로초)'.
+  ULINE.
+  WRITE: / 'STANDARD :', lv_std,
+         / 'SORTED   :', lv_srt,
+         / 'HASHED   :', lv_hsh.
+  ULINE.
   WRITE: / '==> 건수가 많을수록 HASHED/SORTED 의 우위가 커집니다.'.`
   }
 },
@@ -1545,6 +2819,58 @@ START-OF-SELECTION.
 <span class="k">INSERT</span> ls_row <span class="k">INTO</span> <span class="k">TABLE</span> lt_tab.               <span class="c">" 키 순서대로 (권장)</span>
 <span class="k">INSERT</span> ls_row <span class="k">INTO</span> lt_tab <span class="k">INDEX</span> <span class="n">1</span>.             <span class="c">" 1번째 위치에</span>
 <span class="k">INSERT</span> <span class="k">LINES</span> <span class="k">OF</span> lt_src <span class="k">INTO</span> <span class="k">TABLE</span> lt_tgt.    <span class="c">" 테이블 통째로</span></pre>
+<figure class="fig">
+<svg viewBox="0 0 720 250" role="img" aria-label="APPEND 와 INSERT INDEX 의 행 추가 위치 비교">
+  <text class="tx-m tx-b" x="185" y="20" text-anchor="middle">APPEND ls_row TO lt_tab.</text>
+  <rect class="bx" x="40" y="44" width="34" height="30" rx="4"/>
+  <text class="tx-s" x="57" y="59" text-anchor="middle">1</text>
+  <rect class="bx" x="78" y="44" width="160" height="30" rx="4"/>
+  <text class="tx-m" x="158" y="59" text-anchor="middle">A</text>
+  <rect class="bx" x="40" y="78" width="34" height="30" rx="4"/>
+  <text class="tx-s" x="57" y="93" text-anchor="middle">2</text>
+  <rect class="bx" x="78" y="78" width="160" height="30" rx="4"/>
+  <text class="tx-m" x="158" y="93" text-anchor="middle">B</text>
+  <rect class="bx" x="40" y="112" width="34" height="30" rx="4"/>
+  <text class="tx-s" x="57" y="127" text-anchor="middle">3</text>
+  <rect class="bx" x="78" y="112" width="160" height="30" rx="4"/>
+  <text class="tx-m" x="158" y="127" text-anchor="middle">C</text>
+  <rect class="bx-g" x="40" y="146" width="34" height="30" rx="4"/>
+  <text class="tx-s" x="57" y="161" text-anchor="middle">4</text>
+  <rect class="bx-g" x="78" y="146" width="160" height="30" rx="4"/>
+  <text class="tx-m" x="158" y="161" text-anchor="middle">D (신규)</text>
+  <rect class="bx-g" x="270" y="146" width="80" height="30" rx="6"/>
+  <text class="tx-m" x="310" y="161" text-anchor="middle">ls_row</text>
+  <path class="ln-g arr-g" d="M270,161 H242"/>
+  <text class="tx-s" x="185" y="200" text-anchor="middle">항상 맨 끝에 추가 · STANDARD 전용</text>
+  <path class="ln dash" d="M365,10 V215"/>
+  <text class="tx-m tx-b" x="540" y="20" text-anchor="middle">INSERT ls_row INTO lt_tab INDEX 1.</text>
+  <rect class="bx-g" x="400" y="44" width="34" height="30" rx="4"/>
+  <text class="tx-s" x="417" y="59" text-anchor="middle">1</text>
+  <rect class="bx-g" x="438" y="44" width="160" height="30" rx="4"/>
+  <text class="tx-m" x="518" y="59" text-anchor="middle">X (신규)</text>
+  <rect class="bx" x="400" y="78" width="34" height="30" rx="4"/>
+  <text class="tx-s" x="417" y="93" text-anchor="middle">2</text>
+  <rect class="bx" x="438" y="78" width="160" height="30" rx="4"/>
+  <text class="tx-m" x="518" y="93" text-anchor="middle">A</text>
+  <rect class="bx" x="400" y="112" width="34" height="30" rx="4"/>
+  <text class="tx-s" x="417" y="127" text-anchor="middle">3</text>
+  <rect class="bx" x="438" y="112" width="160" height="30" rx="4"/>
+  <text class="tx-m" x="518" y="127" text-anchor="middle">B</text>
+  <rect class="bx" x="400" y="146" width="34" height="30" rx="4"/>
+  <text class="tx-s" x="417" y="161" text-anchor="middle">4</text>
+  <rect class="bx" x="438" y="146" width="160" height="30" rx="4"/>
+  <text class="tx-m" x="518" y="161" text-anchor="middle">C</text>
+  <rect class="bx-g" x="630" y="44" width="80" height="30" rx="6"/>
+  <text class="tx-m" x="670" y="59" text-anchor="middle">ls_row</text>
+  <path class="ln-g arr-g" d="M630,59 H602"/>
+  <text class="tx-s tx-o" x="608" y="93">1 → 2</text>
+  <text class="tx-s tx-o" x="608" y="127">2 → 3</text>
+  <text class="tx-s tx-o" x="608" y="161">3 → 4</text>
+  <text class="tx-s" x="540" y="200" text-anchor="middle">지정 위치에 끼우면 뒤 행의 인덱스가 하나씩 밀림</text>
+  <text class="tx-s" x="360" y="234" text-anchor="middle">INSERT ... INTO TABLE : 종류에 맞는 위치 (STANDARD = 끝, SORTED = 정렬 위치, HASHED = 해시 위치)</text>
+</svg>
+<figcaption>그림 1. APPEND 는 언제나 맨 끝에, INSERT ... INDEX n 은 n번째 자리에 끼워 넣고 뒤 행들의 인덱스를 밀어낸다</figcaption>
+</figure>
 <div class="tip">💡 <code>INTO TABLE</code>(전치사 없음)는 "테이블 종류에 맞는 적절한 위치"에 넣습니다. STANDARD면 맨 끝, SORTED면 정렬 위치, HASHED면 해시 위치입니다. 가장 범용적입니다.</div>
 
 <h4>2. VALUE 생성자로 한 번에 채우기 (권장)</h4>
@@ -1580,6 +2906,50 @@ lt_tab = <span class="k">VALUE</span> #( <span class="k">BASE</span> lt_tab ( id
 <span class="k">DELETE</span> <span class="k">TABLE</span> lt_tab <span class="k">WITH</span> <span class="k">TABLE</span> <span class="k">KEY</span> id = <span class="n">10</span>.    <span class="c">" 키로</span>
 <span class="k">DELETE</span> lt_tab <span class="k">WHERE</span> price &lt; <span class="n">1000</span>.             <span class="c">" 조건 (가장 많이 씀)</span>
 <span class="k">DELETE</span> lt_tab <span class="k">WHERE</span> status = <span class="s">'X'</span> <span class="k">AND</span> qty = <span class="n">0</span>.</pre>
+<figure class="fig">
+<svg viewBox="0 0 720 225" role="img" aria-label="DELETE WHERE 실행 전후의 내부 테이블">
+  <text class="tx-b" x="150" y="20" text-anchor="middle">삭제 전</text>
+  <rect class="bx" x="30" y="40" width="34" height="28" rx="4"/>
+  <text class="tx-s" x="47" y="54" text-anchor="middle">1</text>
+  <rect class="bx" x="68" y="40" width="200" height="28" rx="4"/>
+  <text class="tx-m" x="80" y="54">키보드   qty 10</text>
+  <rect class="bx" x="30" y="72" width="34" height="28" rx="4"/>
+  <text class="tx-s" x="47" y="86" text-anchor="middle">2</text>
+  <rect class="bx" x="68" y="72" width="200" height="28" rx="4"/>
+  <text class="tx-m" x="80" y="86">마우스   qty 25</text>
+  <rect class="bx" x="30" y="104" width="34" height="28" rx="4"/>
+  <text class="tx-s" x="47" y="118" text-anchor="middle">3</text>
+  <rect class="bx-r" x="68" y="104" width="200" height="28" rx="4"/>
+  <text class="tx-m tx-r" x="80" y="118">모니터   qty 0</text>
+  <rect class="bx" x="30" y="136" width="34" height="28" rx="4"/>
+  <text class="tx-s" x="47" y="150" text-anchor="middle">4</text>
+  <rect class="bx" x="68" y="136" width="200" height="28" rx="4"/>
+  <text class="tx-m" x="80" y="150">케이블   qty 50</text>
+  <rect class="bx" x="30" y="168" width="34" height="28" rx="4"/>
+  <text class="tx-s" x="47" y="182" text-anchor="middle">5</text>
+  <rect class="bx-r" x="68" y="168" width="200" height="28" rx="4"/>
+  <text class="tx-m tx-r" x="80" y="182">허브     qty 0</text>
+  <path class="ln-b arr-b" d="M290,118 H416"/>
+  <text class="tx-m tx-c" x="353" y="100" text-anchor="middle">DELETE lt</text>
+  <text class="tx-m tx-c" x="353" y="138" text-anchor="middle">WHERE qty = 0.</text>
+  <text class="tx-b" x="560" y="20" text-anchor="middle">삭제 후</text>
+  <rect class="bx" x="440" y="40" width="34" height="28" rx="4"/>
+  <text class="tx-s" x="457" y="54" text-anchor="middle">1</text>
+  <rect class="bx" x="478" y="40" width="200" height="28" rx="4"/>
+  <text class="tx-m" x="490" y="54">키보드   qty 10</text>
+  <rect class="bx" x="440" y="72" width="34" height="28" rx="4"/>
+  <text class="tx-s" x="457" y="86" text-anchor="middle">2</text>
+  <rect class="bx" x="478" y="72" width="200" height="28" rx="4"/>
+  <text class="tx-m" x="490" y="86">마우스   qty 25</text>
+  <rect class="bx-o" x="440" y="104" width="34" height="28" rx="4"/>
+  <text class="tx-s tx-o" x="457" y="118" text-anchor="middle">3</text>
+  <rect class="bx" x="478" y="104" width="200" height="28" rx="4"/>
+  <text class="tx-m" x="490" y="118">케이블   qty 50</text>
+  <text class="tx-s tx-o" x="684" y="118">← 4</text>
+  <text class="tx-s" x="360" y="212" text-anchor="middle">조건에 맞는 행을 한 번에 지우고, 남은 행의 인덱스는 다시 1부터 빈틈없이 매겨진다</text>
+</svg>
+<figcaption>그림 2. DELETE ... WHERE — 루프 없이 조건에 맞는 모든 행을 한 문장으로 삭제</figcaption>
+</figure>
 
 <h4>5. sy-subrc 확인 습관</h4>
 <p>내부 테이블 조작 후에는 항상 <code>sy-subrc</code>를 확인하세요.</p>
@@ -1591,12 +2961,15 @@ lt_tab = <span class="k">VALUE</span> #( <span class="k">BASE</span> lt_tab ( id
 </table>
 
 <h4>6. 루프 안에서 삭제할 때의 함정</h4>
-<pre class="code"><span class="c">" 위험한 코드 : 삭제하면 뒤 행의 인덱스가 당겨져 건너뜀</span>
-<span class="k">LOOP</span> <span class="k">AT</span> lt_tab <span class="k">INTO</span> ls.
+<pre class="code"><span class="c">" 위험한 코드 : 인덱스를 직접 세면서 삭제하면 뒤 행이 당겨져 건너뜀</span>
+<span class="k">DATA</span>(lv_i) = <span class="n">1</span>.
+<span class="k">WHILE</span> lv_i &lt;= lines( lt_tab ).
+  <span class="k">READ</span> <span class="k">TABLE</span> lt_tab <span class="k">INTO</span> ls <span class="k">INDEX</span> lv_i.
   <span class="k">IF</span> ls-qty = <span class="n">0</span>.
-    <span class="k">DELETE</span> lt_tab <span class="k">INDEX</span> sy-tabix.
+    <span class="k">DELETE</span> lt_tab <span class="k">INDEX</span> lv_i.   <span class="c">" 다음 행이 lv_i 자리로 당겨짐</span>
   <span class="k">ENDIF</span>.
-<span class="k">ENDLOOP</span>.
+  lv_i = lv_i + <span class="n">1</span>.                 <span class="c">" → 당겨진 행을 검사하지 않고 지나감!</span>
+<span class="k">ENDWHILE</span>.
 
 <span class="c">" 안전한 방법 1 : WHERE 로 한 번에</span>
 <span class="k">DELETE</span> lt_tab <span class="k">WHERE</span> qty = <span class="n">0</span>.
@@ -1727,10 +3100,72 @@ START-OF-SELECTION.
   ENDLOOP.`
     }
   ],
+  compare: [
+    {
+      topic: '여러 행 채우기 (작업영역 + APPEND 반복 → VALUE)',
+      classic: `DATA: lt_item TYPE STANDARD TABLE OF ty_item,
+      ls_item TYPE ty_item.
+
+ls_item-id = 1. ls_item-name = '키보드'. ls_item-qty = 10.
+APPEND ls_item TO lt_item.
+
+CLEAR ls_item.
+ls_item-id = 2. ls_item-name = '마우스'. ls_item-qty = 25.
+APPEND ls_item TO lt_item.
+
+CLEAR ls_item.
+ls_item-id = 3. ls_item-name = '모니터'. ls_item-qty = 0.
+APPEND ls_item TO lt_item.
+
+* 기존 행 뒤에 덧붙이기
+CLEAR ls_item.
+ls_item-id = 4. ls_item-name = '케이블'. ls_item-qty = 50.
+APPEND ls_item TO lt_item.`,
+      modern: `DATA lt_item TYPE STANDARD TABLE OF ty_item WITH EMPTY KEY.
+
+lt_item = VALUE #( ( id = 1 name = '키보드' qty = 10 )
+                   ( id = 2 name = '마우스' qty = 25 )
+                   ( id = 3 name = '모니터' qty = 0  ) ).
+
+* 기존 행 뒤에 덧붙이기 : BASE
+lt_item = VALUE #( BASE lt_item
+                   ( id = 4 name = '케이블' qty = 50 ) ).`,
+      note: '작업영역 채우기 → APPEND → CLEAR 를 행마다 반복하던 코드가 VALUE 생성자의 행 목록 하나로 끝나고, 덧붙이기는 BASE 로 합니다.'
+    },
+    {
+      topic: '있으면 수량 증가, 없으면 신규 추가 (READ + MODIFY → ASSIGN 테이블 표현식)',
+      classic: `DATA: ls_cart TYPE ty_cart,
+      lv_idx  TYPE sy-tabix.
+
+READ TABLE gt_cart INTO ls_cart WITH KEY code = iv_code.
+IF sy-subrc = 0.
+  lv_idx = sy-tabix.
+  ls_cart-qty = ls_cart-qty + iv_qty.
+  MODIFY gt_cart FROM ls_cart INDEX lv_idx TRANSPORTING qty.
+ELSE.
+  CLEAR ls_cart.
+  ls_cart-code  = iv_code.
+  ls_cart-name  = iv_name.
+  ls_cart-qty   = iv_qty.
+  ls_cart-price = iv_price.
+  APPEND ls_cart TO gt_cart.
+ENDIF.`,
+      modern: `ASSIGN gt_cart[ code = iv_code ] TO FIELD-SYMBOL(<ls_cart>).
+IF sy-subrc = 0.
+  <ls_cart>-qty = <ls_cart>-qty + iv_qty.      "테이블에 바로 반영
+ELSE.
+  APPEND VALUE #( code  = iv_code
+                  name  = iv_name
+                  qty   = iv_qty
+                  price = iv_price ) TO gt_cart.
+ENDIF.`,
+      note: '복사본을 고친 뒤 인덱스를 기억해 MODIFY 하던 과정이, 행을 직접 가리키는 필드 심볼 덕분에 한 줄 수정으로 바뀝니다.'
+    }
+  ],
   quiz: [
     { q: 'HASHED TABLE에 행을 추가할 때 사용할 수 없는 명령은?', choices: ['INSERT ... INTO TABLE', 'APPEND ... TO', 'VALUE 생성자로 전체 할당', 'INSERT LINES OF'], answer: 1, explain: 'APPEND는 "맨 끝에 추가"를 의미하므로 인덱스 개념이 없는 HASHED 테이블에서는 사용할 수 없습니다.' },
     { q: 'MODIFY lt_tab FROM ls INDEX 3. 에서 TRANSPORTING을 생략하면?', choices: ['아무 필드도 변경되지 않는다', '키 필드만 변경된다', '행 전체가 ls의 내용으로 덮어쓰기 된다', '구문 오류가 발생한다'], answer: 2, explain: 'TRANSPORTING을 생략하면 해당 행 전체가 작업 영역의 내용으로 교체됩니다. 일부 필드만 바꾸려면 반드시 TRANSPORTING을 명시해야 합니다.' },
-    { q: '수량이 0인 모든 행을 삭제하는 가장 안전하고 효율적인 방법은?', choices: ['LOOP 안에서 DELETE lt INDEX sy-tabix.', 'DELETE lt WHERE qty = 0.', 'LOOP 안에서 DELETE TABLE lt WITH TABLE KEY.', 'CLEAR 후 조건에 맞는 행만 다시 APPEND'], answer: 1, explain: 'DELETE ... WHERE 한 줄이 가장 빠르고 안전합니다. LOOP + DELETE INDEX는 인덱스가 당겨지며 행을 건너뛰는 버그를 유발합니다.' }
+    { q: '수량이 0인 모든 행을 삭제하는 가장 안전하고 효율적인 방법은?', choices: ['LOOP 안에서 DELETE lt INDEX sy-tabix.', 'DELETE lt WHERE qty = 0.', 'LOOP 안에서 DELETE TABLE lt WITH TABLE KEY.', 'CLEAR 후 조건에 맞는 행만 다시 APPEND'], answer: 1, explain: 'DELETE ... WHERE 한 줄이 가장 빠르고 안전합니다. LOOP 안에서 현재 행을 지우는 것도 동작은 하지만 한 행씩 처리하므로 느리고, 인덱스를 직접 세며 지우는 코드는 행을 건너뛰는 버그를 만들기 쉽습니다.' }
   ],
   assignment: {
     task: '간단한 장바구니 프로그램 ZTEST_CART를 작성하세요. (1) 상품 5개를 VALUE로 담고 (2) 같은 상품코드를 추가하면 수량만 증가시키고(없으면 신규 추가) (3) 수량이 0 이하인 항목을 일괄 삭제하고 (4) 최종 목록과 총액을 출력하세요.',
@@ -1813,6 +3248,98 @@ FORM show USING iv_title TYPE string.
   ULINE.
   WRITE: / |총 결제금액 : { lv_total NUMBER = USER } 원|.
 
+ENDFORM.`,
+    solutionClassic: `REPORT ztest_cart.
+
+TYPES: BEGIN OF ty_cart,
+         code  TYPE c LENGTH 6,
+         name  TYPE string,
+         qty   TYPE i,
+         price TYPE p LENGTH 9 DECIMALS 0,
+       END OF ty_cart.
+
+DATA: gt_cart TYPE STANDARD TABLE OF ty_cart,
+      gs_cart TYPE ty_cart.
+
+START-OF-SELECTION.
+
+* 1) 초기 상품 - 작업영역을 채워 한 행씩 APPEND
+  gs_cart-code = 'P00001'. gs_cart-name = '키보드'.   gs_cart-qty = 1. gs_cart-price = 89000.
+  APPEND gs_cart TO gt_cart.
+  gs_cart-code = 'P00002'. gs_cart-name = '마우스'.   gs_cart-qty = 2. gs_cart-price = 25000.
+  APPEND gs_cart TO gt_cart.
+  gs_cart-code = 'P00003'. gs_cart-name = '모니터'.   gs_cart-qty = 1. gs_cart-price = 320000.
+  APPEND gs_cart TO gt_cart.
+  gs_cart-code = 'P00004'. gs_cart-name = 'USB 허브'. gs_cart-qty = 3. gs_cart-price = 35000.
+  APPEND gs_cart TO gt_cart.
+  gs_cart-code = 'P00005'. gs_cart-name = '케이블'.   gs_cart-qty = 5. gs_cart-price = 5000.
+  APPEND gs_cart TO gt_cart.
+
+  PERFORM show USING '1) 초기 장바구니'.
+
+* 2) 담기 - 있으면 수량 증가, 없으면 신규
+  PERFORM add_item USING 'P00002' '마우스'   25000 3.
+  PERFORM add_item USING 'P00006' '웹캠'     78000 1.
+  PERFORM add_item USING 'P00005' '케이블'   5000  -5.   "반품
+
+  PERFORM show USING '2) 담기 후'.
+
+* 3) 수량 0 이하 제거
+  DELETE gt_cart WHERE qty <= 0.
+
+  PERFORM show USING '3) 수량 0 이하 제거 후'.
+
+*&---------------------------------------------------------------------*
+FORM add_item USING iv_code  TYPE c
+                    iv_name  TYPE string
+                    iv_price TYPE p
+                    iv_qty   TYPE i.
+
+  DATA: ls_cart TYPE ty_cart,
+        lv_idx  TYPE sy-tabix.
+
+  READ TABLE gt_cart INTO ls_cart WITH KEY code = iv_code.
+
+  IF sy-subrc = 0.
+    lv_idx = sy-tabix.
+    ls_cart-qty = ls_cart-qty + iv_qty.
+    MODIFY gt_cart FROM ls_cart INDEX lv_idx TRANSPORTING qty.
+    WRITE: / '  [수정]', iv_name, '수량', iv_qty, '반영 ->', ls_cart-qty.
+  ELSE.
+    CLEAR ls_cart.
+    ls_cart-code  = iv_code.
+    ls_cart-name  = iv_name.
+    ls_cart-qty   = iv_qty.
+    ls_cart-price = iv_price.
+    APPEND ls_cart TO gt_cart.
+    WRITE: / '  [신규]', iv_name, iv_qty, '개 추가'.
+  ENDIF.
+
+ENDFORM.
+
+*&---------------------------------------------------------------------*
+FORM show USING iv_title TYPE string.
+
+  DATA: ls_cart  TYPE ty_cart,
+        lv_cnt   TYPE i,
+        lv_amt   TYPE p LENGTH 13 DECIMALS 0,
+        lv_total TYPE p LENGTH 13 DECIMALS 0.
+
+  DESCRIBE TABLE gt_cart LINES lv_cnt.
+
+  SKIP. ULINE.
+  WRITE: / iv_title, '(', lv_cnt, '종)'.
+  ULINE.
+
+  LOOP AT gt_cart INTO ls_cart.
+    lv_amt   = ls_cart-qty * ls_cart-price.
+    lv_total = lv_total + lv_amt.
+    WRITE: / ls_cart-code, ls_cart-name, ls_cart-qty, 'x', ls_cart-price, '=', lv_amt.
+  ENDLOOP.
+
+  ULINE.
+  WRITE: / '총 결제금액 :', lv_total, '원'.
+
 ENDFORM.`
   }
 },
@@ -1845,6 +3372,33 @@ ENDFORM.`
   <tr><td>수정</td><td>MODIFY 필요</td><td><b>즉시 반영</b></td></tr>
   <tr><td>권장</td><td>읽기만 할 때</td><td><b>수정할 때 / 큰 구조체</b></td></tr>
 </table>
+<figure class="fig">
+<svg viewBox="0 0 720 235" role="img" aria-label="LOOP INTO 의 복사와 ASSIGNING 필드 심볼의 직접 참조 비교">
+  <text class="tx-m tx-b" x="360" y="40" text-anchor="middle">lt (내부 테이블)</text>
+  <rect class="bx" x="250" y="60" width="220" height="32" rx="4"/>
+  <text class="tx-m" x="262" y="76">1  키보드   89000</text>
+  <rect class="bx-b" x="250" y="96" width="220" height="32" rx="4"/>
+  <text class="tx-m tx-b" x="262" y="112">2  마우스   25000</text>
+  <rect class="bx" x="250" y="132" width="220" height="32" rx="4"/>
+  <text class="tx-m" x="262" y="148">3  모니터   320000</text>
+  <text class="tx-m tx-b" x="100" y="60" text-anchor="middle">LOOP ... INTO ls</text>
+  <rect class="bx-o" x="20" y="92" width="160" height="40" rx="8"/>
+  <text class="tx-m" x="100" y="112" text-anchor="middle">ls (복사본)</text>
+  <path class="ln-o arr-o" d="M250,112 H184"/>
+  <text class="tx-s tx-o" x="217" y="100" text-anchor="middle">복사</text>
+  <text class="tx-s" x="100" y="152" text-anchor="middle">ls 를 바꿔도 테이블은 그대로</text>
+  <text class="tx-s" x="100" y="172" text-anchor="middle">→ MODIFY 로 다시 써야 반영</text>
+  <text class="tx-m tx-b" x="620" y="60" text-anchor="middle">ASSIGNING &lt;fs&gt;</text>
+  <rect class="bx-g" x="540" y="92" width="160" height="40" rx="8"/>
+  <text class="tx-m" x="620" y="112" text-anchor="middle">&lt;fs&gt; (포인터)</text>
+  <path class="ln-g arr-g" d="M540,112 H474"/>
+  <text class="tx-s tx-g" x="507" y="100" text-anchor="middle">가리킴</text>
+  <text class="tx-s" x="620" y="152" text-anchor="middle">&lt;fs&gt;-price 변경 = 즉시 반영</text>
+  <text class="tx-s" x="620" y="172" text-anchor="middle">복사 없음 → 빠름</text>
+  <text class="tx-s" x="360" y="214" text-anchor="middle">REFERENCE INTO DATA(lr) 도 행을 가리킨다 — 참조 변수로 lr-&gt;price 처럼 접근</text>
+</svg>
+<figcaption>그림 1. INTO 는 현재 행을 작업영역에 복사하고, ASSIGNING 은 필드 심볼이 테이블의 행 자체를 가리킨다</figcaption>
+</figure>
 <div class="tip">💡 실무 권장: <b>수정하면 ASSIGNING, 읽기만 하면 INTO</b>. 구조체가 크면 읽기만 해도 ASSIGNING이 유리합니다.</div>
 
 <h4>2. 조건부 LOOP — WHERE</h4>
@@ -1892,6 +3446,35 @@ ENDFORM.`
 <span class="c">" 필드 직접 접근</span>
 <span class="k">WRITE</span> lt[ matnr = <span class="s">'100'</span> ]-maktx.</pre>
 <div class="note">⚠️ <b>찾지 못하면 예외 <code>CX_SY_ITAB_LINE_NOT_FOUND</code>가 발생해 덤프</b>합니다! sy-subrc가 설정되지 않습니다. 반드시 아래처럼 보호하세요.</div>
+<figure class="fig">
+<svg viewBox="0 0 720 280" role="img" aria-label="행이 없을 때 READ TABLE 과 테이블 표현식의 동작 차이">
+  <rect class="bx" x="200" y="12" width="320" height="36" rx="8"/>
+  <text class="tx-b" x="360" y="30" text-anchor="middle">찾는 행이 없을 때 (matnr = 'M99999')</text>
+  <path class="ln" d="M360,48 V62"/>
+  <path class="ln" d="M185,62 H535"/>
+  <path class="ln arr" d="M185,62 V74"/>
+  <path class="ln arr" d="M535,62 V74"/>
+  <rect class="bx-b" x="40" y="78" width="290" height="40" rx="8"/>
+  <text class="tx-m" x="185" y="98" text-anchor="middle">READ TABLE lt INTO ls WITH KEY</text>
+  <rect class="bx-o" x="390" y="78" width="290" height="40" rx="8"/>
+  <text class="tx-m" x="535" y="98" text-anchor="middle">DATA(ls) = lt[ matnr = ... ].</text>
+  <path class="ln arr" d="M185,118 V138"/>
+  <path class="ln arr" d="M535,118 V138"/>
+  <rect class="bx-g" x="40" y="142" width="290" height="50" rx="8"/>
+  <text class="tx-b tx-g" x="185" y="160" text-anchor="middle">sy-subrc = 4</text>
+  <text class="tx-s" x="185" y="180" text-anchor="middle">예외 없음 · IF 로 분기하고 계속 진행</text>
+  <rect class="bx-r" x="390" y="142" width="290" height="50" rx="8"/>
+  <text class="tx-m tx-r" x="535" y="160" text-anchor="middle">CX_SY_ITAB_LINE_NOT_FOUND</text>
+  <text class="tx-s" x="535" y="180" text-anchor="middle">잡지 않으면 덤프 (sy-subrc 설정 안 됨)</text>
+  <path class="ln-b arr-b" d="M535,192 V208"/>
+  <rect class="bx-b" x="390" y="212" width="290" height="56" rx="8"/>
+  <text class="tx-b" x="535" y="230" text-anchor="middle">보호 방법</text>
+  <text class="tx-s" x="535" y="252" text-anchor="middle">line_exists · OPTIONAL · DEFAULT · TRY</text>
+  <text class="tx-s" x="185" y="230" text-anchor="middle">READ TABLE 다음 줄에는</text>
+  <text class="tx-s" x="185" y="250" text-anchor="middle">항상 sy-subrc 확인</text>
+</svg>
+<figcaption>그림 2. 행이 없을 때 READ TABLE 은 sy-subrc = 4 로 알려 주지만, 테이블 표현식은 예외를 던진다</figcaption>
+</figure>
 <pre class="code"><span class="c">" 방법 1 : line_exists 로 미리 확인</span>
 <span class="k">IF</span> <span class="k">line_exists</span>( lt[ matnr = <span class="s">'100'</span> ] ).
   <span class="k">DATA</span>(ls) = lt[ matnr = <span class="s">'100'</span> ].
@@ -2036,6 +3619,61 @@ START-OF-SELECTION.
   ENDTRY.`
     }
   ],
+  compare: [
+    {
+      topic: '루프에서 행 수정하기 (INTO + MODIFY · 필드 심볼 사전 선언 → 인라인 ASSIGNING)',
+      classic: `DATA ls_item TYPE ty_item.
+FIELD-SYMBOLS <ls_row> TYPE ty_item.
+
+* 1) 복사본 수정 후 MODIFY 로 다시 써 넣기
+LOOP AT lt INTO ls_item.
+  ls_item-price = ls_item-price + 1000.
+  MODIFY lt FROM ls_item INDEX sy-tabix TRANSPORTING price.
+ENDLOOP.
+
+* 2) 필드 심볼은 미리 선언해 두고 사용
+LOOP AT lt ASSIGNING <ls_row>.
+  <ls_row>-price = <ls_row>-price * 11 / 10.
+ENDLOOP.`,
+      modern: `* 1) 필드 심볼로 바로 수정 - MODIFY 불필요
+LOOP AT lt ASSIGNING FIELD-SYMBOL(<ls_item>).
+  <ls_item>-price = <ls_item>-price + 1000.
+ENDLOOP.
+
+* 2) 필드 심볼도 그 자리에서 인라인 선언
+LOOP AT lt ASSIGNING FIELD-SYMBOL(<ls_row>).
+  <ls_row>-price = <ls_row>-price * 11 / 10.
+ENDLOOP.`,
+      note: '작업영역·필드 심볼을 위에서 선언하고 MODIFY 로 되돌려 쓰던 방식이, 인라인 FIELD-SYMBOL( ) 로 행을 직접 고치는 방식으로 바뀝니다.'
+    },
+    {
+      topic: '키로 1건 읽고 없으면 기본값 · 행 번호 구하기 (READ TABLE → 테이블 표현식)',
+      classic: `DATA: ls_mat  TYPE ty_mat,
+      lv_name TYPE string.
+
+READ TABLE lt INTO ls_mat WITH KEY matnr = 'M99999'.
+IF sy-subrc = 0.
+  lv_name = ls_mat-maktx.
+ELSE.
+  lv_name = '(미등록 자재)'.
+ENDIF.
+WRITE: / lv_name.
+
+READ TABLE lt TRANSPORTING NO FIELDS WITH KEY matnr = 'M00003'.
+IF sy-subrc = 0.
+  WRITE: / 'M00003 의 행 번호 :', sy-tabix.
+ENDIF.`,
+      modern: `DATA(lv_name) = VALUE #( lt[ matnr = 'M99999' ]-maktx
+                         DEFAULT '(미등록 자재)' ).
+WRITE: / lv_name.
+
+DATA(lv_idx) = line_index( lt[ matnr = 'M00003' ] ).
+IF lv_idx > 0.
+  WRITE: / 'M00003 의 행 번호 :', lv_idx.
+ENDIF.`,
+      note: 'READ TABLE + sy-subrc 분기로 쓰던 "없으면 기본값" 과 "행 번호 찾기" 를 VALUE #( ... DEFAULT ) 와 line_index( ) 로 짧게 씁니다.'
+    }
+  ],
   quiz: [
     { q: 'LOOP AT ... ASSIGNING FIELD-SYMBOL(<fs>) 에서 <fs>-qty 값을 바꾸면?', choices: ['복사본만 바뀌고 테이블은 그대로다', '내부 테이블의 해당 행이 즉시 변경된다', 'MODIFY를 호출해야 반영된다', '런타임 오류가 발생한다'], answer: 1, explain: 'ASSIGNING은 행을 직접 가리키므로 필드 심볼을 통한 변경이 테이블에 즉시 반영됩니다. 그래서 수정 작업에 적합합니다.' },
     { q: '테이블 표현식 lt[ matnr = \'X\' ] 로 조회했는데 해당 행이 없으면?', choices: ['sy-subrc가 4로 설정된다', '초기값이 반환된다', 'CX_SY_ITAB_LINE_NOT_FOUND 예외로 덤프된다', '첫 번째 행이 반환된다'], answer: 2, explain: '테이블 표현식은 sy-subrc를 설정하지 않고 예외를 발생시킵니다. line_exists( ) 선검사나 VALUE #( ... OPTIONAL )로 보호해야 합니다.' },
@@ -2107,7 +3745,81 @@ START-OF-SELECTION.
 
 * 6) 없는 학생 조회 - OPTIONAL 로 보호
   DATA(lv_nm) = VALUE #( gt[ sno = 'S99999' ]-name DEFAULT '(해당 학생 없음)' ).
-  WRITE: / |[안전조회] S99999 = { lv_nm }|.`
+  WRITE: / |[안전조회] S99999 = { lv_nm }|.`,
+    solutionClassic: `REPORT ztest_grade.
+
+TYPES: BEGIN OF ty_stu,
+         sno   TYPE c LENGTH 6,
+         name  TYPE string,
+         kor   TYPE i,
+         eng   TYPE i,
+         mat   TYPE i,
+         total TYPE i,
+         avg   TYPE p LENGTH 5 DECIMALS 1,
+         rank  TYPE i,
+       END OF ty_stu.
+
+DATA: gt      TYPE STANDARD TABLE OF ty_stu,
+      gs      TYPE ty_stu,
+      gv_find TYPE c LENGTH 6 VALUE 'S00003',
+      gv_nm   TYPE string.
+
+FIELD-SYMBOLS <gs> TYPE ty_stu.      "구문법 : 필드 심볼 사전 선언
+
+START-OF-SELECTION.
+
+  gs-sno = 'S00001'. gs-name = '김철수'. gs-kor = 88. gs-eng = 92. gs-mat = 79.
+  APPEND gs TO gt.
+  gs-sno = 'S00002'. gs-name = '이영희'. gs-kor = 95. gs-eng = 88. gs-mat = 97.
+  APPEND gs TO gt.
+  gs-sno = 'S00003'. gs-name = '박민수'. gs-kor = 72. gs-eng = 65. gs-mat = 80.
+  APPEND gs TO gt.
+  gs-sno = 'S00004'. gs-name = '최지은'. gs-kor = 90. gs-eng = 94. gs-mat = 91.
+  APPEND gs TO gt.
+
+* 1) 필드 심볼로 총점/평균 계산 - 즉시 반영
+  LOOP AT gt ASSIGNING <gs>.
+    <gs>-total = <gs>-kor + <gs>-eng + <gs>-mat.
+    <gs>-avg   = <gs>-total / 3.        "P 타입 대입 시 소수 1자리로 반올림
+  ENDLOOP.
+
+* 2) 총점 내림차순 정렬 후 순위 부여
+  SORT gt BY total DESCENDING.
+  LOOP AT gt ASSIGNING <gs>.
+    <gs>-rank = sy-tabix.
+  ENDLOOP.
+
+* 3) 출력
+  ULINE.
+  WRITE: / '순위  학번     이름     국어 영어 수학  총점  평균'.
+  ULINE.
+  LOOP AT gt INTO gs.
+    WRITE: / gs-rank, gs-sno, gs-name, gs-kor, gs-eng, gs-mat, gs-total, gs-avg.
+  ENDLOOP.
+  ULINE.
+
+* 4) 특정 학번 조회
+  READ TABLE gt INTO gs WITH KEY sno = gv_find.
+  IF sy-subrc = 0.
+    WRITE: / '[조회]', gv_find, '=', gs-name, ', 총점', gs-total, ',', gs-rank, '위'.
+  ELSE.
+    WRITE: / '[조회]', gv_find, '학생을 찾을 수 없습니다'.
+  ENDIF.
+
+* 5) 1등 - READ TABLE 후 sy-subrc 확인
+  READ TABLE gt INTO gs WITH KEY rank = 1.
+  IF sy-subrc = 0.
+    WRITE: / '[1등]', gs-name, '(', gs-total, '점)'.
+  ENDIF.
+
+* 6) 없는 학생 조회 - 못 찾으면 기본값
+  READ TABLE gt INTO gs WITH KEY sno = 'S99999'.
+  IF sy-subrc = 0.
+    gv_nm = gs-name.
+  ELSE.
+    gv_nm = '(해당 학생 없음)'.
+  ENDIF.
+  WRITE: / '[안전조회] S99999 =', gv_nm.`
   }
 },
 
@@ -2137,6 +3849,45 @@ SORTED TABLE은 이미 정렬되어 있으므로 SORT를 적용할 수 없습니
 <span class="c">" 여러 키 조합</span>
 <span class="k">DELETE</span> <span class="k">ADJACENT</span> <span class="k">DUPLICATES</span> <span class="k">FROM</span> lt <span class="k">COMPARING</span> werks matnr.</pre>
 <div class="note">⚠️ 이름 그대로 <b>"인접한(ADJACENT)"</b> 중복만 제거합니다. 정렬하지 않으면 중복이 남습니다. <b>SORT → DELETE ADJACENT DUPLICATES</b>는 항상 세트로 기억하세요.</div>
+<figure class="fig">
+<svg viewBox="0 0 720 230" role="img" aria-label="SORT 후 DELETE ADJACENT DUPLICATES 로 중복을 제거하는 과정">
+  <text class="tx-b" x="105" y="24" text-anchor="middle">원본</text>
+  <rect class="bx" x="30" y="44" width="150" height="28" rx="4"/>
+  <text class="tx-m" x="105" y="58" text-anchor="middle">M00002</text>
+  <rect class="bx" x="30" y="76" width="150" height="28" rx="4"/>
+  <text class="tx-m" x="105" y="90" text-anchor="middle">M00001</text>
+  <rect class="bx" x="30" y="108" width="150" height="28" rx="4"/>
+  <text class="tx-m" x="105" y="122" text-anchor="middle">M00003</text>
+  <rect class="bx" x="30" y="140" width="150" height="28" rx="4"/>
+  <text class="tx-m" x="105" y="154" text-anchor="middle">M00001</text>
+  <rect class="bx" x="30" y="172" width="150" height="28" rx="4"/>
+  <text class="tx-m" x="105" y="186" text-anchor="middle">M00002</text>
+  <path class="ln-b arr-b" d="M190,122 H275"/>
+  <text class="tx-s tx-c" x="232" y="108" text-anchor="middle">① 정렬</text>
+  <text class="tx-m tx-b" x="360" y="24" text-anchor="middle">SORT lt BY matnr.</text>
+  <rect class="bx" x="285" y="44" width="150" height="28" rx="4"/>
+  <text class="tx-m" x="360" y="58" text-anchor="middle">M00001</text>
+  <rect class="bx-r" x="285" y="76" width="150" height="28" rx="4"/>
+  <text class="tx-m tx-r" x="360" y="90" text-anchor="middle">M00001</text>
+  <rect class="bx" x="285" y="108" width="150" height="28" rx="4"/>
+  <text class="tx-m" x="360" y="122" text-anchor="middle">M00002</text>
+  <rect class="bx-r" x="285" y="140" width="150" height="28" rx="4"/>
+  <text class="tx-m tx-r" x="360" y="154" text-anchor="middle">M00002</text>
+  <rect class="bx" x="285" y="172" width="150" height="28" rx="4"/>
+  <text class="tx-m" x="360" y="186" text-anchor="middle">M00003</text>
+  <path class="ln-b arr-b" d="M445,122 H530"/>
+  <text class="tx-s tx-c" x="487" y="108" text-anchor="middle">② 인접 중복 제거</text>
+  <text class="tx-m tx-b" x="615" y="24" text-anchor="middle">DELETE ADJACENT ...</text>
+  <rect class="bx-g" x="540" y="44" width="150" height="28" rx="4"/>
+  <text class="tx-m" x="615" y="58" text-anchor="middle">M00001</text>
+  <rect class="bx-g" x="540" y="76" width="150" height="28" rx="4"/>
+  <text class="tx-m" x="615" y="90" text-anchor="middle">M00002</text>
+  <rect class="bx-g" x="540" y="108" width="150" height="28" rx="4"/>
+  <text class="tx-m" x="615" y="122" text-anchor="middle">M00003</text>
+  <text class="tx-s" x="360" y="218" text-anchor="middle">바로 위 행과 같으면(빨강) 삭제 — 정렬하지 않으면 떨어져 있는 중복은 비교되지 않아 남는다</text>
+</svg>
+<figcaption>그림 1. SORT → DELETE ADJACENT DUPLICATES — 정렬로 같은 값을 붙여 놓아야 인접 비교로 중복이 지워진다</figcaption>
+</figure>
 
 <h4>3. COLLECT — 자동 합산</h4>
 <p>키가 같은 행이 있으면 <b>숫자 필드를 자동으로 더하고</b>, 없으면 새 행을 추가합니다.</p>
@@ -2151,6 +3902,36 @@ SORTED TABLE은 이미 정렬되어 있으므로 SORT를 적용할 수 없습니
   <span class="k">COLLECT</span> ls_sum <span class="k">INTO</span> lt_sum.    <span class="c">" 같은 werks 면 qty 가 누적됨</span>
 <span class="k">ENDLOOP</span>.</pre>
 <p>COLLECT는 <b>모든 비숫자 필드를 키로</b> 간주하고, 숫자 필드(I, P, F)를 합산합니다.</p>
+<figure class="fig">
+<svg viewBox="0 0 720 230" role="img" aria-label="상세 데이터를 플랜트별로 집계하는 COLLECT, GROUP BY, REDUCE">
+  <text class="tx-b" x="120" y="26" text-anchor="middle">상세 (lt_sales)</text>
+  <rect class="bx-b" x="20" y="44" width="200" height="28" rx="4"/>
+  <text class="tx-m" x="34" y="58">1000   qty 10</text>
+  <rect class="bx-o" x="20" y="76" width="200" height="28" rx="4"/>
+  <text class="tx-m" x="34" y="90">2000   qty 5</text>
+  <rect class="bx-b" x="20" y="108" width="200" height="28" rx="4"/>
+  <text class="tx-m" x="34" y="122">1000   qty 7</text>
+  <rect class="bx-b" x="20" y="140" width="200" height="28" rx="4"/>
+  <text class="tx-m" x="34" y="154">1000   qty 3</text>
+  <rect class="bx-o" x="20" y="172" width="200" height="28" rx="4"/>
+  <text class="tx-m" x="34" y="186">2000   qty 12</text>
+  <path class="ln arr" d="M226,104 H266"/>
+  <rect class="bx-a" x="270" y="74" width="180" height="60" rx="8"/>
+  <text class="tx-m tx-b" x="360" y="94" text-anchor="middle">COLLECT</text>
+  <text class="tx-s" x="360" y="116" text-anchor="middle">또는 GROUP BY werks</text>
+  <path class="ln arr" d="M450,104 H494"/>
+  <text class="tx-b" x="600" y="50" text-anchor="middle">집계 (lt_sum)</text>
+  <rect class="bx-b" x="500" y="72" width="200" height="30" rx="4"/>
+  <text class="tx-m" x="514" y="87">1000   qty 20</text>
+  <rect class="bx-o" x="500" y="108" width="200" height="30" rx="4"/>
+  <text class="tx-m" x="514" y="123">2000   qty 17</text>
+  <path class="ln-g arr-g dash" d="M226,186 H494"/>
+  <text class="tx-s tx-g" x="360" y="174" text-anchor="middle">REDUCE : 전체를 값 하나로</text>
+  <rect class="bx-g" x="500" y="170" width="200" height="32" rx="6"/>
+  <text class="tx-m" x="600" y="186" text-anchor="middle">합계 qty = 37</text>
+</svg>
+<figcaption>그림 2. 같은 플랜트(키)끼리 숫자 필드를 더하면 집계 테이블이 되고, REDUCE 는 전체를 값 하나로 줄인다</figcaption>
+</figure>
 
 <h4>4. LOOP AT ... GROUP BY (7.4+) — 현대적 집계</h4>
 <pre class="code"><span class="k">LOOP</span> <span class="k">AT</span> lt_detail <span class="k">INTO</span> <span class="k">DATA</span>(ls)
@@ -2347,6 +4128,83 @@ START-OF-SELECTION.
   ENDLOOP.`
     }
   ],
+  compare: [
+    {
+      topic: '전체 합계 구하기 (LOOP 누적 → REDUCE)',
+      classic: `DATA: ls_sales TYPE ty_sales,
+      lv_qty   TYPE i,
+      lv_amt   TYPE p LENGTH 13 DECIMALS 0.
+
+LOOP AT lt_sales INTO ls_sales.
+  lv_qty = lv_qty + ls_sales-qty.
+  lv_amt = lv_amt + ls_sales-amt.
+ENDLOOP.
+
+WRITE: / '전체 수량 :', lv_qty,
+       / '전체 금액 :', lv_amt.`,
+      modern: `TYPES ty_amt TYPE p LENGTH 13 DECIMALS 0.
+
+DATA(lv_qty) = REDUCE i( INIT s = 0
+                         FOR ls_q IN lt_sales
+                         NEXT s = s + ls_q-qty ).
+
+DATA(lv_amt) = REDUCE ty_amt( INIT a = 0
+                              FOR ls_a IN lt_sales
+                              NEXT a = a + ls_a-amt ).
+
+WRITE: / '전체 수량 :', lv_qty,
+       / '전체 금액 :', lv_amt.`,
+      note: '작업영역과 누적 변수를 선언하고 LOOP 로 더하던 집계를 REDUCE 표현식으로 선언과 동시에 계산합니다.'
+    },
+    {
+      topic: '플랜트별 건수 · 수량 집계 (SORT + AT END OF → LOOP AT ... GROUP BY)',
+      classic: `DATA: ls_sales TYPE ty_sales,
+      lv_cnt   TYPE i,
+      lv_qty   TYPE i.
+
+SORT lt_sales BY werks.
+
+LOOP AT lt_sales INTO ls_sales.
+  lv_cnt = lv_cnt + 1.
+  lv_qty = lv_qty + ls_sales-qty.
+
+  AT END OF werks.               "werks 가 바뀌기 직전 행에서 실행
+    WRITE: / ls_sales-werks, lv_cnt, lv_qty.
+    CLEAR: lv_cnt, lv_qty.
+  ENDAT.
+ENDLOOP.`,
+      modern: `LOOP AT lt_sales INTO DATA(ls_sales)
+     GROUP BY ( werks = ls_sales-werks
+                cnt   = GROUP SIZE )
+     ASCENDING
+     INTO DATA(lg).
+
+  DATA(lv_qty) = REDUCE i( INIT s = 0
+                           FOR ls_m IN GROUP lg
+                           NEXT s = s + ls_m-qty ).
+
+  WRITE: / lg-werks, lg-cnt, lv_qty.
+ENDLOOP.`,
+      note: '미리 정렬하고 컨트롤 브레이크(AT END OF)로 끊어 세던 집계를, GROUP BY 가 정렬 없이 그룹을 만들고 GROUP SIZE 로 건수까지 알려 줍니다.'
+    },
+    {
+      topic: '조건에 맞는 행만 새 테이블로 옮기기 (LOOP WHERE + APPEND → FOR)',
+      classic: `DATA: lt_over  TYPE tt_big,
+      ls_big   TYPE ty_big,
+      ls_sales TYPE ty_sales.
+
+LOOP AT lt_sales INTO ls_sales WHERE amt > 500000.
+  CLEAR ls_big.
+  ls_big-matnr = ls_sales-matnr.
+  ls_big-amt   = ls_sales-amt.
+  APPEND ls_big TO lt_over.
+ENDLOOP.`,
+      modern: `DATA(lt_over) = VALUE tt_big(
+    FOR ls IN lt_sales WHERE ( amt > 500000 )
+    ( matnr = ls-matnr amt = ls-amt ) ).`,
+      note: '대상 테이블·작업영역 선언과 LOOP · APPEND 를 VALUE + FOR 반복 표현식 한 문장으로 줄입니다.'
+    }
+  ],
   quiz: [
     { q: 'DELETE ADJACENT DUPLICATES FROM lt COMPARING matnr. 를 실행하기 전에 반드시 해야 할 일은?', choices: ['lt를 CLEAR 한다', 'matnr 기준으로 SORT 한다', 'lt를 HASHED 테이블로 선언한다', 'sy-subrc를 초기화한다'], answer: 1, explain: '이 명령은 인접한(붙어있는) 행끼리만 비교하므로, 먼저 해당 키로 정렬하지 않으면 떨어져 있는 중복은 제거되지 않습니다.' },
     { q: 'COLLECT 명령의 동작으로 옳은 것은?', choices: ['모든 행을 무조건 맨 끝에 추가한다', '키가 같은 행이 있으면 숫자 필드를 합산하고, 없으면 새 행을 추가한다', '중복된 행을 삭제한다', '테이블을 정렬한다'], answer: 1, explain: 'COLLECT는 비숫자 필드를 키로 보고, 같은 키가 있으면 숫자 필드를 누적 합산합니다. 집계 테이블을 만들 때 유용합니다.' },
@@ -2447,6 +4305,111 @@ START-OF-SELECTION.
   SKIP. ULINE.
   WRITE: / |총 { lv_cnt } 건 / 합계 { lv_total NUMBER = USER } 원|,
          / |평균 { CONV p( lv_total / lv_cnt ) NUMBER = USER } 원|.
+  ULINE.`,
+    solutionClassic: `REPORT ztest_sales_sum.
+
+TYPES: BEGIN OF ty_tr,
+         budat TYPE d,
+         bukrs TYPE c LENGTH 4,
+         amt   TYPE p LENGTH 13 DECIMALS 0,
+       END OF ty_tr,
+
+       BEGIN OF ty_br,
+         bukrs TYPE c LENGTH 4,
+         amt   TYPE p LENGTH 13 DECIMALS 0,
+       END OF ty_br,
+
+       BEGIN OF ty_mon,               "월별 집계용 (ym 이 키)
+         ym    TYPE c LENGTH 6,
+         cnt   TYPE i,
+         amt   TYPE p LENGTH 13 DECIMALS 0,
+       END OF ty_mon.
+
+DATA: lt_tr    TYPE STANDARD TABLE OF ty_tr,
+      ls_tr    TYPE ty_tr,
+      lt_br    TYPE STANDARD TABLE OF ty_br,
+      ls_br    TYPE ty_br,
+      lt_mon   TYPE STANDARD TABLE OF ty_mon,
+      ls_mon   TYPE ty_mon,
+      lt_bk    TYPE STANDARD TABLE OF ty_br-bukrs,
+      lv_bk    TYPE c LENGTH 4,
+      lv_total TYPE p LENGTH 13 DECIMALS 0,
+      lv_avg   TYPE p LENGTH 13 DECIMALS 0,
+      lv_cnt   TYPE i.
+
+START-OF-SELECTION.
+
+  ls_tr-budat = '20260105'. ls_tr-bukrs = 'SEL1'. ls_tr-amt = 1200000. APPEND ls_tr TO lt_tr.
+  ls_tr-budat = '20260112'. ls_tr-bukrs = 'BUS1'. ls_tr-amt =  850000. APPEND ls_tr TO lt_tr.
+  ls_tr-budat = '20260120'. ls_tr-bukrs = 'SEL1'. ls_tr-amt =  430000. APPEND ls_tr TO lt_tr.
+  ls_tr-budat = '20260203'. ls_tr-bukrs = 'SEL1'. ls_tr-amt = 2100000. APPEND ls_tr TO lt_tr.
+  ls_tr-budat = '20260210'. ls_tr-bukrs = 'DAE1'. ls_tr-amt =  670000. APPEND ls_tr TO lt_tr.
+  ls_tr-budat = '20260215'. ls_tr-bukrs = 'BUS1'. ls_tr-amt = 1350000. APPEND ls_tr TO lt_tr.
+  ls_tr-budat = '20260305'. ls_tr-bukrs = 'SEL1'. ls_tr-amt =  980000. APPEND ls_tr TO lt_tr.
+  ls_tr-budat = '20260311'. ls_tr-bukrs = 'DAE1'. ls_tr-amt = 1540000. APPEND ls_tr TO lt_tr.
+  ls_tr-budat = '20260320'. ls_tr-bukrs = 'BUS1'. ls_tr-amt =  320000. APPEND ls_tr TO lt_tr.
+  ls_tr-budat = '20260328'. ls_tr-bukrs = 'SEL1'. ls_tr-amt = 1870000. APPEND ls_tr TO lt_tr.
+
+*---- 1) 지점별 집계 (COLLECT)
+  LOOP AT lt_tr INTO ls_tr.
+    ls_br-bukrs = ls_tr-bukrs.
+    ls_br-amt   = ls_tr-amt.
+    COLLECT ls_br INTO lt_br.
+  ENDLOOP.
+
+  SORT lt_br BY amt DESCENDING.
+
+  ULINE.
+  WRITE / '[1] 지점별 매출 (COLLECT)'.
+  ULINE.
+  LOOP AT lt_br INTO ls_br.
+    WRITE: / ls_br-bukrs, ls_br-amt.
+  ENDLOOP.
+
+*---- 2) 월별 집계 (구문법 : GROUP BY 대신 COLLECT 로 월 단위 합산)
+  SKIP. ULINE.
+  WRITE / '[2] 월별 매출 (COLLECT)'.
+  ULINE.
+
+  LOOP AT lt_tr INTO ls_tr.
+    ls_mon-ym  = ls_tr-budat+0(6).
+    ls_mon-cnt = 1.                    "건수도 숫자 필드라 함께 누적됨
+    ls_mon-amt = ls_tr-amt.
+    COLLECT ls_mon INTO lt_mon.
+  ENDLOOP.
+
+  SORT lt_mon BY ym ASCENDING.
+
+  LOOP AT lt_mon INTO ls_mon.
+    WRITE: / ls_mon-ym+0(4), '년', ls_mon-ym+4(2), '월',
+             ls_mon-cnt, '건', ls_mon-amt.
+  ENDLOOP.
+
+*---- 3) 거래 지점 목록 (중복 제거)
+  LOOP AT lt_tr INTO ls_tr.
+    APPEND ls_tr-bukrs TO lt_bk.
+  ENDLOOP.
+  SORT lt_bk.
+  DELETE ADJACENT DUPLICATES FROM lt_bk.
+
+  SKIP. ULINE.
+  WRITE / '[3] 거래 지점 목록'.
+  ULINE.
+  LOOP AT lt_bk INTO lv_bk.
+    WRITE: lv_bk.
+  ENDLOOP.
+
+*---- 4) 전체 합계 (LOOP 누적)
+  LOOP AT lt_tr INTO ls_tr.
+    lv_total = lv_total + ls_tr-amt.
+  ENDLOOP.
+
+  DESCRIBE TABLE lt_tr LINES lv_cnt.
+  lv_avg = lv_total / lv_cnt.
+
+  SKIP. ULINE.
+  WRITE: / '총', lv_cnt, '건 / 합계', lv_total, '원',
+         / '평균', lv_avg, '원'.
   ULINE.`
   }
 }

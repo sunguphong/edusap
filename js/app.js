@@ -9,6 +9,26 @@
   var EXAMS = window.EXAMS || [];
   var KEY = 'edusap.progress.v1';
 
+  /* 보기 순서 고정 셔플: 정답이 특정 번호에 몰리지 않도록 문항 텍스트 기반 시드로 섞는다(매번 같은 순서) */
+  function mixChoices(q) {
+    if (!q || q._mixed || !q.choices || q.choices.length < 2) return;
+    var seed = 7;
+    for (var i = 0; i < q.q.length; i++) seed = (seed * 31 + q.q.charCodeAt(i)) >>> 0;
+    var idx = q.choices.map(function (_, k) { return k; });
+    for (var j = idx.length - 1; j > 0; j--) {
+      seed = (seed + 0x6D2B79F5) >>> 0;                       // mulberry32
+      var z = Math.imul(seed ^ (seed >>> 15), seed | 1);
+      z ^= z + Math.imul(z ^ (z >>> 7), z | 61);
+      var r = ((z ^ (z >>> 14)) >>> 0) % (j + 1), t = idx[j]; idx[j] = idx[r]; idx[r] = t;
+    }
+    var ch = q.choices;
+    q.choices = idx.map(function (k) { return ch[k]; });
+    q.answer = idx.indexOf(q.answer);
+    q._mixed = true;
+  }
+  DAYS.forEach(function (d) { (d.quiz || []).forEach(mixChoices); });
+  EXAMS.forEach(function (e) { (e.questions || []).forEach(mixChoices); });
+
   /* ---------- 저장소 ---------- */
   var ST = load();
   function load() {
@@ -42,7 +62,7 @@
   }
 
   /* ABAP 신택스 하이라이터 (간이) */
-  var ABAP_KW = ('REPORT|PROGRAM|CLASS|ENDCLASS|METHOD|ENDMETHOD|METHODS|CLASS-METHODS|DATA|CLASS-DATA|TYPES|CONSTANTS|FIELD-SYMBOLS|ASSIGN|ASSIGNING|TYPE|LIKE|VALUE|REF|TO|OF|BEGIN|END|STRUCTURE|TABLE|STANDARD|SORTED|HASHED|WITH|UNIQUE|NON-UNIQUE|DEFAULT|KEY|INITIAL|SIZE|OCCURS|HEADER|LINE|IF|ELSEIF|ELSE|ENDIF|CASE|WHEN|OTHERS|ENDCASE|DO|ENDDO|WHILE|ENDWHILE|LOOP|AT|ENDLOOP|EXIT|CONTINUE|CHECK|TIMES|FROM|INTO|APPEND|INSERT|MODIFY|DELETE|READ|COLLECT|CLEAR|REFRESH|FREE|SORT|DESCENDING|ASCENDING|ADJACENT|DUPLICATES|COMPARING|WHERE|INDEX|TRANSPORTING|SELECT|SINGLE|ENDSELECT|UP|ROWS|ORDER|BY|GROUP|HAVING|INNER|LEFT|OUTER|JOIN|ON|AS|FOR|ALL|ENTRIES|IN|AND|OR|NOT|BETWEEN|LIKE|IS|BOUND|SUPPLIED|REQUESTED|UPDATE|SET|COMMIT|ROLLBACK|WORK|WRITE|SKIP|ULINE|NEW-LINE|NEW-PAGE|FORMAT|MESSAGE|CALL|FUNCTION|TRANSACTION|METHOD|SCREEN|PERFORM|FORM|ENDFORM|USING|CHANGING|RETURNING|EXPORTING|IMPORTING|TABLES|EXCEPTIONS|RAISE|RAISING|TRY|CATCH|CLEANUP|ENDTRY|NEW|CREATE|OBJECT|PUBLIC|PROTECTED|PRIVATE|SECTION|SECTION|INHERITING|REDEFINITION|ABSTRACT|FINAL|INTERFACE|ENDINTERFACE|INTERFACES|ALIASES|EVENT|EVENTS|HANDLER|SET|GET|CONCATENATE|SEPARATED|SPLIT|CONDENSE|TRANSLATE|REPLACE|FIND|SHIFT|OVERLAY|STRLEN|SUBSTRING|MOVE|MOVE-CORRESPONDING|CORRESPONDING|ADD|SUBTRACT|MULTIPLY|DIVIDE|COMPUTE|PARAMETERS|SELECT-OPTIONS|SELECTION-SCREEN|INITIALIZATION|START-OF-SELECTION|END-OF-SELECTION|TOP-OF-PAGE|LINE-SELECTION|USER-COMMAND|OUTPUT|INPUT|MODULE|ENDMODULE|PROCESS|BEFORE|AFTER|FIELD|CHAIN|ENDCHAIN|INCLUDE|DEFINE|END-OF-DEFINITION|CONV|CAST|COND|SWITCH|REDUCE|FILTER|LINE_EXISTS|LINE_INDEX|VALUE|NEXT|BASE|LET|THEN|TEXT|SY|ABAP_TRUE|ABAP_FALSE|EQ|NE|GT|LT|GE|LE|CP|NP|CS|NS|STATICS|AUTHORITY-CHECK|SUBMIT|LEAVE|RETURN|WAIT|DESCRIBE|LINES').split('|');
+  var ABAP_KW = ('REPORT|PROGRAM|CLASS|ENDCLASS|METHOD|ENDMETHOD|METHODS|CLASS-METHODS|DATA|CLASS-DATA|TYPES|CONSTANTS|FIELD-SYMBOLS|ASSIGN|ASSIGNING|TYPE|LIKE|VALUE|REF|TO|OF|BEGIN|END|STRUCTURE|TABLE|STANDARD|SORTED|HASHED|WITH|UNIQUE|NON-UNIQUE|DEFAULT|KEY|INITIAL|SIZE|OCCURS|HEADER|LINE|IF|ELSEIF|ELSE|ENDIF|CASE|WHEN|OTHERS|ENDCASE|DO|ENDDO|WHILE|ENDWHILE|LOOP|AT|ENDLOOP|EXIT|CONTINUE|CHECK|TIMES|FROM|INTO|APPEND|INSERT|MODIFY|DELETE|READ|COLLECT|CLEAR|REFRESH|FREE|SORT|DESCENDING|ASCENDING|ADJACENT|DUPLICATES|COMPARING|WHERE|INDEX|TRANSPORTING|SELECT|SINGLE|ENDSELECT|UP|ROWS|ORDER|BY|GROUP|HAVING|INNER|LEFT|OUTER|JOIN|ON|AS|FOR|ALL|ENTRIES|IN|AND|OR|NOT|BETWEEN|LIKE|IS|BOUND|SUPPLIED|REQUESTED|UPDATE|SET|COMMIT|ROLLBACK|WORK|WRITE|SKIP|ULINE|NEW-LINE|NEW-PAGE|FORMAT|MESSAGE|CALL|FUNCTION|TRANSACTION|METHOD|SCREEN|PERFORM|FORM|ENDFORM|USING|CHANGING|RETURNING|EXPORTING|IMPORTING|TABLES|EXCEPTIONS|RAISE|RAISING|TRY|CATCH|CLEANUP|ENDTRY|NEW|CREATE|OBJECT|PUBLIC|PROTECTED|PRIVATE|SECTION|SECTION|INHERITING|REDEFINITION|ABSTRACT|FINAL|INTERFACE|ENDINTERFACE|INTERFACES|ALIASES|EVENT|EVENTS|HANDLER|SET|GET|CONCATENATE|SEPARATED|SPLIT|CONDENSE|TRANSLATE|REPLACE|FIND|SHIFT|OVERLAY|STRLEN|SUBSTRING|MOVE|MOVE-CORRESPONDING|CORRESPONDING|ADD|SUBTRACT|MULTIPLY|DIVIDE|COMPUTE|PARAMETERS|SELECT-OPTIONS|SELECTION-SCREEN|INITIALIZATION|START-OF-SELECTION|END-OF-SELECTION|TOP-OF-PAGE|LINE-SELECTION|USER-COMMAND|OUTPUT|INPUT|MODULE|ENDMODULE|PROCESS|BEFORE|AFTER|FIELD|CHAIN|ENDCHAIN|INCLUDE|DEFINE|END-OF-DEFINITION|CONV|CAST|COND|SWITCH|REDUCE|FILTER|LINE_EXISTS|LINE_INDEX|VALUE|NEXT|BASE|LET|THEN|TEXT|SY|ABAP_TRUE|ABAP_FALSE|EQ|NE|GT|LT|GE|LE|CP|NP|CS|NS|STATICS|AUTHORITY-CHECK|SUBMIT|LEAVE|RETURN|WAIT|DESCRIBE|LINES|DEFINITION|IMPLEMENTATION|ENDAT|HIDE|DISTINCT|COUNT|SUM|MAX|MIN|AVG|UNION|OPTIONAL|RECEIVING|ME|SUPER|BLOCK|RADIOBUTTON|CHECKBOX|OBLIGATORY|BADI|ENDON|DATABASE|PROCEDURE|LANGUAGE|SQLSCRIPT|ENTITY|ENTITIES|DEFINE|VIEW|ASSOCIATION|ENTITIES|REPORTED|FAILED|MAPPED').split('|');
   var KWSET = {};
   ABAP_KW.forEach(function (k) { KWSET[k.toUpperCase()] = 1; });
   function hl(src) {
@@ -67,9 +87,18 @@
     return (c.caption ? '<div class="code-cap">▸ ' + esc(c.caption) + '</div>' : '') +
       '<pre class="code">' + hl(c.src) + '</pre>';
   }
+  function compareBlock(c) {
+    return '<div class="cmp">' + (c.topic ? '<div class="code-cap">▸ ' + esc(c.topic) + '</div>' : '') +
+      '<div class="cmp-grid">' +
+      '<div><div class="cmp-lbl old">기존 문법 (Classic)</div><pre class="code">' + hl(c.classic) + '</pre></div>' +
+      '<div><div class="cmp-lbl new">New Syntax (7.40+)</div><pre class="code">' + hl(c.modern) + '</pre></div>' +
+      '</div>' + (c.note ? '<div class="cmp-note">💡 ' + esc(c.note) + '</div>' : '') + '</div>';
+  }
 
   /* ---------- 진도 계산 ---------- */
   function dayState(n) { return ST.days[n] || null; }
+  /* ISO 타임스탬프 → 로컬 YYYY-MM-DD */
+  function isoDate(iso) { return iso ? fmtISO(new Date(iso)) : '-'; }
   function doneCount() { return DAYS.filter(function (d) { return ST.days[d.day] && ST.days[d.day].done; }).length; }
   function pct() { return DAYS.length ? Math.round(doneCount() / DAYS.length * 100) : 0; }
   function nextDay() {
@@ -237,8 +266,10 @@
         html += '<li><div class="chk ' + (done ? 'done' : '') + '">' + (done ? '✓' : '') + '</div>' +
           '<div class="dnum">Day ' + d.day + '</div>' +
           '<div class="dtitle"><b>' + esc(d.title) + '</b><span>' + esc(d.goals[0]) + '</span></div>' +
-          '<div class="muted" style="font-size:.75rem;width:92px;text-align:right">' + plan[d.day] + '</div>' +
+          '<div class="muted dates" style="font-size:.75rem;width:150px;text-align:right">예정 ' + plan[d.day] +
+          (s && s.startedAt ? '<br>시작 ' + isoDate(s.startedAt).slice(5) + ' · 종료 ' + (done ? isoDate(s.doneAt).slice(5) : '-') : '') + '</div>' +
           (s && s.quizScore != null ? '<span class="tag ' + (s.quizScore === d.quiz.length ? 'ok' : 'warn') + '">퀴즈 ' + s.quizScore + '/' + d.quiz.length + '</span>' : '<span class="tag">연습문제 ' + d.quiz.length + '</span>') +
+          '<button class="btn ghost sm" data-pptx="' + d.day + '" title="PPT로 내보내기">PPT</button>' +
           '<a class="btn ghost sm" href="#/day/' + d.day + '">열기</a></li>';
       });
       if (ex) {
@@ -269,6 +300,12 @@
   function viewDay(n) {
     var d = byDay(n);
     if (!d) return { html: '<div class="card">해당 일차를 찾을 수 없습니다.</div>' };
+    /* 처음 연 날을 학습 시작일로 기록 */
+    if (!ST.days[n] || !ST.days[n].startedAt) {
+      ST.days[n] = ST.days[n] || {};
+      ST.days[n].startedAt = ST.days[n].doneAt || new Date().toISOString();
+      save();
+    }
     var s = dayState(n) || {};
     var plan = planDates();
     var html = '';
@@ -278,7 +315,10 @@
       '<span class="tag">' + d.week + '주차</span>' +
       '<span class="tag">' + esc(d.phase) + '</span>' +
       '<span class="tag">⏱ 30분</span>' +
-      '<span class="tag">예정일 ' + plan[d.day] + '</span></div>' +
+      '<span class="tag">예정일 ' + plan[d.day] + '</span>' +
+      '<span class="tag brand">학습 시작 ' + isoDate(s.startedAt) + '</span>' +
+      '<span class="tag ' + (s.done ? 'ok' : '') + '">학습 종료 ' + (s.done ? isoDate(s.doneAt) : '진행 중') + '</span>' +
+      '<button class="btn ghost sm" data-pptx="' + d.day + '" title="이 Day의 학습 내용을 PowerPoint 파일로 저장">📥 PPT로 내보내기</button></div>' +
       '<h1>' + esc(d.title) + '</h1>' +
       '<ul class="goals">' + d.goals.map(function (g) { return '<li>' + esc(g) + '</li>'; }).join('') + '</ul></div>';
 
@@ -290,6 +330,13 @@
     if (d.code && d.code.length) {
       html += '<div class="card"><div class="sect-label"><span class="t">STEP 2 · 10분</span> 실습 예제 (직접 입력해 보세요)</div>' +
         d.code.map(codeBlock).join('') + '</div>';
+    }
+
+    /* 문법 비교: 기존 문법 vs New Syntax */
+    if (d.compare && d.compare.length) {
+      html += '<div class="card"><div class="sect-label"><span class="t">SYNTAX</span> 문법 비교 — 기존 문법 vs New Syntax</div>' +
+        '<div class="muted" style="font-size:.82rem;margin-bottom:6px">같은 동작을 두 가지 문법으로 비교합니다. 실무에서는 오래된 프로그램(기존 문법)을 읽고 고칠 일이 많으니 둘 다 읽을 수 있어야 합니다.</div>' +
+        d.compare.map(compareBlock).join('') + '</div>';
     }
 
     /* 연습문제 */
@@ -305,7 +352,8 @@
         (d.assignment.check ? '<ul>' + d.assignment.check.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' : '') +
         (d.assignment.hint ? '<div class="theory"><div class="tip">💡 힌트 · ' + esc(d.assignment.hint) + '</div></div>' : '') +
         '<textarea class="input" id="myCode" placeholder="여기에 직접 작성해 보세요 (자동 저장)">' + esc(s.code || '') + '</textarea>' +
-        '<details class="sol"><summary>모범답안 보기</summary><pre class="code">' + hl(d.assignment.solution) + '</pre></details>' +
+        '<details class="sol"><summary>모범답안 보기' + (d.assignment.solutionClassic ? ' (New Syntax)' : '') + '</summary><pre class="code">' + hl(d.assignment.solution) + '</pre></details>' +
+        (d.assignment.solutionClassic ? '<details class="sol"><summary>모범답안 보기 (기존 문법)</summary><pre class="code">' + hl(d.assignment.solutionClassic) + '</pre></details>' : '') +
         '</div>';
     }
 
@@ -493,13 +541,14 @@
       '<tbody>' + examRows + '</tbody></table></div></div>';
 
     html += '<div class="card"><div class="sect-label"><span class="t">DAILY</span> 일별 연습문제 기록</div><div class="tbl-wrap"><table>' +
-      '<thead><tr><th class="center">Day</th><th>주제</th><th class="center">완료</th><th class="center">연습문제</th><th class="center">학습일</th></tr></thead><tbody>' +
+      '<thead><tr><th class="center">Day</th><th>주제</th><th class="center">완료</th><th class="center">연습문제</th><th class="center">학습 시작일</th><th class="center">학습 종료일</th></tr></thead><tbody>' +
       DAYS.map(function (d) {
         var s = ST.days[d.day] || {};
         return '<tr><td class="center">' + d.day + '</td><td>' + esc(d.title) + '</td>' +
           '<td class="center">' + (s.done ? '<span class="tag ok">완료</span>' : '<span class="tag">미완</span>') + '</td>' +
           '<td class="center">' + (s.quizScore != null ? s.quizScore + '/' + d.quiz.length : '-') + '</td>' +
-          '<td class="center">' + (s.doneAt ? s.doneAt.slice(0, 10) : '-') + '</td></tr>';
+          '<td class="center">' + isoDate(s.startedAt) + '</td>' +
+          '<td class="center">' + (s.done ? isoDate(s.doneAt) : '-') + '</td></tr>';
       }).join('') + '</tbody></table></div></div>';
 
     if (allDone && passedAll) {
@@ -545,7 +594,7 @@
         '<div class="card"><div class="sect-label"><span class="t">RULE</span> 평가 규칙</div><div class="theory">' +
         '<ul><li><b>주차평가</b> — 매주 마지막 날 10문항 / 10분 / 합격선 70점. 해당 주차 일일 퀴즈 + 전용 문항에서 출제됩니다.</li>' +
         '<li><b>중간평가</b> — 전반부 과정을 마친 뒤 응시. 25문항 / 30분 / 합격선 70점.</li>' +
-        '<li><b>최종평가</b> — 전 과정 수료 후 응시. 전 범위 종합.</li>' +
+        '<li><b>최종평가</b> — Day 60까지 마친 뒤 응시. 전 범위 종합 40문항 / 50분 / 합격선 70점.</li>' +
         '<li>재응시 횟수 제한은 없으며, 문항은 매번 섞여 출제됩니다. 최고 점수가 기록됩니다.</li></ul></div></div>' +
         '<div class="card"><div class="sect-label"><span class="t">DATA</span> 진도 데이터</div><div class="theory">' +
         '<p>진도는 이 브라우저의 localStorage에 저장됩니다. 브라우저 데이터를 지우면 사라지므로, 왼쪽 메뉴의 <b>진도 내보내기</b>로 주기적으로 JSON 백업을 받아두세요. 다른 PC에서는 <b>진도 불러오기</b>로 복원합니다.</p>' +
@@ -598,6 +647,20 @@
       document.documentElement.dataset.theme = cur;
       localStorage.setItem('edusap.theme', cur);
     };
+    /* Day별 PPT 내보내기 (일일 학습 화면 · 일정표의 data-pptx 버튼) */
+    document.addEventListener('click', function (ev) {
+      var b = ev.target.closest && ev.target.closest('[data-pptx]');
+      if (!b) return;
+      ev.preventDefault();
+      var d = byDay(Number(b.getAttribute('data-pptx')));
+      if (!d) return;
+      if (!window.EduPptx || !window.EduPptx.available()) { toast('PPT 라이브러리를 불러오지 못했습니다'); return; }
+      b.disabled = true; toast('Day ' + d.day + ' PPT를 만드는 중…');
+      Promise.resolve().then(function () { return window.EduPptx.exportDay(d, DAYS.length); })
+        .then(function () { toast('PPT 파일을 저장했습니다'); })
+        .catch(function (e) { console.error(e); toast('PPT 생성 실패: ' + (e && e.message || e)); })
+        .then(function () { b.disabled = false; });
+    });
     $('#resetBtn').onclick = function () {
       if (confirm('모든 학습 진도와 평가 기록을 삭제합니다. 계속할까요?')) {
         localStorage.removeItem(KEY); ST = load(); render(); toast('초기화되었습니다');

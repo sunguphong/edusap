@@ -16,7 +16,7 @@ index.html 더블클릭
 
 1일 30분 = **이론 15분 + 실습 10분 + 연습문제 5분**
 
-전체 설계는 12주 60일 과정이며, 현재 **Day 1~25 (5주차)** 까지 수록되어 있습니다.
+전체 과정은 12주 60일이며, **Day 1~60 (12주차)** 전 범위가 수록되어 있습니다.
 
 | 주차 | Day | 주제 |
 |---|---|---|
@@ -25,22 +25,22 @@ index.html 더블클릭
 | 3주차 | 11~15 | 비교·논리 연산자, IF, CASE, DO/WHILE, EXIT·CONTINUE·CHECK, COND/SWITCH |
 | 4주차 | 16~20 | 구조체, 내부 테이블 3종, CRUD, LOOP(INTO vs ASSIGNING), READ TABLE, SORT·COLLECT·REDUCE |
 | 5주차 | 21~25 | 도메인/데이터 엘리먼트, 테이블 생성, 외래키, 텍스트 테이블, 뷰, 검색 도움말, Lock Object |
-
-### 추가 예정
-
-| 주차 | Day | 주제 |
-|---|---|---|
-| 6주차 | 26~30 | Open SQL (SELECT, JOIN, FOR ALL ENTRIES, LUW·COMMIT) |
-| 7~8주차 | 31~40 | 모듈화·펑션모듈·예외처리·디버깅 / 셀렉션 스크린·클래식 리포트 |
-| 9~10주차 | 41~50 | ALV / OO ABAP |
-| 11~12주차 | 51~60 | Dynpro·BDC·Enhancement / ABAP on HANA·CDS·AMDP·RAP |
+| 6주차 | 26~30 | Open SQL (SELECT, 집계·GROUP BY, JOIN, FOR ALL ENTRIES·성능, DML·LUW·COMMIT) |
+| 7주차 | 31~35 | 서브루틴, 펑션 모듈, INCLUDE·메시지, 예외처리(TRY/CATCH), 디버깅 |
+| 8주차 | 36~40 | PARAMETERS·SELECT-OPTIONS, 선택화면 이벤트, 리포트 이벤트·WRITE, 인터랙티브 리포트, 권한 체크 |
+| 9주차 | 41~45 | REUSE_ALV, CL_SALV_TABLE, SALV 이벤트, CL_GUI_ALV_GRID, 편집 ALV |
+| 10주차 | 46~50 | 클래스·객체, 생성자·정적·가시성, 상속·다형성, 인터페이스·추상 클래스, 이벤트·SE24·디자인 패턴 |
+| 11주차 | 51~55 | Dynpro(PBO/PAI), 화면 흐름, BDC, BAPI, Enhancement(User Exit·BAdI) |
+| 12주차 | 56~60 | ABAP on HANA, CDS View 기초·심화, AMDP, RAP 개요 및 과정 총정리 |
 
 ## 기능
 
 - **대시보드** — 진도율, 연속 학습일, 연습문제 정답률, 평가 통과 현황
 - **전체 교육일정표** — 시작일을 입력하면 전체 일정 자동 배정(주말 제외 옵션), 인쇄/PDF 출력
-- **일일 학습** — 이론 → ABAP 예제 코드(문법 하이라이팅) → 연습문제 자동 채점 + 해설 → 실습 과제(코드 입력 자동 저장 + 모범답안)
-- **평가 센터** — 주차평가 + 중간평가. 제한시간 타이머, 자동 제출, 재응시 시 문항 셔플
+- **일일 학습** — 이론(도식·화면 목업 포함) → ABAP 예제 코드(문법 하이라이팅) → **기존 문법 vs New Syntax 비교** → 연습문제 자동 채점 + 해설 → 실습 과제(코드 입력 자동 저장 + 모범답안, 기존 문법 답안 병기)
+- **PPT 내보내기** — 각 Day 화면 또는 일정표의 PPT 버튼으로 그날 학습 내용을 .pptx 로 저장(이론·도식·예제·문법 비교·연습문제·과제, 정답은 발표자 노트)
+- **학습 시작일 / 종료일** — Day를 처음 연 날과 완료 처리한 날을 자동 기록해 Day 화면·일정표·성적표에 표시
+- **평가 센터** — 주차평가 12회 + 중간평가 + 최종평가. 제한시간 타이머, 자동 제출, 재응시 시 문항 셔플
 - **성적표 / 수료증** — 전 과정 이수 + 전 평가 합격 시 수료증 발급(인쇄 가능)
 - 다크/라이트 테마, 진도 JSON 내보내기·불러오기
 
@@ -55,11 +55,18 @@ edusap/
 ├─ css/style.css               테마 · 레이아웃 · 인쇄 스타일
 └─ js/
    ├─ app.js                   라우팅 · 진도 저장 · 채점 · 일정 배정 · ABAP 하이라이터
+   ├─ diagram.js               이론 도식(SVG) 공통 스타일 · PNG 변환
+   ├─ pptx-export.js           Day → PowerPoint 변환
+   ├─ vendor/pptxgen.bundle.js PptxGenJS 3.12.0 (PPT 생성 라이브러리, 오프라인 동작용 로컬 사본)
    └─ data/
       ├─ curriculum-01.js      Day 1~10
       ├─ curriculum-02.js      Day 11~20
       ├─ curriculum-03.js      Day 21~25
-      └─ exams.js              주차평가 · 중간평가 문항
+      ├─ curriculum-04.js      Day 26~35
+      ├─ curriculum-05.js      Day 36~45
+      ├─ curriculum-06.js      Day 46~55
+      ├─ curriculum-07.js      Day 56~60
+      └─ exams.js              주차평가 · 중간평가 · 최종평가 문항
 ```
 
 ## 커리큘럼 데이터 추가 방법
@@ -74,8 +81,9 @@ window.CURRICULUM.push({
   goals: ['...'],
   theory: `<h4>...</h4>`,                       // HTML 문자열
   code:   [{ caption: '...', src: 'ABAP 코드' }],
+  compare: [{ topic: '...', classic: '기존 문법 코드', modern: 'New Syntax 코드', note: '차이 한 줄' }],  // 선택
   quiz:   [{ q: '...', choices: ['A','B'], answer: 0, explain: '...' }],
-  assignment: { task: '...', check: ['...'], hint: '...', solution: 'ABAP 코드' }
+  assignment: { task: '...', check: ['...'], hint: '...', solution: 'ABAP 코드', solutionClassic: '기존 문법 답안(선택)' }
 });
 ```
 
@@ -86,3 +94,9 @@ ABAP 실습에는 아래 중 하나가 필요합니다. 없어도 이론 + 연�
 - 회사 SAP 개발 시스템 (SAP GUI + S_DEVELOP 권한)
 - SAP BTP ABAP Environment 체험 계정 (ABAP Development Tools / Eclipse)
 - ABAP Platform Developer Edition (Docker / VM)
+
+### 이론 도식 작성 규칙
+
+`theory` 안에 `<figure class="fig"><svg viewBox="0 0 720 H">…</svg><figcaption>그림 N. …</figcaption></figure>` 형태로 넣습니다.
+색은 직접 지정하지 않고 `js/diagram.js` 에 정의된 클래스(`bx-b`, `tx-s`, `ln arr` 등)만 사용하면
+라이트/다크 테마와 PPT 내보내기에 자동으로 맞춰집니다.
