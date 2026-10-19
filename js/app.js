@@ -8,6 +8,8 @@
   var DAYS = (window.CURRICULUM || []).slice().sort(function (a, b) { return a.day - b.day; });
   var EXAMS = window.EXAMS || [];
   var KEY = 'edusap.progress.v1';
+  /* 질문을 받을 선생님 이메일 기본값 (배포 시 여기에 넣으면 모든 학습자에게 적용, 학습자가 질문 창에서 바꿀 수도 있음) */
+  var TEACHER_EMAIL = '';
 
   /* 보기 순서 고정 셔플: 정답이 특정 번호에 몰리지 않도록 문항 텍스트 기반 시드로 섞는다(매번 같은 순서) */
   function mixChoices(q) {
@@ -37,9 +39,10 @@
       o.days = o.days || {}; o.exams = o.exams || {};
       o.learner = o.learner || ''; o.startDate = o.startDate || today();
       o.skipWeekend = (o.skipWeekend !== false);
+      o.questions = o.questions || [];
       return o;
     } catch (e) {
-      return { days: {}, exams: {}, learner: '', startDate: today(), skipWeekend: true };
+      return { days: {}, exams: {}, learner: '', startDate: today(), skipWeekend: true, questions: [] };
     }
   }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(ST)); } catch (e) {} paintMini(); }
@@ -131,6 +134,8 @@
     var mb = $('#miniBar'), mp = $('#miniPct');
     if (mb) mb.style.width = p + '%';
     if (mp) mp.textContent = p + '% (' + doneCount() + '/' + DAYS.length + ')';
+    var qb = $('#qnaBadge'), pend = (ST.questions || []).filter(function (q) { return !q.answer; }).length;
+    if (qb) { qb.textContent = pend || ''; qb.hidden = !pend; }
   }
 
   /* ---------- 문제 렌더링 공통 ---------- */
@@ -318,36 +323,37 @@
       '<span class="tag">예정일 ' + plan[d.day] + '</span>' +
       '<span class="tag brand">학습 시작 ' + isoDate(s.startedAt) + '</span>' +
       '<span class="tag ' + (s.done ? 'ok' : '') + '">학습 종료 ' + (s.done ? isoDate(s.doneAt) : '진행 중') + '</span>' +
-      '<button class="btn ghost sm" data-pptx="' + d.day + '" title="이 Day의 학습 내용을 PowerPoint 파일로 저장">📥 PPT로 내보내기</button></div>' +
+      '<button class="btn ghost sm" data-pptx="' + d.day + '" title="이 Day의 학습 내용을 PowerPoint 파일로 저장">📥 PPT로 내보내기</button>' +
+      '<button class="btn ghost sm" data-ask="theory" title="이 Day에서 궁금한 점을 선생님께 질문">💬 선생님께 질문</button></div>' +
       '<h1>' + esc(d.title) + '</h1>' +
       '<ul class="goals">' + d.goals.map(function (g) { return '<li>' + esc(g) + '</li>'; }).join('') + '</ul></div>';
 
     /* 이론 */
-    html += '<div class="card"><div class="sect-label"><span class="t">STEP 1 · 15분</span> 이론 학습</div>' +
+    html += '<div class="card"><div class="sect-label"><span class="t">STEP 1 · 15분</span> 이론 학습' + askLink('theory') + '</div>' +
       '<div class="theory">' + d.theory + '</div></div>';
 
     /* 실습 코드 */
     if (d.code && d.code.length) {
-      html += '<div class="card"><div class="sect-label"><span class="t">STEP 2 · 10분</span> 실습 예제 (직접 입력해 보세요)</div>' +
+      html += '<div class="card"><div class="sect-label"><span class="t">STEP 2 · 10분</span> 실습 예제 (직접 입력해 보세요)' + askLink('code') + '</div>' +
         d.code.map(codeBlock).join('') + '</div>';
     }
 
     /* 문법 비교: 기존 문법 vs New Syntax */
     if (d.compare && d.compare.length) {
-      html += '<div class="card"><div class="sect-label"><span class="t">SYNTAX</span> 문법 비교 — 기존 문법 vs New Syntax</div>' +
+      html += '<div class="card"><div class="sect-label"><span class="t">SYNTAX</span> 문법 비교 — 기존 문법 vs New Syntax' + askLink('compare') + '</div>' +
         '<div class="muted" style="font-size:.82rem;margin-bottom:6px">같은 동작을 두 가지 문법으로 비교합니다. 실무에서는 오래된 프로그램(기존 문법)을 읽고 고칠 일이 많으니 둘 다 읽을 수 있어야 합니다.</div>' +
         d.compare.map(compareBlock).join('') + '</div>';
     }
 
     /* 연습문제 */
-    html += '<div class="card" id="quizCard"><div class="sect-label"><span class="t">STEP 3 · 5분</span> 연습문제 (' + d.quiz.length + '문항)</div>' +
+    html += '<div class="card" id="quizCard"><div class="sect-label"><span class="t">STEP 3 · 5분</span> 연습문제 (' + d.quiz.length + '문항)' + askLink('quiz') + '</div>' +
       '<div id="quizBox">' + renderQuestions(d.quiz, 'dq', true) + '</div>' +
       '<div class="row" style="margin-top:12px"><button class="btn" id="gradeBtn">채점하기</button>' +
       '<span id="quizRes" class="muted"></span></div></div>';
 
     /* 과제 */
     if (d.assignment) {
-      html += '<div class="card"><div class="sect-label"><span class="t">실습 과제</span> 손으로 짜보기</div>' +
+      html += '<div class="card"><div class="sect-label"><span class="t">실습 과제</span> 손으로 짜보기' + askLink('assignment') + '</div>' +
         '<p><b>' + esc(d.assignment.task) + '</b></p>' +
         (d.assignment.check ? '<ul>' + d.assignment.check.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' : '') +
         (d.assignment.hint ? '<div class="theory"><div class="tip">💡 힌트 · ' + esc(d.assignment.hint) + '</div></div>' : '') +
@@ -355,6 +361,13 @@
         '<details class="sol"><summary>모범답안 보기' + (d.assignment.solutionClassic ? ' (New Syntax)' : '') + '</summary><pre class="code">' + hl(d.assignment.solution) + '</pre></details>' +
         (d.assignment.solutionClassic ? '<details class="sol"><summary>모범답안 보기 (기존 문법)</summary><pre class="code">' + hl(d.assignment.solutionClassic) + '</pre></details>' : '') +
         '</div>';
+    }
+
+    /* 이 Day에 남긴 질문 */
+    var myQ = ST.questions.filter(function (q) { return q.day === n; });
+    if (myQ.length) {
+      html += '<div class="card"><div class="sect-label"><span class="t">Q&amp;A</span> 이 Day에 남긴 질문 (' + myQ.length + '건)' +
+        '<a class="ask-link" href="#/qna">질문함 전체 보기 →</a></div>' + myQ.map(qnaItem).join('') + '</div>';
     }
 
     /* 완료 */
@@ -603,6 +616,205 @@
   }
 
   /* =========================================================
+     선생님께 질문 (질문 창 · 질문함)
+     ========================================================= */
+  var SECTIONS = { theory: '이론', code: '실습 예제', compare: '문법 비교', quiz: '연습문제', assignment: '실습 과제', exam: '평가', etc: '기타' };
+  var askSel = '';   /* 질문 창을 열기 직전에 드래그해 둔 본문 문장 */
+
+  function askLink(sec) { return '<a class="ask-link" href="#" data-ask="' + sec + '">💬 질문</a>'; }
+  function teacherEmail() { return ST.teacherEmail != null ? ST.teacherEmail : TEACHER_EMAIL; }
+  function curDay() { var m = /^#\/day\/(\d+)/.exec(location.hash); return m ? Number(m[1]) : null; }
+  function fmtDT(iso) { var d = new Date(iso); return fmtISO(d) + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  function qWhere(q) {
+    var d = q.day && byDay(q.day);
+    return (d ? 'Day ' + d.day + ' · ' + d.title : '일반 질문') + ' / ' + (SECTIONS[q.section] || '기타');
+  }
+  function qMailText(q) {
+    return '[ABAP 교육 질문] ' + qWhere(q) + '\n' +
+      '학습자: ' + (ST.learner || '(이름 미입력)') + '\n' +
+      '작성: ' + fmtDT(q.createdAt) + '\n\n' +
+      (q.quote ? '■ 궁금한 부분(본문 인용)\n"' + q.quote + '"\n\n' : '') +
+      '■ 질문\n' + q.text + '\n' +
+      (q.code ? '\n■ 내가 작성한 코드\n' + q.code + '\n' : '');
+  }
+  function copyText(t, okMsg) {
+    var done = function () { toast(okMsg || '클립보드에 복사했습니다'); };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(done, fallback);
+    else fallback();
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = t; ta.style.cssText = 'position:fixed;opacity:0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); done(); } catch (e) { toast('복사하지 못했습니다'); }
+      ta.remove();
+    }
+  }
+  /* 메일 앱으로 보내기. 주소 길이 제한이 있어 긴 본문은 잘라 보내고 전체 내용은 클립보드에 복사한다 */
+  function mailQuestion(q) {
+    var to = teacherEmail();
+    if (!to) { toast('먼저 선생님 이메일을 입력하세요'); openAsk(q.section); return false; }
+    var full = qMailText(q), body = full, subj = '[ABAP 질문] ' + qWhere(q);
+    var url = function (b) { return 'mailto:' + encodeURIComponent(to) + '?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(b); };
+    if (url(full).length > 1900) {
+      var tail = '\n…(이하 생략 — 전체 내용은 클립보드에 복사되어 있으니 붙여넣어 주세요)';
+      while (body.length > 50 && url(body + tail).length > 1900) body = body.slice(0, Math.floor(body.length * 0.85));
+      body += tail;
+      copyText(full, '본문이 길어 전체 내용을 클립보드에 복사했습니다. 메일에 붙여넣으세요');
+    }
+    location.href = url(body);
+    q.sentAt = new Date().toISOString(); save();
+    return true;
+  }
+
+  function qnaItem(q) {
+    var d = q.day && byDay(q.day);
+    return '<div class="qna" data-qid="' + q.id + '">' +
+      '<div class="qna-head">' +
+      (d ? '<a class="tag brand" href="#/day/' + d.day + '">Day ' + d.day + '</a>' : '<span class="tag">일반</span>') +
+      '<span class="tag">' + (SECTIONS[q.section] || '기타') + '</span>' +
+      '<span class="tag ' + (q.answer ? 'ok' : 'warn') + '">' + (q.answer ? '답변 완료' : '답변 대기') + '</span>' +
+      '<span class="muted" style="font-size:.76rem">' + fmtDT(q.createdAt) + (q.sentAt ? ' · 메일 보냄' : '') + '</span></div>' +
+      (d ? '<div class="muted" style="font-size:.8rem">' + esc(d.title) + '</div>' : '') +
+      (q.quote ? '<blockquote class="qna-quote">' + esc(q.quote) + '</blockquote>' : '') +
+      '<div class="qna-text">' + esc(q.text) + '</div>' +
+      (q.code ? '<details class="sol"><summary>첨부한 내 코드</summary><pre class="code">' + hl(q.code) + '</pre></details>' : '') +
+      (q.answer
+        ? '<div class="qna-ans"><b>👩‍🏫 선생님 답변</b>' + (q.answeredAt ? ' <span class="muted" style="font-size:.74rem">' + fmtDT(q.answeredAt) + '</span>' : '') +
+          '<div class="qna-text">' + esc(q.answer) + '</div></div>'
+        : '<details class="sol"><summary>받은 답변 기록하기</summary>' +
+          '<textarea class="input qna-ans-in" placeholder="메일·메신저로 받은 선생님 답변을 붙여넣어 두면 복습할 때 다시 볼 수 있습니다"></textarea>' +
+          '<button class="btn sm" data-qact="answer" style="margin-top:6px">답변 저장</button></details>') +
+      '<div class="row qna-acts">' +
+      '<button class="btn ghost sm" data-qact="mail">✉️ 메일로 ' + (q.sentAt ? '다시 ' : '') + '보내기</button>' +
+      '<button class="btn ghost sm" data-qact="copy">📋 복사 (메신저용)</button>' +
+      (q.answer ? '<button class="btn ghost sm" data-qact="reopen">답변 수정</button>' : '') +
+      '<button class="btn ghost sm danger" data-qact="del">삭제</button></div></div>';
+  }
+  function findQ(id) { return ST.questions.filter(function (q) { return q.id === id; })[0]; }
+  /* #view 는 화면마다 내용만 바뀌고 요소는 그대로라 위임 핸들러는 한 번만 단다 */
+  function bindQna() {
+    $('#view').addEventListener('click', function (ev) {
+      var b = ev.target.closest && ev.target.closest('[data-qact]');
+      if (!b) return;
+      var box = b.closest('.qna'), q = box && findQ(box.getAttribute('data-qid'));
+      if (!q) return;
+      var act = b.getAttribute('data-qact');
+      if (act === 'mail') { if (mailQuestion(q)) render(); }
+      else if (act === 'copy') copyText(qMailText(q));
+      else if (act === 'answer') {
+        var v = $('.qna-ans-in', box).value.trim();
+        if (!v) { toast('답변 내용을 입력하세요'); return; }
+        q.answer = v; q.answeredAt = new Date().toISOString(); save(); render(); toast('답변을 저장했습니다');
+      } else if (act === 'reopen') {
+        var nv = prompt('선생님 답변 수정 (비우면 답변 대기로 돌아갑니다)', q.answer);
+        if (nv == null) return;
+        q.answer = nv.trim(); if (!q.answer) delete q.answeredAt; save(); render();
+      } else if (act === 'del') {
+        if (!confirm('이 질문을 삭제할까요?')) return;
+        ST.questions = ST.questions.filter(function (x) { return x !== q; }); save(); render();
+      }
+    });
+  }
+
+  function viewQna(filter) {
+    filter = filter || 'all';
+    var all = ST.questions.slice().sort(function (a, b) { return a.createdAt < b.createdAt ? 1 : -1; });
+    var pend = all.filter(function (q) { return !q.answer; }).length;
+    var list = all.filter(function (q) { return filter === 'all' || (filter === 'wait' ? !q.answer : !!q.answer); });
+    var tab = function (k, label, n) { return '<a class="btn sm ' + (filter === k ? '' : 'ghost') + '" href="#/qna/' + k + '">' + label + ' ' + n + '</a>'; };
+    var html = '<div class="spread" style="margin-bottom:6px"><div><h1>질문함</h1>' +
+      '<div class="muted">학습 중 궁금했던 점을 선생님께 보내고, 받은 답변을 모아 복습하세요.</div></div>' +
+      '<button class="btn" data-ask="etc">💬 새 질문하기</button></div>';
+    html += '<div class="row" style="margin:14px 0">' + tab('all', '전체', all.length) + tab('wait', '답변 대기', pend) + tab('done', '답변 완료', all.length - pend) + '</div>';
+    if (!teacherEmail()) {
+      html += '<div class="card tight"><div class="theory"><div class="note">✉️ 아직 선생님 이메일이 없습니다. <b>새 질문하기</b> 창 맨 아래에 이메일을 입력하면 질문을 메일로 바로 보낼 수 있습니다. 메일 대신 <b>복사</b> 버튼으로 카카오톡·Teams 등에 붙여넣어 보내도 됩니다.</div></div></div>';
+    }
+    html += list.length ? '<div class="card">' + list.map(qnaItem).join('') + '</div>'
+      : '<div class="card muted" style="text-align:center;padding:40px">' + (all.length ? '해당하는 질문이 없습니다.' : '아직 남긴 질문이 없습니다. 학습 화면의 <b>💬 질문</b> 버튼이나 오른쪽 아래 버튼으로 질문해 보세요.') + '</div>';
+    return { html: html };
+  }
+
+  /* 질문 창 (화면 오른쪽 아래 버튼 / 각 섹션의 💬 질문 링크) */
+  function openAsk(sec) {
+    var pn = $('#askPanel'), n = curDay(), d = n && byDay(n);
+    $('#askWhere').innerHTML = d ? '<b>Day ' + d.day + '</b> · ' + esc(d.title) : '일반 질문 (특정 Day와 관계없음)';
+    $('#askSec').value = sec || (d ? 'theory' : 'etc');
+    $('#askQuote').value = askSel;
+    $('#askQuoteRow').hidden = !askSel;
+    var s = n && ST.days[n];
+    $('#askCodeRow').hidden = !(s && s.code);
+    $('#askCode').checked = false;
+    $('#askMail').value = teacherEmail();
+    pn.hidden = false;
+    setTimeout(function () { $('#askText').focus(); }, 30);
+  }
+  function closeAsk() { $('#askPanel').hidden = true; }
+  function submitAsk(how) {
+    var text = $('#askText').value.trim();
+    if (!text) { toast('질문 내용을 입력하세요'); $('#askText').focus(); return; }
+    var mail = $('#askMail').value.trim();
+    if (how === 'mail' && !mail) { toast('선생님 이메일을 입력하세요'); $('#askMail').focus(); return; }
+    if (mail !== teacherEmail()) ST.teacherEmail = mail;
+    var n = curDay(), s = n && ST.days[n];
+    var q = {
+      id: 'q' + Date.now().toString(36), createdAt: new Date().toISOString(),
+      day: n && byDay(n) ? n : null, section: $('#askSec').value,
+      quote: $('#askQuoteRow').hidden ? '' : $('#askQuote').value.trim(),
+      text: text, code: ($('#askCode').checked && s && s.code) ? s.code : ''
+    };
+    ST.questions.push(q); save();
+    if (how === 'mail') mailQuestion(q);
+    else if (how === 'copy') copyText(qMailText(q), '질문을 저장하고 복사했습니다. 메신저에 붙여넣어 보내세요');
+    else toast('질문함에 저장했습니다');
+    $('#askText').value = ''; askSel = '';
+    closeAsk();
+    render();
+  }
+  function initAsk() {
+    var secOpts = Object.keys(SECTIONS).filter(function (k) { return k !== 'exam'; })
+      .map(function (k) { return '<option value="' + k + '">' + SECTIONS[k] + '</option>'; }).join('');
+    var wrap = document.createElement('div');
+    wrap.innerHTML =
+      '<button class="ask-fab" data-ask="" title="학습 중 궁금한 점을 선생님께 질문">💬 선생님께 질문</button>' +
+      '<div class="ask-panel" id="askPanel" hidden role="dialog" aria-label="선생님께 질문">' +
+      '<div class="ask-top"><b>💬 선생님께 질문</b><button class="btn ghost sm" id="askClose" title="닫기">✕</button></div>' +
+      '<div class="ask-body">' +
+      '<div class="muted" style="font-size:.8rem">질문 위치 · <span id="askWhere"></span></div>' +
+      '<label class="ask-lbl">어느 부분인가요? <select class="input" id="askSec">' + secOpts + '</select></label>' +
+      '<div id="askQuoteRow"><div class="ask-lbl">궁금한 문장 (본문에서 드래그한 내용)</div><textarea class="input ask-quote" id="askQuote"></textarea></div>' +
+      '<label class="ask-lbl" for="askText">질문 내용</label>' +
+      '<textarea class="input ask-text" id="askText" placeholder="예) LOOP AT ... ASSIGNING 에서 필드 심볼 값을 바꾸면 원본 테이블도 바뀌는 이유가 궁금합니다.&#10;&#10;💡 본문 문장을 드래그한 뒤 질문 버튼을 누르면 그 문장이 함께 첨부됩니다."></textarea>' +
+      '<label class="row ask-lbl" id="askCodeRow" style="gap:6px"><input type="checkbox" id="askCode"> 실습 과제에 작성한 내 코드 함께 보내기</label>' +
+      '<label class="ask-lbl">선생님 이메일 <input class="input" id="askMail" type="email" placeholder="teacher@example.com" style="width:100%"></label>' +
+      '</div>' +
+      '<div class="ask-foot">' +
+      '<button class="btn" id="askSendMail">✉️ 메일로 보내기</button>' +
+      '<button class="btn ghost" id="askSendCopy" title="카카오톡·Teams 등에 붙여넣기">📋 복사</button>' +
+      '<button class="btn ghost" id="askSave" title="보내지 않고 질문함에만 저장">저장만</button></div></div>';
+    while (wrap.firstChild) document.body.appendChild(wrap.firstChild);
+
+    /* 버튼을 누르면 선택이 풀릴 수 있어 mousedown 시점에 드래그한 문장을 잡아둔다 */
+    document.addEventListener('mousedown', function (ev) {
+      if (ev.target.closest && ev.target.closest('[data-ask]')) {
+        var t = String(window.getSelection ? window.getSelection() : '').trim();
+        askSel = t.length > 600 ? t.slice(0, 600) + '…' : t;
+      }
+    }, true);
+    document.addEventListener('click', function (ev) {
+      var b = ev.target.closest && ev.target.closest('[data-ask]');
+      if (!b) return;
+      ev.preventDefault();
+      openAsk(b.getAttribute('data-ask'));
+    });
+    document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape' && !$('#askPanel').hidden) closeAsk(); });
+    $('#askClose').onclick = closeAsk;
+    $('#askSendMail').onclick = function () { submitAsk('mail'); };
+    $('#askSendCopy').onclick = function () { submitAsk('copy'); };
+    $('#askSave').onclick = function () { submitAsk('save'); };
+    bindQna();
+  }
+
+  /* =========================================================
      라우터
      ========================================================= */
   function render() {
@@ -617,9 +829,13 @@
     else if (page === 'schedule') out = viewSchedule();
     else if (page === 'report') out = viewReport();
     else if (page === 'guide') out = viewGuide();
+    else if (page === 'qna') out = viewQna(arg);
     else { out = viewDashboard(); navKey = 'dashboard'; }
 
     if (page !== 'exam') clearInterval(examTimer);
+    /* 시험 중에는 질문 창을 숨긴다 */
+    document.body.classList.toggle('in-exam', page === 'exam');
+    if (page === 'exam') closeAsk();
 
     var v = $('#view');
     v.innerHTML = out.html;
@@ -681,6 +897,7 @@
         try {
           var o = JSON.parse(r.result);
           if (!o.days) throw 0;
+          o.exams = o.exams || {}; o.questions = o.questions || [];
           ST = o; save(); render(); toast('진도를 불러왔습니다');
         } catch (e) { alert('올바른 진도 파일이 아닙니다.'); }
       };
@@ -692,6 +909,6 @@
   window.addEventListener('hashchange', render);
   document.addEventListener('DOMContentLoaded', function () {
     if (!DAYS.length) { $('#view').innerHTML = '<div class="card">커리큘럼 데이터를 불러오지 못했습니다.</div>'; return; }
-    initChrome(); render();
+    initChrome(); initAsk(); render();
   });
 })();
