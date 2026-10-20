@@ -29,6 +29,8 @@
     q._mixed = true;
   }
   DAYS.forEach(function (d) { (d.quiz || []).forEach(mixChoices); });
+  /* Day별 참고 영상 (js/data/videos.js) */
+  DAYS.forEach(function (d) { d.videos = d.videos || (window.VIDEOS || {})[d.day] || []; });
   EXAMS.forEach(function (e) { (e.questions || []).forEach(mixChoices); });
 
   /* ---------- 저장소 ---------- */
@@ -96,6 +98,30 @@
       '<div><div class="cmp-lbl old">기존 문법 (Classic)</div><pre class="code">' + hl(c.classic) + '</pre></div>' +
       '<div><div class="cmp-lbl new">New Syntax (7.40+)</div><pre class="code">' + hl(c.modern) + '</pre></div>' +
       '</div>' + (c.note ? '<div class="cmp-note">💡 ' + esc(c.note) + '</div>' : '') + '</div>';
+  }
+  /* YouTube 영상: 처음엔 썸네일만 보여주고 누르면 플레이어를 띄운다.
+     file:// 로 연 경우 YouTube가 임베드 재생을 막으므로 새 탭에서 연다 */
+  function videoBlock(v) {
+    var watch = 'https://www.youtube.com/watch?v=' + encodeURIComponent(v.id) + (v.start ? '&t=' + v.start + 's' : '');
+    return '<div class="vid">' +
+      '<a class="vid-frame" href="' + watch + '" target="_blank" rel="noopener" data-vid="' + esc(v.id) + '" data-start="' + (v.start || 0) + '">' +
+      '<img src="https://i.ytimg.com/vi/' + esc(v.id) + '/hqdefault.jpg" alt="" loading="lazy"><span class="vid-play">▶</span></a>' +
+      '<div class="vid-meta"><b>' + esc(v.title) + '</b>' +
+      '<div class="muted">' + esc(v.channel || '') + (v.lang === 'en' ? ' · <span class="tag">영어</span>' : v.lang === 'ko' ? ' · <span class="tag">한국어</span>' : '') +
+      ' · <a href="' + watch + '" target="_blank" rel="noopener">YouTube에서 보기 ↗</a></div>' +
+      (v.note ? '<div class="vid-note">' + esc(v.note) + '</div>' : '') + '</div></div>';
+  }
+  function playVideo(a) {
+    if (location.protocol === 'file:') return false;
+    var id = a.getAttribute('data-vid'), st = Number(a.getAttribute('data-start')) || 0;
+    var f = document.createElement('iframe');
+    f.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(id) + '?autoplay=1&rel=0' + (st ? '&start=' + st : '');
+    f.title = 'YouTube 영상'; f.allowFullscreen = true;
+    f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen');
+    f.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+    var box = document.createElement('div'); box.className = 'vid-frame'; box.appendChild(f);
+    a.replaceWith(box);
+    return true;
   }
 
   /* ---------- 진도 계산 ---------- */
@@ -331,6 +357,13 @@
     /* 이론 */
     html += '<div class="card"><div class="sect-label"><span class="t">STEP 1 · 15분</span> 이론 학습' + askLink('theory') + '</div>' +
       '<div class="theory">' + d.theory + '</div></div>';
+
+    /* 참고 영상 */
+    if (d.videos.length) {
+      html += '<div class="card"><div class="sect-label"><span class="t">VIDEO</span> 참고 영상 (선택)' + askLink('video') + '</div>' +
+        '<div class="muted" style="font-size:.82rem;margin-bottom:10px">이론을 읽고 이해가 덜 된 부분을 영상으로 다시 보세요. 30분 학습 시간과 별도로 보는 보충 자료입니다.</div>' +
+        d.videos.map(videoBlock).join('') + '</div>';
+    }
 
     /* 실습 코드 */
     if (d.code && d.code.length) {
@@ -618,7 +651,7 @@
   /* =========================================================
      선생님께 질문 (질문 창 · 질문함)
      ========================================================= */
-  var SECTIONS = { theory: '이론', code: '실습 예제', compare: '문법 비교', quiz: '연습문제', assignment: '실습 과제', exam: '평가', etc: '기타' };
+  var SECTIONS = { theory: '이론', video: '참고 영상', code: '실습 예제', compare: '문법 비교', quiz: '연습문제', assignment: '실습 과제', exam: '평가', etc: '기타' };
   var askSel = '';   /* 질문 창을 열기 직전에 드래그해 둔 본문 문장 */
 
   function askLink(sec) { return '<a class="ask-link" href="#" data-ask="' + sec + '">💬 질문</a>'; }
@@ -863,6 +896,11 @@
       document.documentElement.dataset.theme = cur;
       localStorage.setItem('edusap.theme', cur);
     };
+    /* 참고 영상 썸네일 → 플레이어 */
+    document.addEventListener('click', function (ev) {
+      var a = ev.target.closest && ev.target.closest('a[data-vid]');
+      if (a && playVideo(a)) ev.preventDefault();
+    });
     /* Day별 PPT 내보내기 (일일 학습 화면 · 일정표의 data-pptx 버튼) */
     document.addEventListener('click', function (ev) {
       var b = ev.target.closest && ev.target.closest('[data-pptx]');

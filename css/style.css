@@ -239,3 +239,19 @@ textarea.input.qna-ans-in{min-height:80px; font-family:inherit; margin-top:4px}
   .ask-panel{right:16px; bottom:70px}
 }
 @media print{ .ask-fab,.ask-panel{display:none!important} }
+
+/* ===== 참고 영상 ===== */
+.vid{display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1fr); gap:16px; align-items:start; margin-bottom:14px}
+.vid:last-child{margin-bottom:0}
+.vid-frame{position:relative; display:block; aspect-ratio:16/9; border-radius:10px; overflow:hidden; background:#000}
+.vid-frame img,.vid-frame iframe{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border:0}
+.vid-play{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:64px; height:44px; border-radius:12px;
+  display:grid; place-items:center; background:rgba(204,0,0,.9); color:#fff; font-size:1.2rem; transition:transform .15s
+}
+a.vid-frame:hover .vid-play{transform:translate(-50%,-50%) scale(1.08)}
+.vid-meta{font-size:.9rem}
+.vid-meta .muted{font-size:.8rem; margin-top:4px}
+.vid-note{font-size:.84rem; margin-top:8px}
+@media (max-width:820px){ .vid{grid-template-columns:1fr; gap:8px} }
+@media print{ .vid-frame{display:none} .vid{grid-template-columns:1fr} }

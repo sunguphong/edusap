@@ -319,6 +319,14 @@
     sections.forEach(function (sec) {
       if (sec.blocks.length) paginate(pptx, dayLbl + ' · STEP 1 이론', sec.title, sec.blocks);
     });
+    if (d.videos && d.videos.length) {
+      var vs = contentSlide(pptx, dayLbl + ' · 참고 영상', '참고 영상 (YouTube)');
+      vs.addText(d.videos.map(function (v, i) {
+        var url = 'https://www.youtube.com/watch?v=' + v.id + (v.start ? '&t=' + v.start + 's' : '');
+        return { text: v.title + (v.channel ? '  — ' + v.channel : ''),
+          options: { hyperlink: { url: url }, bullet: { code: '25B6' }, breakLine: i < d.videos.length - 1 } };
+      }), { x: X0, y: TOP + 0.1, w: CW, h: BOTTOM - TOP - 0.2, fontFace: FONT, fontSize: 18, color: C.brand, valign: 'top', paraSpaceAfter: 12 });
+    }
 
     /* 4. 실습 예제 */
     (d.code || []).forEach(function (c, i) {
