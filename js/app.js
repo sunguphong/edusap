@@ -8,8 +8,6 @@
   var DAYS = (window.CURRICULUM || []).slice().sort(function (a, b) { return a.day - b.day; });
   var EXAMS = window.EXAMS || [];
   var KEY = 'edusap.progress.v1';
-  /* 질문을 받을 선생님 이메일 기본값 (배포 시 여기에 넣으면 모든 학습자에게 적용, 학습자가 질문 창에서 바꿀 수도 있음) */
-  var TEACHER_EMAIL = '';
 
   /* 보기 순서 고정 셔플: 정답이 특정 번호에 몰리지 않도록 문항 텍스트 기반 시드로 섞는다(매번 같은 순서) */
   function mixChoices(q) {
@@ -350,7 +348,7 @@
       '<span class="tag brand">학습 시작 ' + isoDate(s.startedAt) + '</span>' +
       '<span class="tag ' + (s.done ? 'ok' : '') + '">학습 종료 ' + (s.done ? isoDate(s.doneAt) : '진행 중') + '</span>' +
       '<button class="btn ghost sm" data-pptx="' + d.day + '" title="이 Day의 학습 내용을 PowerPoint 파일로 저장">📥 PPT로 내보내기</button>' +
-      '<button class="btn ghost sm" data-ask="theory" title="이 Day에서 궁금한 점을 선생님께 질문">💬 선생님께 질문</button></div>' +
+      '<button class="btn ghost sm" data-ask="theory" title="이 Day에서 궁금한 점을 AI 튜터에게 바로 질문">🤖 AI에게 질문</button></div>' +
       '<h1>' + esc(d.title) + '</h1>' +
       '<ul class="goals">' + d.goals.map(function (g) { return '<li>' + esc(g) + '</li>'; }).join('') + '</ul></div>';
 
@@ -649,81 +647,187 @@
   }
 
   /* =========================================================
-     선생님께 질문 (질문 창 · 질문함)
+     AI 튜터에게 질문 (질문 창 · 질문함)
+     - 학습자가 넣은 Claude API 키로 브라우저가 Anthropic API를 바로 부른다 (서버 없음)
+     - 보고 있는 Day 교재(이론·예제·연습문제·과제)를 함께 보내 그 내용에 맞춰 답하게 한다
+     - API 키는 진도 데이터(ST)와 따로 저장해 진도 내보내기 파일에 섞이지 않게 한다
      ========================================================= */
   var SECTIONS = { theory: '이론', video: '참고 영상', code: '실습 예제', compare: '문법 비교', quiz: '연습문제', assignment: '실습 과제', exam: '평가', etc: '기타' };
-  var askSel = '';   /* 질문 창을 열기 직전에 드래그해 둔 본문 문장 */
+  var AI_MODEL = 'claude-opus-5-5';
+  var AI_SDK = 'https://cdn.jsdelivr.net/npm/@anthropic-ai/sdk@0.131.0/+esm';
+  var KEY_STORE = 'edusap.apiKey';
+  var TUTOR_RULES = [
+    '당신은 "SAP ABAP 교육센터"(하루 30분, 12주 60일 과정)의 AI 튜터입니다. 학습자는 ABAP 입문자이고, 교재를 읽다가 궁금한 점을 바로 묻습니다.',
+    '- 한국어로 답합니다. 아래 [교재]의 설명 순서와 용어에 맞춰 설명하고, 교재 범위를 넘는 내용은 이해에 필요한 만큼만 덧붙입니다.',
+    '- 짧은 예제 코드로 보여 줍니다. 코드는 ```abap 블록에 씁니다. 기존 문법과 New Syntax(7.40 이상)가 다르면 둘 다 보여 줍니다.',
+    '- 학습자 코드가 첨부되면 무엇이 틀렸는지, 왜 그런지, 고친 코드를 차례로 알려 줍니다.',
+    '- 연습문제·실습 과제를 물으면 먼저 힌트와 개념 설명으로 스스로 풀 수 있게 돕고, 학습자가 정답을 원하면 정답과 이유를 알려 줍니다.',
+    '- 릴리스나 시스템 설정에 따라 다른 내용, 확실하지 않은 내용은 그렇다고 밝힙니다.',
+    '- 서식은 짧은 문단과 목록, **굵게**, `코드`, 코드 블록만 씁니다. 제목(#)과 표는 쓰지 않습니다.'
+  ].join('\n');
+  var askSel = '';      /* 질문 창을 열기 직전에 드래그해 둔 본문 문장 */
+  var activeQ = null;   /* 질문 창에 열린 질문 (null이면 새 질문 작성) */
+  var aiStream = null, aiLive = '', liveFrame = 0;
+  var sdkLoad = null;
+
+  function apiKey() { try { return localStorage.getItem(KEY_STORE) || ''; } catch (e) { return ''; } }
+  function setApiKey(k) { try { if (k) localStorage.setItem(KEY_STORE, k); else localStorage.removeItem(KEY_STORE); } catch (e) {} }
+  function loadSdk() { return sdkLoad || (sdkLoad = import(AI_SDK).catch(function (e) { sdkLoad = null; throw e; })); }
 
   function askLink(sec) { return '<a class="ask-link" href="#" data-ask="' + sec + '">💬 질문</a>'; }
-  function teacherEmail() { return ST.teacherEmail != null ? ST.teacherEmail : TEACHER_EMAIL; }
   function curDay() { var m = /^#\/day\/(\d+)/.exec(location.hash); return m ? Number(m[1]) : null; }
   function fmtDT(iso) { var d = new Date(iso); return fmtISO(d) + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
   function qWhere(q) {
     var d = q.day && byDay(q.day);
     return (d ? 'Day ' + d.day + ' · ' + d.title : '일반 질문') + ' / ' + (SECTIONS[q.section] || '기타');
   }
-  function qMailText(q) {
-    return '[ABAP 교육 질문] ' + qWhere(q) + '\n' +
-      '학습자: ' + (ST.learner || '(이름 미입력)') + '\n' +
-      '작성: ' + fmtDT(q.createdAt) + '\n\n' +
-      (q.quote ? '■ 궁금한 부분(본문 인용)\n"' + q.quote + '"\n\n' : '') +
-      '■ 질문\n' + q.text + '\n' +
-      (q.code ? '\n■ 내가 작성한 코드\n' + q.code + '\n' : '');
+  function findQ(id) { return ST.questions.filter(function (q) { return q.id === id; })[0]; }
+
+  /* ---------- 튜터에게 보내는 내용 ---------- */
+  function htmlText(h) { return (new DOMParser().parseFromString(h || '', 'text/html').body.textContent || '').replace(/\n\s*\n\s*\n+/g, '\n\n').trim(); }
+  function dayMaterial(d) {
+    if (!d) return '[교재] 학습자가 특정 Day 화면이 아닌 곳(대시보드·일정표·질문함 등)에서 질문했습니다. 과정 전체: 12주 60일, SAP 기초 → ABAP 문법 → ABAP Dictionary → Open SQL → 모듈화 → 리포트 → ALV → OOP → Dynpro·BDC·BAPI·Enhancement → ABAP on HANA·CDS·RAP.';
+    var out = '[교재] Day ' + d.day + ' / ' + DAYS.length + ' (' + d.week + '주차 · ' + d.phase + ')\n제목: ' + d.title +
+      '\n학습 목표:\n' + d.goals.map(function (g) { return '- ' + g; }).join('\n') +
+      '\n\n[이론]\n' + htmlText(d.theory);
+    (d.code || []).forEach(function (c) { out += '\n\n[실습 예제] ' + (c.caption || '') + '\n' + c.src; });
+    (d.quiz || []).forEach(function (q, i) {
+      out += '\n\n[연습문제 ' + (i + 1) + '] ' + q.q + '\n' + q.choices.map(function (c, k) { return (k + 1) + ') ' + c; }).join('\n') +
+        '\n정답: ' + (q.answer + 1) + (q.explain ? ' — ' + htmlText(q.explain) : '');
+    });
+    if (d.assignment) out += '\n\n[실습 과제]\n' + d.assignment.task + (d.assignment.solution ? '\n모범답안:\n' + d.assignment.solution : '');
+    return out;
   }
-  function copyText(t, okMsg) {
-    var done = function () { toast(okMsg || '클립보드에 복사했습니다'); };
-    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(done, fallback);
-    else fallback();
-    function fallback() {
-      var ta = document.createElement('textarea');
-      ta.value = t; ta.style.cssText = 'position:fixed;opacity:0';
-      document.body.appendChild(ta); ta.select();
-      try { document.execCommand('copy'); done(); } catch (e) { toast('복사하지 못했습니다'); }
-      ta.remove();
-    }
+  function firstPrompt(q) {
+    return '질문 위치: ' + qWhere(q) + '\n' +
+      (q.quote ? '\n궁금한 부분(교재 인용):\n"' + q.quote + '"\n' : '') +
+      '\n질문:\n' + q.text +
+      (q.code ? '\n\n내가 작성한 과제 코드:\n```abap\n' + q.code + '\n```' : '');
   }
-  /* 메일 앱으로 보내기. 주소 길이 제한이 있어 긴 본문은 잘라 보내고 전체 내용은 클립보드에 복사한다 */
-  function mailQuestion(q) {
-    var to = teacherEmail();
-    if (!to) { toast('먼저 선생님 이메일을 입력하세요'); openAsk(q.section); return false; }
-    var full = qMailText(q), body = full, subj = '[ABAP 질문] ' + qWhere(q);
-    var url = function (b) { return 'mailto:' + encodeURIComponent(to) + '?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(b); };
-    if (url(full).length > 1900) {
-      var tail = '\n…(이하 생략 — 전체 내용은 클립보드에 복사되어 있으니 붙여넣어 주세요)';
-      while (body.length > 50 && url(body + tail).length > 1900) body = body.slice(0, Math.floor(body.length * 0.85));
-      body += tail;
-      copyText(full, '본문이 길어 전체 내용을 클립보드에 복사했습니다. 메일에 붙여넣으세요');
+  /* 대화 기록. 예전(메일 방식) 질문은 받은 답변을 첫 답으로 넣어 이어서 물을 수 있게 한다 */
+  function qThread(q) {
+    if (!q.thread) {
+      q.thread = [{ role: 'user', content: firstPrompt(q) }];
+      if (q.answer) q.thread.push({ role: 'assistant', content: q.answer });
     }
-    location.href = url(body);
-    q.sentAt = new Date().toISOString(); save();
-    return true;
+    return q.thread;
+  }
+  function lastRole(q) { var t = qThread(q); return t[t.length - 1].role; }
+
+  function aiErrorText(err, A) {
+    if (!A) return 'AI 연결 모듈을 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.';
+    if (err instanceof A.APIUserAbortError) return '';
+    if (err instanceof A.AuthenticationError) return 'API 키가 올바르지 않습니다. 아래 🔑 Claude API 키를 다시 확인해 주세요.';
+    if (err instanceof A.PermissionDeniedError) return '이 API 키로는 사용할 수 없습니다(권한 없음). 키의 권한·결제 상태를 확인해 주세요.';
+    if (err instanceof A.RateLimitError) return '요청이 많아 잠시 막혔습니다. 잠시 뒤 다시 시도해 주세요.';
+    if (err instanceof A.BadRequestError) return '요청이 거부되었습니다: ' + err.message;
+    if (err instanceof A.APIConnectionError) return 'Anthropic API에 연결하지 못했습니다. 인터넷 연결을 확인해 주세요.';
+    if (err instanceof A.APIError) return 'AI 서버 오류(' + err.status + ')입니다. 잠시 뒤 다시 시도해 주세요.';
+    return '답변을 받지 못했습니다: ' + (err && err.message || err);
   }
 
+  /* 대화 기록의 마지막 질문에 AI가 답한다 (스트리밍) */
+  function askAI(q) {
+    var key = apiKey();
+    if (!key) { toast('먼저 Claude API 키를 넣어 주세요'); paintPanel(true); return; }
+    var d = q.day && byDay(q.day), A = null;
+    q.error = ''; aiLive = '';
+    aiStream = { q: q, s: null, stopped: false };
+    var run = aiStream;
+    paintPanel();
+    loadSdk().then(function (mod) {
+      A = mod.default;
+      if (run.stopped) throw new A.APIUserAbortError();
+      var client = new A({ apiKey: key, dangerouslyAllowBrowser: true });
+      run.s = client.beta.messages.stream({
+        model: AI_MODEL,
+        max_tokens: 16000,
+        output_config: { effort: 'medium' },
+        betas: ['server-side-fallback-2026-07-01'],
+        fallbacks: 'default',
+        cache_control: { type: 'ephemeral' },
+        system: [{ type: 'text', text: TUTOR_RULES }, { type: 'text', text: dayMaterial(d) }],
+        messages: qThread(q).map(function (m) { return { role: m.role, content: m.content }; })
+      });
+      run.s.on('text', function (delta, snapshot) { aiLive = snapshot; paintLive(); });
+      return run.s.finalMessage();
+    }).then(function (msg) {
+      var text = msg.content.filter(function (b) { return b.type === 'text'; }).map(function (b) { return b.text; }).join('');
+      if (msg.stop_reason === 'refusal') text = (text ? text + '\n\n' : '') + '(이 질문에는 답하지 못했습니다. 질문을 바꿔서 다시 물어봐 주세요.)';
+      else if (msg.stop_reason === 'max_tokens') text += '\n\n(답변이 길어 중간에 끊겼습니다. "이어서 설명해 줘"라고 물어보세요.)';
+      finishAnswer(q, text);
+    }).catch(function (err) {
+      if (run.stopped && aiLive) finishAnswer(q, aiLive + '\n\n(답변을 중지했습니다)');
+      else q.error = aiErrorText(err, A);
+    }).then(function () {
+      aiStream = null; aiLive = '';
+      save(); paintPanel(); render();
+    });
+  }
+  function finishAnswer(q, text) {
+    q.thread.push({ role: 'assistant', content: text });
+    q.answer = text; q.answeredAt = new Date().toISOString();
+  }
+  function stopAI() {
+    if (!aiStream) return;
+    aiStream.stopped = true;
+    if (aiStream.s) aiStream.s.abort();
+  }
+
+  /* ---------- 답변 표시 (코드 블록·굵게·인라인 코드만 해석) ---------- */
+  function mdLite(t) {
+    var parts = String(t || '').split(/```[ \t]*([\w-]*)[^\n]*\n([\s\S]*?)(?:```|$)/), html = '';
+    for (var i = 0; i < parts.length; i += 3) {
+      var txt = esc(parts[i]).replace(/`([^`\n]+)`/g, '<code>$1</code>').replace(/\*\*([^*\n]+)\*\*/g, '<b>$1</b>').replace(/^#{1,6}\s+(.*)$/gm, '<b>$1</b>').trim();
+      if (txt) html += '<div class="ai-p">' + txt + '</div>';
+      if (i + 2 < parts.length) {
+        var lang = parts[i + 1], src = parts[i + 2].replace(/\n$/, '');
+        html += '<pre class="code">' + (!lang || /abap/i.test(lang) ? hl(src) : esc(src)) + '</pre>';
+      }
+    }
+    return html;
+  }
+  /* 질문 1건의 대화: 첫 질문(인용·코드 포함) → AI 답변 → 이어서 한 질문 … */
+  function convoHtml(q, withLive) {
+    var th = qThread(q), html = '';
+    if (q.quote) html += '<blockquote class="qna-quote">' + esc(q.quote) + '</blockquote>';
+    html += '<div class="ai-msg me">' + esc(q.text) + '</div>';
+    if (q.code) html += '<details class="sol"><summary>첨부한 내 코드</summary><pre class="code">' + hl(q.code) + '</pre></details>';
+    for (var i = 1; i < th.length; i++) {
+      html += th[i].role === 'user' ? '<div class="ai-msg me">' + esc(th[i].content) + '</div>'
+        : '<div class="ai-msg bot"><div class="ai-who">🤖 AI 튜터</div>' + mdLite(th[i].content) + '</div>';
+    }
+    if (withLive && aiStream && aiStream.q === q) {
+      html += '<div class="ai-msg bot"><div class="ai-who">🤖 AI 튜터</div><div id="aiLive">' + (aiLive ? mdLite(aiLive) : '<span class="muted">생각하는 중…</span>') + '</div></div>';
+    }
+    if (q.error) html += '<div class="ai-err">⚠️ ' + esc(q.error) + '</div>';
+    return html;
+  }
+  function paintLive() {
+    if (liveFrame) return;
+    liveFrame = requestAnimationFrame(function () {
+      liveFrame = 0;
+      var el = $('#aiLive');
+      if (el) { el.innerHTML = mdLite(aiLive); scrollAsk(); }
+    });
+  }
+  function scrollAsk() { var b = $('#askBody'); if (b) b.scrollTop = b.scrollHeight; }
+
+  /* ---------- 질문함 ---------- */
   function qnaItem(q) {
-    var d = q.day && byDay(q.day);
+    var d = q.day && byDay(q.day), busy = aiStream && aiStream.q === q;
     return '<div class="qna" data-qid="' + q.id + '">' +
       '<div class="qna-head">' +
       (d ? '<a class="tag brand" href="#/day/' + d.day + '">Day ' + d.day + '</a>' : '<span class="tag">일반</span>') +
       '<span class="tag">' + (SECTIONS[q.section] || '기타') + '</span>' +
-      '<span class="tag ' + (q.answer ? 'ok' : 'warn') + '">' + (q.answer ? '답변 완료' : '답변 대기') + '</span>' +
-      '<span class="muted" style="font-size:.76rem">' + fmtDT(q.createdAt) + (q.sentAt ? ' · 메일 보냄' : '') + '</span></div>' +
+      '<span class="tag ' + (busy ? '' : q.answer ? 'ok' : 'warn') + '">' + (busy ? '답변 중…' : q.answer ? '답변 완료' : '답변 대기') + '</span>' +
+      '<span class="muted" style="font-size:.76rem">' + fmtDT(q.createdAt) + '</span></div>' +
       (d ? '<div class="muted" style="font-size:.8rem">' + esc(d.title) + '</div>' : '') +
-      (q.quote ? '<blockquote class="qna-quote">' + esc(q.quote) + '</blockquote>' : '') +
-      '<div class="qna-text">' + esc(q.text) + '</div>' +
-      (q.code ? '<details class="sol"><summary>첨부한 내 코드</summary><pre class="code">' + hl(q.code) + '</pre></details>' : '') +
-      (q.answer
-        ? '<div class="qna-ans"><b>👩‍🏫 선생님 답변</b>' + (q.answeredAt ? ' <span class="muted" style="font-size:.74rem">' + fmtDT(q.answeredAt) + '</span>' : '') +
-          '<div class="qna-text">' + esc(q.answer) + '</div></div>'
-        : '<details class="sol"><summary>받은 답변 기록하기</summary>' +
-          '<textarea class="input qna-ans-in" placeholder="메일·메신저로 받은 선생님 답변을 붙여넣어 두면 복습할 때 다시 볼 수 있습니다"></textarea>' +
-          '<button class="btn sm" data-qact="answer" style="margin-top:6px">답변 저장</button></details>') +
+      convoHtml(q, false) +
       '<div class="row qna-acts">' +
-      '<button class="btn ghost sm" data-qact="mail">✉️ 메일로 ' + (q.sentAt ? '다시 ' : '') + '보내기</button>' +
-      '<button class="btn ghost sm" data-qact="copy">📋 복사 (메신저용)</button>' +
-      (q.answer ? '<button class="btn ghost sm" data-qact="reopen">답변 수정</button>' : '') +
-      '<button class="btn ghost sm danger" data-qact="del">삭제</button></div></div>';
+      '<button class="btn ghost sm" data-qact="chat">' + (q.answer ? '💬 이어서 질문' : '🤖 AI에게 묻기') + '</button>' +
+      '<button class="btn ghost sm danger" data-qact="del"' + (busy ? ' disabled' : '') + '>삭제</button></div></div>';
   }
-  function findQ(id) { return ST.questions.filter(function (q) { return q.id === id; })[0]; }
   /* #view 는 화면마다 내용만 바뀌고 요소는 그대로라 위임 핸들러는 한 번만 단다 */
   function bindQna() {
     $('#view').addEventListener('click', function (ev) {
@@ -732,19 +836,14 @@
       var box = b.closest('.qna'), q = box && findQ(box.getAttribute('data-qid'));
       if (!q) return;
       var act = b.getAttribute('data-qact');
-      if (act === 'mail') { if (mailQuestion(q)) render(); }
-      else if (act === 'copy') copyText(qMailText(q));
-      else if (act === 'answer') {
-        var v = $('.qna-ans-in', box).value.trim();
-        if (!v) { toast('답변 내용을 입력하세요'); return; }
-        q.answer = v; q.answeredAt = new Date().toISOString(); save(); render(); toast('답변을 저장했습니다');
-      } else if (act === 'reopen') {
-        var nv = prompt('선생님 답변 수정 (비우면 답변 대기로 돌아갑니다)', q.answer);
-        if (nv == null) return;
-        q.answer = nv.trim(); if (!q.answer) delete q.answeredAt; save(); render();
+      if (act === 'chat') {
+        openAsk(q.section, q.id);
+        if (!q.answer && !aiStream && lastRole(q) === 'user') askAI(q);
       } else if (act === 'del') {
         if (!confirm('이 질문을 삭제할까요?')) return;
-        ST.questions = ST.questions.filter(function (x) { return x !== q; }); save(); render();
+        ST.questions = ST.questions.filter(function (x) { return x !== q; });
+        if (activeQ === q) activeQ = null;
+        save(); render();
       }
     });
   }
@@ -756,38 +855,62 @@
     var list = all.filter(function (q) { return filter === 'all' || (filter === 'wait' ? !q.answer : !!q.answer); });
     var tab = function (k, label, n) { return '<a class="btn sm ' + (filter === k ? '' : 'ghost') + '" href="#/qna/' + k + '">' + label + ' ' + n + '</a>'; };
     var html = '<div class="spread" style="margin-bottom:6px"><div><h1>질문함</h1>' +
-      '<div class="muted">학습 중 궁금했던 점을 선생님께 보내고, 받은 답변을 모아 복습하세요.</div></div>' +
-      '<button class="btn" data-ask="etc">💬 새 질문하기</button></div>';
+      '<div class="muted">학습 중 AI 튜터에게 물어본 질문과 답변을 모아 복습하세요. 답변이 부족하면 이어서 물어볼 수 있습니다.</div></div>' +
+      '<button class="btn" data-ask="etc">🤖 새 질문하기</button></div>';
     html += '<div class="row" style="margin:14px 0">' + tab('all', '전체', all.length) + tab('wait', '답변 대기', pend) + tab('done', '답변 완료', all.length - pend) + '</div>';
-    if (!teacherEmail()) {
-      html += '<div class="card tight"><div class="theory"><div class="note">✉️ 아직 선생님 이메일이 없습니다. <b>새 질문하기</b> 창 맨 아래에 이메일을 입력하면 질문을 메일로 바로 보낼 수 있습니다. 메일 대신 <b>복사</b> 버튼으로 카카오톡·Teams 등에 붙여넣어 보내도 됩니다.</div></div></div>';
+    if (!apiKey()) {
+      html += '<div class="card tight"><div class="theory"><div class="note">🔑 AI 튜터를 쓰려면 Claude API 키가 한 번 필요합니다. <b>새 질문하기</b> 창 아래의 <b>Claude API 키</b>에 넣어 두면 이 브라우저에서 계속 쓸 수 있습니다.</div></div></div>';
     }
     html += list.length ? '<div class="card">' + list.map(qnaItem).join('') + '</div>'
-      : '<div class="card muted" style="text-align:center;padding:40px">' + (all.length ? '해당하는 질문이 없습니다.' : '아직 남긴 질문이 없습니다. 학습 화면의 <b>💬 질문</b> 버튼이나 오른쪽 아래 버튼으로 질문해 보세요.') + '</div>';
+      : '<div class="card muted" style="text-align:center;padding:40px">' + (all.length ? '해당하는 질문이 없습니다.' : '아직 남긴 질문이 없습니다. 학습 화면의 <b>💬 질문</b> 버튼이나 오른쪽 아래 버튼으로 AI 튜터에게 물어보세요.') + '</div>';
     return { html: html };
   }
 
-  /* 질문 창 (화면 오른쪽 아래 버튼 / 각 섹션의 💬 질문 링크) */
-  function openAsk(sec) {
-    var pn = $('#askPanel'), n = curDay(), d = n && byDay(n);
-    $('#askWhere').innerHTML = d ? '<b>Day ' + d.day + '</b> · ' + esc(d.title) : '일반 질문 (특정 Day와 관계없음)';
-    $('#askSec').value = sec || (d ? 'theory' : 'etc');
-    $('#askQuote').value = askSel;
-    $('#askQuoteRow').hidden = !askSel;
-    var s = n && ST.days[n];
-    $('#askCodeRow').hidden = !(s && s.code);
-    $('#askCode').checked = false;
-    $('#askMail').value = teacherEmail();
-    pn.hidden = false;
-    setTimeout(function () { $('#askText').focus(); }, 30);
+  /* ---------- 질문 창 (화면 오른쪽 아래 버튼 / 각 섹션의 💬 질문 링크) ---------- */
+  function openAsk(sec, qid) {
+    if (!aiStream) {
+      activeQ = qid ? findQ(qid) || null : null;
+      if (!activeQ) {
+        var n = curDay(), s = n && ST.days[n];
+        $('#askSec').value = sec || (n && byDay(n) ? 'theory' : 'etc');
+        $('#askQuote').value = askSel;
+        $('#askQuoteRow').hidden = !askSel;
+        $('#askCodeRow').hidden = !(s && s.code);
+        $('#askCode').checked = false;
+      }
+    }
+    $('#askPanel').hidden = false;
+    paintPanel();
+    setTimeout(function () { var f = activeQ ? $('#askFollow') : $('#askText'); if (f && !f.hidden) f.focus(); }, 30);
   }
   function closeAsk() { $('#askPanel').hidden = true; }
+
+  /* 질문 창 상태: 새 질문 작성 / 대화 보기(답변 중·이어서 질문) */
+  function paintPanel(openKey) {
+    var q = activeQ, busy = !!aiStream, d;
+    if (q) d = q.day && byDay(q.day); else { var n = curDay(); d = n && byDay(n); }
+    $('#askWhere').innerHTML = d ? '<b>Day ' + d.day + '</b> · ' + esc(d.title) : '일반 질문 (특정 Day와 관계없음)';
+    $('#askForm').hidden = !!q;
+    $('#askThread').hidden = !q;
+    if (q) $('#askThread').innerHTML = convoHtml(q, true);
+    var answered = q && lastRole(q) === 'assistant';
+    $('#askFollow').hidden = !q || busy || !answered;
+    $('#askGo').hidden = busy;
+    $('#askGo').textContent = !q ? '🤖 AI에게 묻기' : answered ? '💬 이어서 묻기' : '↻ 다시 묻기';
+    $('#askStop').hidden = !busy;
+    $('#askNew').hidden = !q || busy;
+    $('#askSave').hidden = !!q;
+    var key = apiKey();
+    $('#askKeyState').textContent = key ? '(저장됨)' : '(필요)';
+    $('#askKeyState').className = key ? 'muted' : 'ai-need';
+    if (openKey || !key) $('#askKeyBox').open = true;
+    if (q) scrollAsk();
+  }
+
   function submitAsk(how) {
     var text = $('#askText').value.trim();
     if (!text) { toast('질문 내용을 입력하세요'); $('#askText').focus(); return; }
-    var mail = $('#askMail').value.trim();
-    if (how === 'mail' && !mail) { toast('선생님 이메일을 입력하세요'); $('#askMail').focus(); return; }
-    if (mail !== teacherEmail()) ST.teacherEmail = mail;
+    if (how === 'ai' && !apiKey()) { toast('먼저 Claude API 키를 넣어 주세요'); paintPanel(true); $('#askKey').focus(); return; }
     var n = curDay(), s = n && ST.days[n];
     var q = {
       id: 'q' + Date.now().toString(36), createdAt: new Date().toISOString(),
@@ -795,35 +918,58 @@
       quote: $('#askQuoteRow').hidden ? '' : $('#askQuote').value.trim(),
       text: text, code: ($('#askCode').checked && s && s.code) ? s.code : ''
     };
+    qThread(q);
     ST.questions.push(q); save();
-    if (how === 'mail') mailQuestion(q);
-    else if (how === 'copy') copyText(qMailText(q), '질문을 저장하고 복사했습니다. 메신저에 붙여넣어 보내세요');
-    else toast('질문함에 저장했습니다');
     $('#askText').value = ''; askSel = '';
-    closeAsk();
+    if (how === 'save') { toast('질문함에 저장했습니다. 나중에 질문함에서 AI에게 물어볼 수 있습니다'); closeAsk(); render(); return; }
+    activeQ = q;
+    askAI(q);
     render();
   }
+  function askGo() {
+    if (!activeQ) { submitAsk('ai'); return; }
+    if (lastRole(activeQ) === 'assistant') {
+      var t = $('#askFollow').value.trim();
+      if (!t) { toast('이어서 물어볼 내용을 입력하세요'); $('#askFollow').focus(); return; }
+      if (!apiKey()) { toast('먼저 Claude API 키를 넣어 주세요'); paintPanel(true); return; }
+      qThread(activeQ).push({ role: 'user', content: t });
+      $('#askFollow').value = '';
+      save();
+    }
+    askAI(activeQ);
+  }
+
   function initAsk() {
     var secOpts = Object.keys(SECTIONS).filter(function (k) { return k !== 'exam'; })
       .map(function (k) { return '<option value="' + k + '">' + SECTIONS[k] + '</option>'; }).join('');
     var wrap = document.createElement('div');
     wrap.innerHTML =
-      '<button class="ask-fab" data-ask="" title="학습 중 궁금한 점을 선생님께 질문">💬 선생님께 질문</button>' +
-      '<div class="ask-panel" id="askPanel" hidden role="dialog" aria-label="선생님께 질문">' +
-      '<div class="ask-top"><b>💬 선생님께 질문</b><button class="btn ghost sm" id="askClose" title="닫기">✕</button></div>' +
-      '<div class="ask-body">' +
+      '<button class="ask-fab" data-ask="" title="학습 중 궁금한 점을 AI 튜터에게 바로 질문">🤖 AI에게 질문</button>' +
+      '<div class="ask-panel" id="askPanel" hidden role="dialog" aria-label="AI 튜터에게 질문">' +
+      '<div class="ask-top"><b>🤖 AI 튜터에게 질문</b><button class="btn ghost sm" id="askClose" title="닫기">✕</button></div>' +
+      '<div class="ask-body" id="askBody">' +
       '<div class="muted" style="font-size:.8rem">질문 위치 · <span id="askWhere"></span></div>' +
+      '<div id="askForm" class="ask-form">' +
       '<label class="ask-lbl">어느 부분인가요? <select class="input" id="askSec">' + secOpts + '</select></label>' +
       '<div id="askQuoteRow"><div class="ask-lbl">궁금한 문장 (본문에서 드래그한 내용)</div><textarea class="input ask-quote" id="askQuote"></textarea></div>' +
       '<label class="ask-lbl" for="askText">질문 내용</label>' +
       '<textarea class="input ask-text" id="askText" placeholder="예) LOOP AT ... ASSIGNING 에서 필드 심볼 값을 바꾸면 원본 테이블도 바뀌는 이유가 궁금합니다.&#10;&#10;💡 본문 문장을 드래그한 뒤 질문 버튼을 누르면 그 문장이 함께 첨부됩니다."></textarea>' +
       '<label class="row ask-lbl" id="askCodeRow" style="gap:6px"><input type="checkbox" id="askCode"> 실습 과제에 작성한 내 코드 함께 보내기</label>' +
-      '<label class="ask-lbl">선생님 이메일 <input class="input" id="askMail" type="email" placeholder="teacher@example.com" style="width:100%"></label>' +
+      '</div>' +
+      '<div id="askThread" class="ask-thread" hidden></div>' +
+      '<details class="ask-key" id="askKeyBox"><summary>🔑 Claude API 키 <span id="askKeyState"></span></summary>' +
+      '<div class="row" style="gap:6px;margin-top:6px"><input class="input" id="askKey" type="password" placeholder="sk-ant-..." autocomplete="off" style="flex:1;min-width:0">' +
+      '<button class="btn sm" id="askKeySave">저장</button><button class="btn ghost sm" id="askKeyDel">지우기</button></div>' +
+      '<div class="muted ask-note">키는 이 브라우저에만 저장되고, 질문할 때 Anthropic API로만 보냅니다(진도 내보내기 파일에는 들어가지 않음). ' +
+      '키는 <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">Anthropic Console</a>에서 만들 수 있고, 질문할 때마다 사용한 만큼 요금이 나옵니다. 공용 PC에서는 다 쓴 뒤 <b>지우기</b>를 눌러 주세요.</div>' +
+      '</details>' +
       '</div>' +
       '<div class="ask-foot">' +
-      '<button class="btn" id="askSendMail">✉️ 메일로 보내기</button>' +
-      '<button class="btn ghost" id="askSendCopy" title="카카오톡·Teams 등에 붙여넣기">📋 복사</button>' +
-      '<button class="btn ghost" id="askSave" title="보내지 않고 질문함에만 저장">저장만</button></div></div>';
+      '<textarea class="input ask-follow" id="askFollow" placeholder="답변이 부족하면 이어서 물어보세요 (Ctrl+Enter로 보내기)" hidden></textarea>' +
+      '<button class="btn" id="askGo">🤖 AI에게 묻기</button>' +
+      '<button class="btn ghost" id="askStop" hidden>■ 중지</button>' +
+      '<button class="btn ghost" id="askNew" hidden title="새 질문 쓰기">＋ 새 질문</button>' +
+      '<button class="btn ghost" id="askSave" title="AI에게 묻지 않고 질문함에만 저장">저장만</button></div></div>';
     while (wrap.firstChild) document.body.appendChild(wrap.firstChild);
 
     /* 버튼을 누르면 선택이 풀릴 수 있어 mousedown 시점에 드래그한 문장을 잡아둔다 */
@@ -841,9 +987,18 @@
     });
     document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape' && !$('#askPanel').hidden) closeAsk(); });
     $('#askClose').onclick = closeAsk;
-    $('#askSendMail').onclick = function () { submitAsk('mail'); };
-    $('#askSendCopy').onclick = function () { submitAsk('copy'); };
+    $('#askGo').onclick = askGo;
+    $('#askStop').onclick = stopAI;
+    $('#askNew').onclick = function () { activeQ = null; openAsk(); };
     $('#askSave').onclick = function () { submitAsk('save'); };
+    $('#askFollow').onkeydown = function (ev) { if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) askGo(); };
+    $('#askText').onkeydown = function (ev) { if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) askGo(); };
+    $('#askKeySave').onclick = function () {
+      var k = $('#askKey').value.trim();
+      if (!k) { toast('API 키를 입력하세요'); return; }
+      setApiKey(k); $('#askKey').value = ''; $('#askKeyBox').open = false; paintPanel(); toast('API 키를 이 브라우저에 저장했습니다');
+    };
+    $('#askKeyDel').onclick = function () { setApiKey(''); paintPanel(true); toast('API 키를 지웠습니다'); };
     bindQna();
   }
 
